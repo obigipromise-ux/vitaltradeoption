@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>My Dashboard — VitalTradeOption</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--gold:#f0b429;--gd:#c48f0a;--dark:#0a0e1a;--card:#111827;--card2:#1a2235;--green:#00d084;--red:#ff4560;--blue:#4f8ef7;--purple:#a78bfa;--text:#e2e8f0;--muted:#8492a6;--border:rgba(255,255,255,.08);}
+body{font-family:'Segoe UI',sans-serif;background:var(--dark);color:var(--text);min-height:100vh;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.5)}}
+@keyframes ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* NAV */
+.nav{background:#060910;border-bottom:1px solid var(--border);height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;position:sticky;top:0;z-index:50;}
+.nav-brand{display:flex;align-items:center;gap:9px;text-decoration:none;}
+.nb-ico{width:32px;height:32px;background:linear-gradient(135deg,var(--gold),var(--gd));border-radius:7px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:15px;color:#000;}
+.nb-txt{font-size:.9rem;font-weight:800;color:#fff;}
+.nb-txt span{color:var(--gold);}
+.nav-right{display:flex;align-items:center;gap:10px;}
+.live{display:flex;align-items:center;gap:5px;font-size:.72rem;color:var(--green);}
+.ldot{width:7px;height:7px;background:var(--green);border-radius:50%;animation:pulse 1.5s infinite;}
+.upill{display:flex;align-items:center;gap:7px;background:var(--card);border:1px solid var(--border);border-radius:30px;padding:4px 12px 4px 4px;}
+.uav{width:27px;height:27px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gd));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.75rem;color:#000;}
+.uname{font-size:.76rem;font-weight:600;}
+.btn-lo{padding:6px 13px;border-radius:6px;background:rgba(255,69,96,.1);border:1px solid rgba(255,69,96,.2);color:var(--red);font-size:.74rem;font-weight:700;cursor:pointer;}
+.notif-wrap{position:relative;cursor:pointer;}
+.nbell{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.05);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.9rem;}
+.nbadge{position:absolute;top:-3px;right:-3px;min-width:16px;height:16px;background:var(--red);border-radius:20px;font-size:.6rem;font-weight:800;color:#fff;display:none;align-items:center;justify-content:center;padding:0 3px;}
+.nbadge.show{display:flex;}
+
+/* TICKER */
+.tkbar{background:#080c18;border-bottom:1px solid var(--border);overflow:hidden;padding:7px 0;}
+.ticker{display:flex;gap:28px;animation:ticker 20s linear infinite;white-space:nowrap;width:max-content;}
+.ti{display:flex;align-items:center;gap:6px;font-size:.74rem;}
+.ts{color:var(--gold);font-weight:700;}
+.tup{color:var(--green);}
+.tdn{color:var(--red);}
+
+/* TABS */
+.tabs{background:var(--card);border-bottom:1px solid var(--border);display:flex;overflow-x:auto;padding:0 16px;}
+.tab{padding:12px 15px;font-size:.8rem;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:.2s;display:flex;align-items:center;gap:5px;}
+.tab:hover{color:var(--text);}
+.tab.active{color:var(--gold);border-bottom-color:var(--gold);}
+.tbadge{background:var(--red);color:#fff;font-size:.6rem;font-weight:800;padding:1px 5px;border-radius:10px;}
+
+/* CONTENT */
+.content{padding:20px;max-width:1160px;margin:0 auto;}
+.page{display:none;animation:fadeUp .3s ease;}
+.page.active{display:block;}
+
+/* CARDS & COMPONENTS */
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:16px;}
+.card-head{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.card-title{font-size:.88rem;font-weight:700;}
+.card-body{padding:18px;}
+.srow{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:12px;margin-bottom:16px;}
+.sc{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;transition:.2s;}
+.sc:hover{border-color:rgba(240,180,41,.25);}
+.slbl{font-size:.68rem;color:var(--muted);margin-bottom:7px;}
+.sv{font-size:1.6rem;font-weight:900;margin-bottom:4px;}
+.sv.gold{color:var(--gold);}.sv.green{color:var(--green);}.sv.blue{color:var(--blue);}.sv.red{color:var(--red);}.sv.purple{color:var(--purple);}
+.ssub{font-size:.7rem;}.ssub.up{color:var(--green);}.ssub.neutral{color:var(--muted);}
+
+/* BALANCE HERO */
+.balhero{background:linear-gradient(135deg,#12172a,#0f1521);border:1px solid var(--border);border-radius:14px;padding:26px;margin-bottom:16px;position:relative;overflow:hidden;}
+.balhero::before{content:'';position:absolute;top:-50px;right:-50px;width:180px;height:180px;background:radial-gradient(circle,rgba(240,180,41,.12),transparent 70%);border-radius:50%;}
+.bal-lbl{font-size:.72rem;color:var(--muted);margin-bottom:6px;position:relative;z-index:1;}
+.bal-amt{font-size:2.5rem;font-weight:900;position:relative;z-index:1;margin-bottom:3px;}
+.bal-cur{font-size:1.3rem;color:var(--gold);}
+.bal-today{font-size:.8rem;color:var(--green);position:relative;z-index:1;margin-bottom:20px;}
+.bal-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;position:relative;z-index:1;}
+.bi{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:12px;}
+.bi-lbl{font-size:.66rem;color:var(--muted);margin-bottom:4px;}
+.bi-val{font-size:.95rem;font-weight:800;}
+
+/* PROGRESS */
+.prog{margin-bottom:12px;}
+.prog-head{display:flex;justify-content:space-between;font-size:.72rem;margin-bottom:4px;}
+.prog-head span:first-child{color:var(--muted);}
+.prog-head span:last-child{color:var(--gold);font-weight:700;}
+.prog-track{height:6px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:4px;transition:width 1.2s ease;}
+
+/* TABLE */
+.scrollable{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+thead tr{background:rgba(255,255,255,.02);}
+th{padding:9px 14px;text-align:left;font-size:.67rem;color:var(--muted);font-weight:700;letter-spacing:.4px;text-transform:uppercase;white-space:nowrap;}
+td{padding:11px 14px;font-size:.82rem;border-top:1px solid rgba(255,255,255,.04);}
+tr:hover td{background:rgba(255,255,255,.015);}
+.badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:.67rem;font-weight:700;}
+.badge.win,.badge.active,.badge.completed,.badge.approved,.badge.credit{background:rgba(0,208,132,.13);color:var(--green);}
+.badge.loss,.badge.suspended,.badge.rejected,.badge.debit{background:rgba(255,69,96,.13);color:var(--red);}
+.badge.pending,.badge.open{background:rgba(240,180,41,.13);color:var(--gold);}
+
+/* FORMS */
+.fgrp{margin-bottom:13px;}
+.fgrp label{font-size:.7rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.3px;display:block;margin-bottom:5px;}
+.fgrp input,.fgrp select,.fgrp textarea{width:100%;padding:10px 12px;background:var(--card2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:.86rem;outline:none;transition:.2s;font-family:'Segoe UI',sans-serif;}
+.fgrp input:focus,.fgrp select:focus,.fgrp textarea:focus{border-color:var(--gold);}
+.fgrp textarea{resize:vertical;min-height:60px;}
+.frow2{display:grid;grid-template-columns:1fr 1fr;gap:11px;}
+.btn-g{padding:10px 22px;border-radius:8px;background:linear-gradient(135deg,var(--gold),var(--gd));border:none;color:#000;font-size:.84rem;font-weight:800;cursor:pointer;transition:.2s;}
+.btn-g:hover{opacity:.88;}
+.btn-o{padding:10px 20px;border-radius:8px;background:none;border:1px solid var(--border);color:var(--muted);font-size:.84rem;cursor:pointer;transition:.2s;}
+.btn-o:hover{border-color:var(--gold);color:var(--gold);}
+
+/* DEPOSIT */
+.dep-steps{display:flex;align-items:center;gap:0;margin-bottom:20px;flex-wrap:wrap;}
+.dst{display:flex;align-items:center;gap:6px;font-size:.75rem;color:var(--muted);}
+.dst.active{color:var(--gold);font-weight:700;}
+.dst.done{color:var(--green);}
+.dsn{width:22px;height:22px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;flex-shrink:0;}
+.dst.active .dsn{border-color:var(--gold);background:rgba(240,180,41,.1);color:var(--gold);}
+.dst.done .dsn{border-color:var(--green);background:rgba(0,208,132,.1);color:var(--green);}
+.dsl{flex:1;height:1px;background:var(--border);margin:0 6px;min-width:14px;}
+.mcard{background:var(--card2);border:1px solid var(--border);border-radius:9px;padding:14px 11px;text-align:center;cursor:pointer;transition:.2s;}
+.mcard:hover,.mcard.sel{border-color:var(--gold);background:rgba(240,180,41,.07);}
+.mico{font-size:1.6rem;margin-bottom:5px;}
+.mname{font-size:.8rem;font-weight:700;margin-bottom:1px;}
+.mnet{font-size:.66rem;color:var(--muted);}
+.mfee{font-size:.65rem;color:var(--green);margin-top:3px;}
+.addr-card{background:var(--card2);border:1px solid rgba(240,180,41,.25);border-radius:10px;padding:18px;margin-bottom:14px;}
+.addr-str{font-family:monospace;font-size:.76rem;color:var(--gold);word-break:break-all;background:rgba(240,180,41,.05);border:1px solid rgba(240,180,41,.12);border-radius:6px;padding:9px 11px;margin-bottom:9px;line-height:1.6;}
+.qr-box{background:#fff;border-radius:8px;padding:7px;width:110px;height:110px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.qr-box img{width:96px;height:96px;}
+.warn-box{background:rgba(255,69,96,.06);border:1px solid rgba(255,69,96,.18);border-radius:8px;padding:12px;font-size:.75rem;color:#ff8a9a;line-height:1.7;}
+.preset-btns{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px;}
+.preset{padding:7px 14px;border-radius:7px;background:var(--card2);border:1px solid var(--border);color:var(--muted);font-size:.8rem;cursor:pointer;transition:.2s;}
+.preset:hover,.preset.sel{border-color:var(--gold);color:var(--gold);background:rgba(240,180,41,.08);}
+.plan-pick{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:9px;margin-bottom:14px;}
+.pc{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:13px;cursor:pointer;transition:.2s;}
+.pc:hover,.pc.sel{border-color:var(--gold);background:rgba(240,180,41,.07);}
+.pc-tier{font-size:.65rem;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.7px;margin-bottom:4px;}
+.pc-roi{font-size:1.2rem;font-weight:900;margin-bottom:2px;}
+.pc-range{font-size:.68rem;color:var(--muted);}
+.steppage{display:none;}
+.steppage.active{display:block;}
+.dep-nav{display:flex;gap:9px;margin-top:14px;}
+
+/* SUPPORT CHAT */
+.chat-wrap{display:flex;flex-direction:column;height:480px;border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.chat-hdr{padding:13px 16px;background:var(--card2);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+.chat-av{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gd));display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.9rem;color:#000;flex-shrink:0;}
+.chat-msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:9px;}
+.cmsg{max-width:74%;display:flex;flex-direction:column;gap:3px;}
+.cmsg.mine{align-self:flex-end;align-items:flex-end;}
+.cmsg.theirs{align-self:flex-start;align-items:flex-start;}
+.mbubble{padding:9px 13px;border-radius:11px;font-size:.83rem;line-height:1.55;word-break:break-word;}
+.mine .mbubble{background:linear-gradient(135deg,var(--gold),var(--gd));color:#000;border-bottom-right-radius:3px;}
+.theirs .mbubble{background:var(--card2);color:var(--text);border-bottom-left-radius:3px;}
+.mtime{font-size:.63rem;color:var(--muted);}
+.chat-empty-state{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--muted);font-size:.85rem;gap:8px;}
+.chat-inp{padding:12px 14px;border-top:1px solid var(--border);display:flex;gap:9px;align-items:flex-end;background:var(--card2);}
+.chat-inp textarea{flex:1;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:.83rem;padding:9px 12px;resize:none;outline:none;font-family:'Segoe UI',sans-serif;max-height:90px;}
+.chat-inp textarea:focus{border-color:var(--gold);}
+.chat-send{padding:9px 16px;border-radius:8px;background:linear-gradient(135deg,var(--gold),var(--gd));border:none;color:#000;font-weight:800;font-size:.82rem;cursor:pointer;}
+
+/* MODAL */
+.mover{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;align-items:center;justify-content:center;}
+.mover.show{display:flex;}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:14px;width:90%;max-width:440px;padding:28px;position:relative;max-height:90vh;overflow-y:auto;animation:fadeUp .3s ease;}
+.mcl{position:absolute;top:13px;right:16px;background:none;border:none;color:var(--muted);font-size:1.3rem;cursor:pointer;}
+.modal h3{font-size:1.1rem;font-weight:800;text-align:center;margin-bottom:4px;}
+.modal .msub{font-size:.8rem;color:var(--muted);text-align:center;margin-bottom:16px;}
+.cd-row{display:flex;justify-content:space-between;font-size:.8rem;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);}
+.cd-row:last-child{border-bottom:none;}
+.cd-row span:first-child{color:var(--muted);}
+.mbtns{display:flex;gap:9px;margin-top:14px;}
+.mbtn{flex:1;padding:11px;border-radius:8px;font-size:.86rem;font-weight:700;cursor:pointer;}
+.mbtn.gold{background:linear-gradient(135deg,var(--gold),var(--gd));border:none;color:#000;}
+.mbtn.out{background:none;border:1px solid var(--border);color:var(--muted);}
+
+.toast{position:fixed;bottom:20px;right:20px;background:var(--card2);border:1px solid var(--green);border-radius:9px;padding:11px 16px;font-size:.82rem;color:var(--green);display:none;z-index:400;animation:fadeUp .3s ease;}
+@media(max-width:600px){.bal-row{grid-template-columns:1fr 1fr;}.frow2{grid-template-columns:1fr;}.content{padding:12px;}}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-brand" href="/"><div class="nb-ico">V</div><div class="nb-txt">Vital<span>Trade</span>Option</div></a>
+  <div class="nav-right">
+    <div class="live"><div class="ldot"></div>Live</div>
+    <div class="notif-wrap" onclick="goSupport()"><div class="nbell">💬</div><div class="nbadge" id="nbadge">0</div></div>
+    <div class="upill"><div class="uav" id="uAv">A</div><span class="uname" id="uName">Loading</span></div>
+    <button class="btn-lo" onclick="logout()">⏏ Logout</button>
+  </div>
+</nav>
+
+<div class="tkbar"><div class="ticker" id="tkr"></div></div>
+
+<div class="tabs">
+  <div class="tab active" onclick="showTab('dash',this)">📊 Dashboard</div>
+  <div class="tab" onclick="showTab('portfolio',this)">💼 Portfolio</div>
+  <div class="tab" onclick="showTab('trades',this)">📈 My Trades</div>
+  <div class="tab" onclick="showTab('deposit',this)">💰 Deposit</div>
+  <div class="tab" onclick="showTab('withdraw',this)">💸 Withdraw</div>
+  <div class="tab" onclick="showTab('referral',this)">🔗 Referral</div>
+  <div class="tab" onclick="showTab('profile',this)">👤 Profile</div>
+  <div class="tab" onclick="showTab('kyc',this)">🪪 KYC Verify</div>
+  <div class="tab" id="supportTabEl" onclick="showTab('support',this)">💬 Support <span class="tbadge" id="chatBadge" style="display:none">0</span></div>
+</div>
+
+<div class="content">
+
+  <!-- DASHBOARD -->
+  <div class="page active" id="tab-dash">
+    <!-- UPGRADE NOTIFICATION BANNER -->
+    <div id="upgradeBanner" style="display:none;background:linear-gradient(135deg,rgba(240,180,41,.15),rgba(240,180,41,.05));border:2px solid var(--gold);border-radius:14px;padding:20px 22px;margin-bottom:14px;position:relative;overflow:hidden;">
+      <div style="position:absolute;top:-20px;right:-20px;width:100px;height:100px;background:radial-gradient(circle,rgba(240,180,41,.2),transparent);border-radius:50%;"></div>
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap;">
+        <div style="font-size:2.2rem;flex-shrink:0;">🚀</div>
+        <div style="flex:1;">
+          <div style="font-size:1rem;font-weight:800;color:var(--gold);margin-bottom:6px;">Account Upgrade Available!</div>
+          <div id="upgradeMsg" style="font-size:.85rem;color:var(--text);line-height:1.7;margin-bottom:12px;"></div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <button class="btn-g" onclick="showTab('deposit',document.querySelectorAll('.tab')[3])">💰 Make Upgrade Deposit →</button>
+            <button style="padding:9px 18px;border-radius:8px;background:none;border:1px solid rgba(255,255,255,.15);color:var(--muted);font-size:.82rem;cursor:pointer;" onclick="dismissUpgrade()">Dismiss</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WITHDRAWAL READY BANNER -->
+    <div id="withdrawalBanner" style="display:none;background:linear-gradient(135deg,rgba(0,208,132,.12),rgba(0,208,132,.04));border:2px solid var(--green);border-radius:14px;padding:20px 22px;margin-bottom:14px;position:relative;overflow:hidden;">
+      <div style="position:absolute;top:-20px;right:-20px;width:100px;height:100px;background:radial-gradient(circle,rgba(0,208,132,.15),transparent);border-radius:50%;"></div>
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap;">
+        <div style="font-size:2.2rem;flex-shrink:0;animation:pulse 1.5s infinite;">💸</div>
+        <div style="flex:1;">
+          <div style="font-size:1rem;font-weight:800;color:var(--green);margin-bottom:6px;">🎉 Your Profits Are Ready to Withdraw!</div>
+          <div id="withdrawalMsg" style="font-size:.85rem;color:var(--text);line-height:1.7;margin-bottom:12px;"></div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <button class="btn-g" style="background:linear-gradient(135deg,var(--green),#00a86b);" onclick="showTab('withdraw',document.querySelectorAll('.tab')[4])">💸 Withdraw Now →</button>
+            <button style="padding:9px 18px;border-radius:8px;background:none;border:1px solid rgba(255,255,255,.15);color:var(--muted);font-size:.82rem;cursor:pointer;" onclick="dismissWithdrawal()">Dismiss</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:linear-gradient(135deg,rgba(240,180,41,.08),rgba(0,208,132,.04));border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+      <div><h2 id="wMsg" style="font-size:1.1rem;font-weight:800;margin-bottom:3px;"></h2><p id="wSub" style="font-size:.8rem;color:var(--muted);"></p></div>
+      <div style="display:flex;gap:9px;"><button class="btn-g" onclick="showTab('deposit',document.querySelectorAll('.tab')[3])">+ Deposit</button><button class="btn-o" onclick="showTab('withdraw',document.querySelectorAll('.tab')[4])">Withdraw</button></div>
+    </div>
+    <div class="balhero">
+      <div class="bal-lbl">💰 Total Account Balance</div>
+      <div class="bal-amt"><span class="bal-cur">$</span><span id="mainBal">0.00</span></div>
+      <div class="bal-today" id="todayEarned"></div>
+      <div class="bal-row">
+        <div class="bi"><div class="bi-lbl">💵 Invested</div><div class="bi-val" style="color:var(--gold)" id="bInv">$0</div></div>
+        <div class="bi"><div class="bi-lbl">📈 Total Profit</div><div class="bi-val" style="color:var(--green)" id="bProfit">$0</div></div>
+        <div class="bi"><div class="bi-lbl">💸 Withdrawn</div><div class="bi-val" style="color:var(--blue)" id="bWd">$0</div></div>
+      </div>
+    </div>
+    <div class="srow">
+      <div class="sc"><div class="slbl">💎 Plan</div><div class="sv gold" id="sPlan" style="font-size:1rem;margin-top:4px;"></div><div class="ssub neutral" id="sCycle"></div></div>
+      <div class="sc"><div class="slbl">📈 Daily ROI</div><div class="sv green" id="sRoi"></div><div class="ssub up">Per day</div></div>
+      <div class="sc"><div class="slbl">🕐 Days Left</div><div class="sv blue" id="sDays"></div><div class="ssub neutral">In cycle</div></div>
+      <div class="sc"><div class="slbl">🏆 Trades</div><div class="sv purple" id="sTrades"></div><div class="ssub up">Total executed</div></div>
+      <div class="sc"><div class="slbl">👥 Referrals</div><div class="sv green" id="sRefs"></div><div class="ssub up">Active</div></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><div class="card-title">📅 Cycle Progress</div><span id="cycleLabel" style="font-size:.72rem;color:var(--muted);"></span></div>
+      <div class="card-body">
+        <div class="prog"><div class="prog-head"><span>Investment Cycle</span><span id="cPct">0%</span></div><div class="prog-track"><div class="prog-fill" id="cBar" style="width:0%;background:linear-gradient(90deg,var(--gold),var(--gd))"></div></div></div>
+        <div class="prog"><div class="prog-head"><span>Profit Earned</span><span id="pPct">0%</span></div><div class="prog-track"><div class="prog-fill" id="pBar" style="width:0%;background:linear-gradient(90deg,var(--green),#00a86b)"></div></div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><div class="card-title">📈 14-Day Earnings Chart</div><span id="chartTtl" style="font-size:.76rem;color:var(--green);font-weight:700;"></span></div>
+      <div style="padding:12px 16px 16px;">
+        <div style="display:flex;gap:18px;margin-bottom:10px;flex-wrap:wrap;">
+          <div style="font-size:.72rem;color:var(--muted);">Today's Earnings<br/><span id="todayP" style="font-size:.9rem;font-weight:700;color:var(--green)"></span></div>
+          <div style="font-size:.72rem;color:var(--muted);">Best Day<br/><span id="bestP" style="font-size:.9rem;font-weight:700;color:var(--gold)"></span></div>
+          <div style="font-size:.72rem;color:var(--muted);">Daily Average<br/><span id="avgP" style="font-size:.9rem;font-weight:700;"></span></div>
+        </div>
+        <svg viewBox="0 0 500 80" preserveAspectRatio="none" style="width:100%;height:90px;">
+          <defs><linearGradient id="eg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#00d084" stop-opacity=".35"/><stop offset="100%" stop-color="#00d084" stop-opacity="0"/></linearGradient></defs>
+          <path id="eLine" d="" fill="none" stroke="var(--green)" stroke-width="2.5"/>
+          <path id="eFill" d="" fill="url(#eg)"/>
+        </svg>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><div class="card-title">🕐 Recent Activity</div></div>
+      <div class="scrollable"><table><thead><tr><th>Type</th><th>Description</th><th>Amount</th><th>Date</th></tr></thead><tbody id="actTbody"></tbody></table></div>
+    </div>
+  </div>
+
+  <!-- PORTFOLIO -->
+  <div class="page" id="tab-portfolio">
+    <div class="srow" style="grid-template-columns:repeat(4,1fr);">
+      <div class="sc"><div class="slbl">💵 Invested</div><div class="sv gold" id="p-inv"></div></div>
+      <div class="sc"><div class="slbl">📈 Profit</div><div class="sv green" id="p-prof"></div></div>
+      <div class="sc"><div class="slbl">💼 Balance</div><div class="sv blue" id="p-bal"></div></div>
+      <div class="sc"><div class="slbl">💸 Withdrawn</div><div class="sv purple" id="p-wd"></div></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><div class="card-title">📊 Portfolio Breakdown</div></div>
+      <div class="card-body">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:center;">
+          <svg viewBox="0 0 120 120" style="width:100%;max-width:160px;display:block;margin:0 auto">
+            <circle cx="60" cy="60" r="44" fill="none" stroke="rgba(255,255,255,.04)" stroke-width="20"/>
+            <circle id="dInv"  cx="60" cy="60" r="44" fill="none" stroke="var(--gold)"  stroke-width="20" stroke-dasharray="0 276" stroke-dashoffset="-69" transform="rotate(-90 60 60)"/>
+            <circle id="dProf" cx="60" cy="60" r="44" fill="none" stroke="var(--green)" stroke-width="20" stroke-dasharray="0 276" stroke-dashoffset="-69" transform="rotate(-90 60 60)"/>
+            <text x="60" y="64" text-anchor="middle" fill="#fff" font-size="9" font-weight="700">Portfolio</text>
+          </svg>
+          <div style="display:flex;flex-direction:column;gap:13px;">
+            <div><div style="display:flex;justify-content:space-between;font-size:.76rem;margin-bottom:4px;"><span style="display:flex;align-items:center;gap:5px;"><span style="width:9px;height:9px;background:var(--gold);border-radius:50%;display:inline-block"></span>Invested</span><span id="lg-inv" style="font-weight:700"></span></div><div class="prog-track"><div class="prog-fill" id="lb-inv" style="background:var(--gold);width:0%"></div></div></div>
+            <div><div style="display:flex;justify-content:space-between;font-size:.76rem;margin-bottom:4px;"><span style="display:flex;align-items:center;gap:5px;"><span style="width:9px;height:9px;background:var(--green);border-radius:50%;display:inline-block"></span>Profit</span><span id="lg-prof" style="font-weight:700;color:var(--green)"></span></div><div class="prog-track"><div class="prog-fill" id="lb-prof" style="background:var(--green);width:0%"></div></div></div>
+            <div><div style="display:flex;justify-content:space-between;font-size:.76rem;margin-bottom:4px;"><span style="display:flex;align-items:center;gap:5px;"><span style="width:9px;height:9px;background:var(--blue);border-radius:50%;display:inline-block"></span>Withdrawn</span><span id="lg-wd" style="font-weight:700;color:var(--blue)"></span></div><div class="prog-track"><div class="prog-fill" id="lb-wd" style="background:var(--blue);width:0%"></div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TRADES -->
+  <div class="page" id="tab-trades">
+    <div class="srow" style="grid-template-columns:repeat(4,1fr);">
+      <div class="sc"><div class="slbl">✅ Wins</div><div class="sv green" id="tw"></div></div>
+      <div class="sc"><div class="slbl">❌ Losses</div><div class="sv red" id="tl"></div></div>
+      <div class="sc"><div class="slbl">💰 Net P&L</div><div class="sv gold" id="tp"></div></div>
+      <div class="sc"><div class="slbl">📊 Volume</div><div class="sv blue" id="tv"></div></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><div class="card-title">📈 Trade History</div>
+        <select style="padding:5px 10px;font-size:.76rem;background:var(--card2);border:1px solid var(--border);color:var(--text);border-radius:6px;outline:none;" onchange="filterTrades(this.value)">
+          <option value="">All</option><option value="win">Wins</option><option value="loss">Losses</option><option value="open">Open</option>
+        </select>
+      </div>
+      <div class="scrollable"><table><thead><tr><th>Instrument</th><th>Direction</th><th>Amount</th><th>P&L</th><th>Duration</th><th>Result</th><th>Date</th></tr></thead><tbody id="tradesTbody"></tbody></table></div>
+    </div>
+  </div>
+
+  <!-- DEPOSIT -->
+  <div class="page" id="tab-deposit">
+    <div class="card">
+      <div class="card-head"><div class="card-title">💰 Make a Deposit</div></div>
+      <div class="card-body">
+        <div class="dep-steps" id="depBar">
+          <div class="dst active" id="ds1"><div class="dsn">1</div>Amount & Plan</div>
+          <div class="dsl"></div>
+          <div class="dst" id="ds2"><div class="dsn">2</div>Payment Method</div>
+          <div class="dsl"></div>
+          <div class="dst" id="ds3"><div class="dsn">3</div>Send & Confirm</div>
+        </div>
+        <!-- Step 1 -->
+        <div class="steppage active" id="sp1">
+          <div class="preset-btns">
+            <button class="preset" onclick="setAmt(100,this)">$100</button>
+            <button class="preset" onclick="setAmt(500,this)">$500</button>
+            <button class="preset" onclick="setAmt(1000,this)">$1,000</button>
+            <button class="preset" onclick="setAmt(5000,this)">$5,000</button>
+            <button class="preset" onclick="setAmt(10000,this)">$10,000</button>
+            <button class="preset" onclick="setAmt(50000,this)">$50,000</button>
+          </div>
+          <div class="fgrp"><label>Custom Amount (USD)</label><input type="number" id="depAmt" placeholder="Minimum $50" min="50" oninput="updSummary()"/></div>
+          <div style="margin-bottom:14px;"><label style="font-size:.7rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.3px;display:block;margin-bottom:9px;">Select Plan</label>
+            <div class="plan-pick">
+              <div class="pc sel" id="pp0" onclick="selPlan(0,this)"><div class="pc-tier">Starter</div><div class="pc-roi">5%<small style="font-size:.7rem;color:var(--muted);font-weight:400">/day</small></div><div class="pc-range">$50 – $999</div></div>
+              <div class="pc" id="pp1" onclick="selPlan(1,this)"><div class="pc-tier">Growth</div><div class="pc-roi">12%<small style="font-size:.7rem;color:var(--muted);font-weight:400">/day</small></div><div class="pc-range">$1K – $9,999</div></div>
+              <div class="pc" id="pp2" onclick="selPlan(2,this)"><div class="pc-tier">Premium</div><div class="pc-roi">20%<small style="font-size:.7rem;color:var(--muted);font-weight:400">/day</small></div><div class="pc-range">$10K – $49,999</div></div>
+              <div class="pc" id="pp3" onclick="selPlan(3,this)"><div class="pc-tier">VIP Elite</div><div class="pc-roi">30%<small style="font-size:.7rem;color:var(--muted);font-weight:400">/day</small></div><div class="pc-range">$50K+</div></div>
+            </div>
+          </div>
+          <div style="background:var(--card2);border:1px solid rgba(240,180,41,.2);border-radius:9px;padding:14px;margin-bottom:14px;">
+            <div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:7px;"><span style="color:var(--muted)">Amount</span><span id="dSAmt" style="font-weight:700;color:var(--gold)">—</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:7px;"><span style="color:var(--muted)">Plan</span><span id="dSPlan" style="font-weight:700">Starter</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:.8rem;"><span style="color:var(--muted)">Est. Daily Earnings</span><span id="dSEarn" style="font-weight:700;color:var(--green)">—</span></div>
+          </div>
+          <div class="dep-nav"><button class="btn-g" onclick="goStep(2)">Next: Choose Payment →</button></div>
+        </div>
+        <!-- Step 2 -->
+        <div class="steppage" id="sp2">
+          <p style="font-size:.8rem;color:var(--muted);margin-bottom:14px;">Select your preferred payment method. All deposits are confirmed within 30 minutes.</p>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:16px;">
+            <div class="mcard sel" id="m0" onclick="selMethod(0,this)"><div class="mico">₿</div><div class="mname">Bitcoin</div><div class="mnet">BTC Network</div><div class="mfee">No fee</div></div>
+            <div class="mcard" id="m1" onclick="selMethod(1,this)"><div class="mico">💲</div><div class="mname">USDT</div><div class="mnet">BEP-20 (BSC)</div><div class="mfee">No fee · Fast</div></div>
+            <div class="mcard" id="m2" onclick="selMethod(2,this)"><div class="mico">⟠</div><div class="mname">Ethereum</div><div class="mnet">ERC-20</div><div class="mfee">No fee</div></div>
+            <div class="mcard" id="m3" onclick="selMethod(3,this)"><div class="mico">🔷</div><div class="mname">USDT</div><div class="mnet">ERC-20</div><div class="mfee">No fee</div></div>
+          </div>
+          <div class="dep-nav"><button class="btn-o" onclick="goStep(1)">← Back</button><button class="btn-g" onclick="goStep(3)">Next: Get Address →</button></div>
+        </div>
+        <!-- Step 3 -->
+        <div class="steppage" id="sp3">
+          <div class="addr-card">
+            <div style="display:flex;align-items:center;gap:11px;margin-bottom:14px;">
+              <span style="font-size:1.8rem;" id="addrIco">₿</span>
+              <div><div style="font-size:.92rem;font-weight:800;" id="addrMN">Bitcoin</div><div style="font-size:.72rem;color:var(--muted);" id="addrNet">BTC Network</div></div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:16px;margin-bottom:14px;flex-wrap:wrap;">
+              <div class="qr-box"><img id="qrImg" src="" alt="QR"/></div>
+              <div style="flex:1;min-width:160px;">
+                <div style="font-size:.68rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.3px;margin-bottom:6px;">Send <span id="addrAmt" style="color:var(--gold);font-weight:700"></span> to:</div>
+                <div class="addr-str" id="addrStr"></div>
+                <button class="btn-g" style="padding:8px 14px;font-size:.76rem;" onclick="copyAddr()">📋 Copy Address</button>
+              </div>
+            </div>
+            <div class="warn-box">⚠️ Only send <strong id="warnSym">BTC</strong> to this address. Sending wrong coin = permanent loss. Minimum: <strong>$50</strong>.</div>
+          </div>
+          <div style="background:rgba(0,208,132,.06);border:1px solid rgba(0,208,132,.2);border-radius:10px;padding:14px;margin-bottom:12px;">
+            <div style="font-size:.8rem;font-weight:700;color:var(--green);margin-bottom:10px;">✅ Already Sent? Notify Admin</div>
+            <div class="frow2">
+              <div class="fgrp"><label>Amount Sent (USD)</label><input type="number" id="confAmt" placeholder="e.g. 500"/></div>
+              <div class="fgrp"><label>TX Hash (optional)</label><input type="text" id="confTx" placeholder="Transaction ID"/></div>
+            </div>
+            <button class="btn-g" style="width:100%;padding:11px;" onclick="submitDeposit()">📨 Notify Admin & Confirm</button>
+          </div>
+          <div class="dep-nav"><button class="btn-o" onclick="goStep(2)">← Change Method</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WITHDRAW -->
+  <div class="page" id="tab-withdraw">
+    <div class="card">
+      <div class="card-head"><div class="card-title">💸 Request Withdrawal</div></div>
+      <div class="card-body">
+        <div style="background:linear-gradient(135deg,rgba(0,208,132,.08),rgba(0,208,132,.03));border:1px solid rgba(0,208,132,.2);border-radius:9px;padding:14px;margin-bottom:16px;">
+          <div style="font-size:.7rem;color:var(--muted);display:block;margin-bottom:4px;">Available Balance</div>
+          <div style="font-size:1.5rem;font-weight:900;color:var(--green);" id="availBal">$0.00</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <div>
+            <div class="fgrp"><label>Amount (USD)</label><input type="number" id="wdAmt" placeholder="Minimum $20"/></div>
+            <div class="fgrp"><label>Payment Method</label><select id="wdMethod"><option>Bitcoin (BTC)</option><option>USDT BEP-20</option><option>Ethereum ERC-20</option><option>USDT ERC-20</option></select></div>
+            <div class="fgrp"><label>Your Wallet Address</label><input type="text" id="wdWallet" placeholder="Paste your wallet address"/></div>
+            <div class="fgrp"><label>Security PIN (4 digits)</label><input type="password" id="wdPin" maxlength="4" placeholder="••••"/></div>
+            <button class="btn-g" style="width:100%;padding:12px;" onclick="submitWithdraw()">💸 Submit Withdrawal</button>
+            <p style="font-size:.72rem;color:var(--muted);margin-top:9px;line-height:1.6;">Withdrawals processed within 1–24 hours. You'll be notified via support chat once approved.</p>
+          </div>
+          <div>
+            <div class="card" style="margin:0;background:var(--card2);">
+              <div class="card-head" style="padding:11px 14px;"><div class="card-title" style="font-size:.82rem;">📋 Withdrawal History</div></div>
+              <div class="scrollable"><table><thead><tr><th>Amount</th><th>Method</th><th>Status</th><th>Date</th></tr></thead><tbody id="wdTbody"></tbody></table></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REFERRAL -->
+  <div class="page" id="tab-referral">
+    <div class="card">
+      <div class="card-head"><div class="card-title">🔗 Referral Program</div></div>
+      <div class="card-body">
+        <p style="font-size:.82rem;color:var(--muted);margin-bottom:16px;">Earn <strong style="color:var(--gold)">5% commission</strong> on every deposit made by people you refer. Paid instantly to your account.</p>
+        <div style="background:var(--card2);border:1px solid var(--border);border-radius:9px;padding:14px;display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:16px;">
+          <div style="font-size:.8rem;color:var(--gold);font-family:monospace;word-break:break-all;" id="refLink">—</div>
+          <button class="btn-g" style="padding:7px 13px;font-size:.75rem;flex-shrink:0;" onclick="copyRef()">📋 Copy</button>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
+          <div class="sc"><div class="slbl">Total Referrals</div><div class="sv gold" id="rCount">0</div></div>
+          <div class="sc"><div class="slbl">Total Earned</div><div class="sv green" id="rEarned">$0</div></div>
+          <div class="sc"><div class="slbl">Pending</div><div class="sv" style="color:var(--gold)" id="rPending">$0</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROFILE -->
+  <div class="page" id="tab-profile">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+      <div class="card" style="margin:0;"><div class="card-head"><div class="card-title">👤 Personal Info</div></div>
+        <div class="card-body">
+          <div class="fgrp"><label>Full Name</label><input type="text" id="pName"/></div>
+          <div class="fgrp"><label>Email (read-only)</label><input type="email" id="pEmail" readonly style="opacity:.6;cursor:not-allowed"/></div>
+          <div class="fgrp"><label>Phone</label><input type="tel" id="pPhone"/></div>
+          <div class="fgrp"><label>Country</label><input type="text" id="pCountry"/></div>
+          <div class="fgrp"><label>Member Since</label><input type="text" id="pJoined" readonly style="opacity:.6;cursor:not-allowed"/></div>
+          <button class="btn-g" style="width:100%;padding:11px;" onclick="saveProfile()">Save Changes</button>
+        </div>
+      </div>
+      <div class="card" style="margin:0;"><div class="card-head"><div class="card-title">🔒 Change Password</div></div>
+        <div class="card-body">
+          <div class="fgrp"><label>Current Password</label><input type="password" id="cpOld" placeholder="••••••••"/></div>
+          <div class="fgrp"><label>New Password</label><input type="password" id="cpNew" placeholder="Min 6 characters"/></div>
+          <div class="fgrp"><label>Confirm New Password</label><input type="password" id="cpNew2" placeholder="Repeat password"/></div>
+          <button class="btn-g" style="width:100%;padding:11px;" onclick="changePw()">Update Password</button>
+          <div style="margin-top:12px;background:rgba(79,142,247,.07);border:1px solid rgba(79,142,247,.2);border-radius:7px;padding:11px;font-size:.72rem;color:#93c5fd;">🔐 Your session is secured with JWT · Auto-expires in 24h</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- KYC VERIFICATION -->
+  <div class="ppage" id="tab-kyc">
+    <div id="kycVerifiedBanner" style="display:none;background:linear-gradient(135deg,rgba(0,208,132,.1),rgba(0,208,132,.03));border:2px solid var(--green);border-radius:12px;padding:20px 22px;margin-bottom:16px;text-align:center;">
+      <div style="font-size:2rem;margin-bottom:8px;">✅</div>
+      <div style="font-size:1rem;font-weight:800;color:var(--green);margin-bottom:6px;">KYC Verified</div>
+      <div style="font-size:.84rem;color:var(--muted);">Your identity has been confirmed. Your account is fully verified.</div>
+    </div>
+    <div id="kycFormSection">
+      <div style="background:rgba(240,180,41,.06);border:1px solid rgba(240,180,41,.2);border-radius:12px;padding:18px 20px;margin-bottom:16px;">
+        <div style="font-size:.9rem;font-weight:700;margin-bottom:6px;">🪪 Identity Verification (KYC)</div>
+        <div style="font-size:.82rem;color:var(--muted);line-height:1.7;">To comply with financial regulations and secure your account, please upload the following documents. Your documents are encrypted and only visible to our compliance team.</div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-title">📄 Upload Your Documents</div><span id="kycStatusBadge" style="font-size:.76rem;font-weight:700;color:var(--muted);">Not Submitted</span></div>
+        <div class="card-body">
+          <!-- ID Document -->
+          <div style="margin-bottom:20px;">
+            <div style="font-size:.72rem;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">1. Government-Issued ID</div>
+            <div class="fgrp"><label>ID Type</label>
+              <select id="kycIdType">
+                <option value="">— Select ID Type —</option>
+                <option value="national_id">National Identity Card</option>
+                <option value="passport">International Passport</option>
+                <option value="drivers_license">Driver's License</option>
+                <option value="voters_card">Voter's Card</option>
+                <option value="residence_permit">Residence Permit</option>
+              </select>
+            </div>
+            <div class="fgrp"><label>ID Number</label><input type="text" id="kycIdNumber" placeholder="Enter your ID number"/></div>
+            <div class="fgrp"><label>Upload ID Document (front side)</label>
+              <div id="idUploadZone" onclick="document.getElementById('kycIdFile').click()" style="border:2px dashed rgba(240,180,41,.3);border-radius:10px;padding:20px;text-align:center;cursor:pointer;transition:.2s;background:var(--card2);">
+                <input type="file" id="kycIdFile" accept="image/jpeg,image/png,image/jpg,application/pdf" style="display:none" onchange="previewKycFile(this,'idPreview','idUploadZone')"/>
+                <div style="font-size:1.8rem;margin-bottom:6px;">🪪</div>
+                <div style="font-size:.82rem;font-weight:700;margin-bottom:3px;">Click to upload Government ID</div>
+                <div style="font-size:.72rem;color:var(--muted);">JPG, PNG or PDF · Max 10MB</div>
+              </div>
+              <div id="idPreview" style="display:none;margin-top:8px;"></div>
+            </div>
+          </div>
+          <!-- Proof of Address -->
+          <div style="margin-bottom:20px;">
+            <div style="font-size:.72rem;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">2. Proof of Address</div>
+            <div style="font-size:.78rem;color:var(--muted);margin-bottom:10px;line-height:1.6;">Accepted: Utility bill, bank statement, or official letter dated within the last 3 months.</div>
+            <div class="fgrp"><label>Upload Proof of Address</label>
+              <div id="addrUploadZone" onclick="document.getElementById('kycAddrFile').click()" style="border:2px dashed rgba(240,180,41,.3);border-radius:10px;padding:20px;text-align:center;cursor:pointer;transition:.2s;background:var(--card2);">
+                <input type="file" id="kycAddrFile" accept="image/jpeg,image/png,image/jpg,application/pdf" style="display:none" onchange="previewKycFile(this,'addrPreview','addrUploadZone')"/>
+                <div style="font-size:1.8rem;margin-bottom:6px;">🏠</div>
+                <div style="font-size:.82rem;font-weight:700;margin-bottom:3px;">Click to upload Proof of Address</div>
+                <div style="font-size:.72rem;color:var(--muted);">JPG, PNG or PDF · Max 10MB</div>
+              </div>
+              <div id="addrPreview" style="display:none;margin-top:8px;"></div>
+            </div>
+          </div>
+          <!-- Selfie -->
+          <div style="margin-bottom:20px;">
+            <div style="font-size:.72px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;font-size:.72rem;">3. Selfie with ID <span style="color:var(--muted);font-weight:400;">(Optional but recommended)</span></div>
+            <div id="selfieUploadZone" onclick="document.getElementById('kycSelfieFile').click()" style="border:2px dashed rgba(255,255,255,.1);border-radius:10px;padding:16px;text-align:center;cursor:pointer;transition:.2s;background:var(--card2);">
+              <input type="file" id="kycSelfieFile" accept="image/jpeg,image/png,image/jpg" style="display:none" onchange="previewKycFile(this,'selfiePreview','selfieUploadZone')"/>
+              <div style="font-size:1.8rem;margin-bottom:6px;">🤳</div>
+              <div style="font-size:.82rem;font-weight:700;margin-bottom:3px;">Click to upload Selfie with ID</div>
+              <div style="font-size:.72rem;color:var(--muted);">JPG or PNG only</div>
+            </div>
+            <div id="selfiePreview" style="display:none;margin-top:8px;"></div>
+          </div>
+          <div style="background:rgba(255,69,96,.06);border:1px solid rgba(255,69,96,.18);border-radius:8px;padding:12px 14px;margin-bottom:14px;font-size:.76rem;color:#fca5a5;line-height:1.7;">
+            🔒 All documents are encrypted with 256-bit SSL. Only our compliance team can view them. We do not share your data with third parties.
+          </div>
+          <button class="btn-g" style="width:100%;padding:13px;font-size:.95rem;" onclick="submitKYC()">🪪 Submit KYC Documents</button>
+          <div id="kycSubmitMsg" style="display:none;margin-top:12px;text-align:center;font-size:.82rem;color:var(--green);line-height:1.7;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUPPORT -->
+  <div class="page" id="tab-support">
+    <div class="chat-wrap">
+      <div class="chat-hdr">
+        <div class="chat-av">V</div>
+        <div style="flex:1;">
+          <div style="font-weight:700;font-size:.9rem;">VitalTradeOption Support</div>
+          <div style="font-size:.72rem;color:var(--green);">🟢 Online — replies within minutes</div>
+        </div>
+        <a href="https://wa.me/12158924891?text=Hello%2C%20I%20need%20support%20with%20my%20VitalTradeOption%20account" target="_blank"
+           style="display:flex;align-items:center;gap:6px;padding:7px 13px;background:#25D366;border-radius:8px;color:#fff;font-size:.75rem;font-weight:800;text-decoration:none;flex-shrink:0;">
+          <svg width="15" height="15" viewBox="0 0 30 30" fill="white"><path d="M15 2C7.8 2 2 7.8 2 15c0 2.3.6 4.5 1.7 6.4L2 28l6.8-1.7C10.6 27.4 12.8 28 15 28c7.2 0 13-5.8 13-13S22.2 2 15 2zm6.4 17.9c-.3.8-1.5 1.5-2.1 1.6-.5.1-1.2.1-1.9-.1-.4-.1-1-.3-1.7-.6-3-1.3-5-4.3-5.1-4.5-.1-.2-1.1-1.5-1.1-2.8 0-1.3.7-2 .9-2.2.3-.3.6-.3.8-.3h.6c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .6l-.5.7c-.1.1-.2.3-.1.5.4.7.9 1.4 1.5 1.9.6.6 1.3 1 2 1.2.2.1.4 0 .5-.1l.6-.8c.2-.2.4-.3.6-.2l1.9.9c.2.1.4.2.5.4.1.6-.1 1.5-.4 2.3z"/></svg>
+          WhatsApp
+        </a>
+      </div>
+      <div class="chat-msgs" id="chatMsgs">
+        <div class="chat-empty-state" id="chatEmpty"><span style="font-size:2rem;">💬</span>Send a message to start the conversation</div>
+      </div>
+      <div class="chat-inp">
+        <textarea id="chatInput" placeholder="Type your message…" rows="2" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg();}"></textarea>
+        <button class="chat-send" onclick="sendMsg()">Send ➤</button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /content -->
+
+<!-- DEPOSIT CONFIRM MODAL -->
+<div class="mover" id="depModal">
+  <div class="modal">
+    <button class="mcl" onclick="closeM('dep')">×</button>
+    <div style="font-size:2.8rem;text-align:center;margin-bottom:10px;">📨</div>
+    <h3>Deposit Submitted!</h3>
+    <p class="msub">Admin has been notified. Your balance will be updated within 30 minutes after payment confirmation.</p>
+    <div style="background:var(--card2);border-radius:8px;padding:13px;margin-bottom:14px;" id="depDetails"></div>
+    <div class="mbtns"><button class="mbtn gold" onclick="closeM('dep')">Got It 👍</button></div>
+  </div>
+</div>
+<!-- WITHDRAW CONFIRM MODAL -->
+<div class="mover" id="wdModal">
+  <div class="modal">
+    <button class="mcl" onclick="closeM('wd')">×</button>
+    <div style="font-size:2.8rem;text-align:center;margin-bottom:10px;">💸</div>
+    <h3>Withdrawal Requested!</h3>
+    <p class="msub">Your withdrawal is under review. You'll receive a support chat notification once it's processed — usually within 24 hours.</p>
+    <div class="mbtns"><button class="mbtn gold" onclick="closeM('wd')">OK, Close</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = window.location.origin;
+let token = sessionStorage.getItem('vto_token');
+let user  = null;
+let allTrades = [], chatPoll = null, supportPoll = null, selPlanIdx = 0, selMethodIdx = 0, depStep = 1;
+
+const METHODS = [
+  {ico:'₿', name:'Bitcoin',  net:'BTC Network',  sym:'BTC',  addr:'bc1q8vv2xun48l32gfxqx3e4znasyl0sgrfdvxps9e'},
+  {ico:'💲',name:'USDT',     net:'BEP-20 (BSC)', sym:'USDT', addr:'0x9162416c354E9CCEA0f4662511149CD336AD0016'},
+  {ico:'⟠', name:'Ethereum', net:'ERC-20',        sym:'ETH',  addr:'0x9162416c354E9CCEA0f4662511149CD336AD0016'},
+  {ico:'🔷',name:'USDT',     net:'ERC-20',        sym:'USDT', addr:'0x9162416c354E9CCEA0f4662511149CD336AD0016'},
+];
+const PLANS=[{name:'Starter',roi:5,dur:7,min:50},{name:'Growth',roi:12,dur:14,min:1000},{name:'Premium',roi:20,dur:21,min:10000},{name:'VIP Elite',roi:30,dur:30,min:50000}];
+
+if (!token) { window.location.href='/'; }
+
+async function req(method,path,body){
+  const h={'Content-Type':'application/json','Authorization':'Bearer '+token};
+  const r=await fetch(API+path,{method,headers:h,body:body?JSON.stringify(body):undefined});
+  const d=await r.json(); if(!r.ok) throw d; return d;
+}
+
+// ── INIT ─────────────────────────────────────────────────────────
+(async()=>{
+  try{
+    user=await req('GET','/api/client/me');
+    buildTicker(); loadAll();
+    supportPoll=setInterval(checkUnread,8000);
+    checkUnread();
+  }catch(e){
+    sessionStorage.clear(); window.location.href='/';
+  }
+})();
+
+function loadAll(){
+  const u=user;
+  // Nav
+  document.getElementById('uAv').textContent=u.initials||u.name[0];
+  document.getElementById('uName').textContent=u.name.split(' ')[0];
+  // Welcome
+  const h=new Date().getHours();
+  const g=h<12?'Good morning':h<18?'Good afternoon':'Good evening';
+  document.getElementById('wMsg').textContent=`${g}, ${u.name.split(' ')[0]} 👋`;
+  document.getElementById('wSub').textContent=`${u.plan} Plan · ${u.roi}% daily ROI · Account Active`;
+  // Balance
+  document.getElementById('mainBal').textContent=fmt(u.balance);
+  document.getElementById('todayEarned').textContent=`↑ +$${(u.today_earned||0).toLocaleString()} earned today`;
+  document.getElementById('bInv').textContent='$'+(u.invested||0).toLocaleString();
+  document.getElementById('bProfit').textContent='+$'+(u.profit||0).toLocaleString();
+  document.getElementById('bWd').textContent='$'+(u.withdrawn||0).toLocaleString();
+  // Stats
+  document.getElementById('sPlan').textContent=u.plan;
+  document.getElementById('sCycle').textContent=(PLANS.find(p=>p.name===u.plan)||PLANS[0]).dur+'-day cycle';
+  document.getElementById('sRoi').textContent=u.roi+'%';
+  document.getElementById('sDays').textContent=u.days_left||0;
+  document.getElementById('sTrades').textContent=(u.trades_wins||0)+(u.trades_losses||0);
+  document.getElementById('sRefs').textContent=u.refs||0;
+  // Progress
+  const cp=u.duration?Math.round(((u.cycle_day||0)/u.duration)*100):0;
+  const pp=u.invested&&u.roi?Math.min(100,Math.round((u.profit/(u.invested*(u.roi/100)*(u.duration||7)))*100)):0;
+  document.getElementById('cycleLabel').textContent=`Day ${u.cycle_day||0} of ${u.duration||7}`;
+  document.getElementById('cPct').textContent=cp+'%';
+  document.getElementById('pPct').textContent=pp+'%';
+  setTimeout(()=>{document.getElementById('cBar').style.width=cp+'%';document.getElementById('pBar').style.width=pp+'%';},400);
+  // Chart
+  buildChart(u.chart_data||[0,0,0,0,0,0,0,0,0,0,0,0,0,0]);
+  const cd=u.chart_data||[]; const sum=cd.reduce((a,b)=>a+b,0);
+  document.getElementById('chartTtl').textContent='+$'+sum.toLocaleString()+' total';
+  document.getElementById('todayP').textContent='+$'+(u.today_earned||0);
+  document.getElementById('bestP').textContent='+$'+(cd.length?Math.max(...cd):0);
+  document.getElementById('avgP').textContent='+$'+Math.round(sum/(cd.length||1));
+  // Portfolio
+  document.getElementById('p-inv').textContent='$'+(u.invested||0).toLocaleString();
+  document.getElementById('p-prof').textContent='+$'+(u.profit||0).toLocaleString();
+  document.getElementById('p-bal').textContent='$'+(u.balance||0).toLocaleString();
+  document.getElementById('p-wd').textContent='$'+(u.withdrawn||0).toLocaleString();
+  document.getElementById('lg-inv').textContent='$'+(u.invested||0).toLocaleString();
+  document.getElementById('lg-prof').textContent='+$'+(u.profit||0).toLocaleString();
+  document.getElementById('lg-wd').textContent='$'+(u.withdrawn||0).toLocaleString();
+  const tot=(u.balance||0)+(u.withdrawn||0)||1;
+  setTimeout(()=>{
+    document.getElementById('lb-inv').style.width=Math.round((u.invested/tot)*100)+'%';
+    document.getElementById('lb-prof').style.width=Math.round((u.profit/tot)*100)+'%';
+    document.getElementById('lb-wd').style.width=Math.round((u.withdrawn/tot)*100)+'%';
+    const C=276,ia=Math.round(((u.invested||0)/tot)*C),pa=Math.round(((u.profit||0)/tot)*C);
+    document.getElementById('dInv').setAttribute('stroke-dasharray',`${ia} ${C-ia}`);
+    document.getElementById('dProf').setAttribute('stroke-dasharray',`${pa} ${C-pa}`);
+    document.getElementById('dProf').setAttribute('stroke-dashoffset',-(69+ia));
+  },500);
+  // Trades stats
+  document.getElementById('tw').textContent=u.trades_wins||0;
+  document.getElementById('tl').textContent=u.trades_losses||0;
+  document.getElementById('tp').textContent='$'+(u.profit||0).toLocaleString();
+  document.getElementById('tv').textContent='$'+(u.trades_volume||0).toLocaleString();
+  // Available bal
+  document.getElementById('availBal').textContent='$'+fmt(u.balance);
+  // Referral
+  document.getElementById('refLink').textContent=`https://vitaltradeoption.onrender.com/ref/${u.ref_code||''}`;
+  document.getElementById('rCount').textContent=u.refs||0;
+  document.getElementById('rEarned').textContent='$'+(u.ref_earned||0).toLocaleString();
+  document.getElementById('rPending').textContent='$'+(u.ref_pending||0).toLocaleString();
+  // Profile
+  document.getElementById('pName').value=u.name;
+  document.getElementById('pEmail').value=u.email;
+  document.getElementById('pPhone').value=u.phone||'';
+  document.getElementById('pCountry').value=u.country||'';
+  document.getElementById('pJoined').value=u.joined||'';
+  // Activity
+  buildActivity(u);
+  // Load trades
+  loadTrades();
+  loadWdHistory();
+  // Load KYC status and notifications
+  loadKycStatus(u);
+  loadNotifications(u);
+}
+
+function fmt(v){return parseFloat(v||0).toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2});}
+
+function buildChart(data){
+  if(!data?.length)return;
+  const W=500,H=70,p=6;
+  const max=Math.max(...data)||1,min=Math.min(...data)||0;
+  const pts=data.map((v,i)=>[((i/(data.length-1))*(W-p*2)+p),(H-p-((v-min)/(max-min||1))*(H-p*2))]);
+  const line='M'+pts.map(x=>x.join(',')).join(' L');
+  document.getElementById('eLine').setAttribute('d',line);
+  document.getElementById('eFill').setAttribute('d',line+` L${pts[pts.length-1][0]},${H} L${pts[0][0]},${H}Z`);
+}
+
+function buildActivity(u){
+  document.getElementById('actTbody').innerHTML=[
+    {t:'credit',d:`Daily ROI — ${u.plan}`,a:`+$${u.today_earned||0}`,date:'Today'},
+    {t:'credit',d:'Trade WIN — BTC/USD',  a:`+$${Math.round((u.profit||0)*.05)}`,date:'Yesterday'},
+    {t:'credit',d:'Referral Commission',  a:'+$25',date:'2 days ago'},
+  ].filter(r=>parseFloat(r.a.replace(/[^0-9.-]/g,''))>0).map(r=>`<tr>
+    <td><span class="badge ${r.t}">${r.t.charAt(0).toUpperCase()+r.t.slice(1)}</span></td>
+    <td>${r.d}</td>
+    <td style="font-weight:700;color:${r.t==='credit'?'var(--green)':'var(--red)'}">${r.a}</td>
+    <td style="color:var(--muted);font-size:.74rem">${r.date}</td></tr>`).join('');
+}
+
+// ── TRADES ───────────────────────────────────────────────────────
+async function loadTrades(){
+  try{
+    allTrades=await req('GET','/api/client/trades');
+    renderTrades(allTrades);
+  }catch(e){}
+}
+function renderTrades(data){
+  document.getElementById('tradesTbody').innerHTML=data.length?data.map(t=>`<tr>
+    <td style="font-weight:700;color:var(--gold)">${t.instrument}</td>
+    <td style="color:${t.direction==='UP'?'var(--green)':'var(--red)'}"><strong>${t.direction==='UP'?'▲':'▼'} ${t.direction}</strong></td>
+    <td>${t.amount?'$'+parseFloat(t.amount).toLocaleString():'—'}</td>
+    <td style="font-weight:700;color:${t.result==='open'?'var(--blue)':parseFloat(t.pnl)>0?'var(--green)':'var(--red)'}">
+      ${t.result==='open'?'Open':parseFloat(t.pnl)>0?'+$'+parseFloat(t.pnl).toLocaleString():'-$'+Math.abs(parseFloat(t.pnl)).toLocaleString()}</td>
+    <td style="color:var(--muted)">${t.duration||'—'}</td>
+    <td><span class="badge ${t.result}">${t.result.charAt(0).toUpperCase()+t.result.slice(1)}</span></td>
+    <td style="color:var(--muted);font-size:.72rem">${new Date(t.date).toLocaleDateString()}</td></tr>`).join('')
+    :'<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:24px;">No trades yet. Your trades will appear here once added.</td></tr>';
+}
+function filterTrades(v){renderTrades(v?allTrades.filter(t=>t.result===v):allTrades);}
+
+// ── WITHDRAWALS ───────────────────────────────────────────────────
+async function loadWdHistory(){
+  try{
+    const wds=await req('GET','/api/client/withdrawals');
+    document.getElementById('wdTbody').innerHTML=wds.length?wds.map(w=>`<tr>
+      <td style="font-weight:700">$${parseFloat(w.amount).toLocaleString()}</td>
+      <td style="font-size:.76rem">${w.method}</td>
+      <td><span class="badge ${w.status}">${w.status.charAt(0).toUpperCase()+w.status.slice(1)}</span></td>
+      <td style="color:var(--muted);font-size:.72rem">${new Date(w.date).toLocaleDateString()}</td></tr>`).join('')
+    :'<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:18px;">No withdrawals yet</td></tr>';
+  }catch(e){}
+}
+
+// ── DEPOSIT FLOW ──────────────────────────────────────────────────
+function setAmt(v,el){
+  document.getElementById('depAmt').value=v;
+  document.querySelectorAll('.preset').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');
+  const pi=PLANS.findIndex(p=>v>=p.min&&v<=(PLANS[PLANS.indexOf(p)+1]?.min-1||999999));
+  if(pi>=0){document.querySelectorAll('.pc').forEach((c,i)=>c.classList.toggle('sel',i===pi));selPlanIdx=pi;}
+  updSummary();
+}
+function selPlan(i,el){selPlanIdx=i;document.querySelectorAll('.pc').forEach(c=>c.classList.remove('sel'));el.classList.add('sel');updSummary();}
+function updSummary(){
+  const amt=parseFloat(document.getElementById('depAmt').value)||0;
+  const p=PLANS[selPlanIdx];
+  document.getElementById('dSAmt').textContent=amt?'$'+amt.toLocaleString():'—';
+  document.getElementById('dSPlan').textContent=p.name;
+  document.getElementById('dSEarn').textContent=amt?'+$'+(amt*p.roi/100).toFixed(2)+'/day':'—';
+}
+function selMethod(i,el){selMethodIdx=i;document.querySelectorAll('.mcard').forEach(c=>c.classList.remove('sel'));el.classList.add('sel');}
+function goStep(n){
+  if(n===2){const a=parseFloat(document.getElementById('depAmt').value)||0;if(a<50){showToast('⚠️ Minimum deposit is $50');return;}}
+  if(n===3){loadAddrPage();}
+  depStep=n;
+  document.querySelectorAll('.steppage').forEach((p,i)=>p.classList.toggle('active',i===n-1));
+  for(let i=1;i<=3;i++){const el=document.getElementById('ds'+i);el.classList.remove('active','done');if(i<n)el.classList.add('done');else if(i===n)el.classList.add('active');}
+}
+function loadAddrPage(){
+  const m=METHODS[selMethodIdx];
+  const amt=document.getElementById('depAmt').value;
+  document.getElementById('addrIco').textContent=m.ico;
+  document.getElementById('addrMN').textContent=m.name;
+  document.getElementById('addrNet').textContent=m.net;
+  document.getElementById('addrAmt').textContent='$'+parseFloat(amt).toLocaleString()+' in '+m.sym;
+  document.getElementById('addrStr').textContent=m.addr;
+  document.getElementById('warnSym').textContent=m.sym;
+  document.getElementById('confAmt').value=amt;
+  document.getElementById('qrImg').src=`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(m.addr)}&margin=6`;
+}
+function copyAddr(){navigator.clipboard.writeText(document.getElementById('addrStr').textContent).catch(()=>{});showToast('✅ Address copied!');}
+async function submitDeposit(){
+  const amt=document.getElementById('confAmt').value;
+  const tx=document.getElementById('confTx').value;
+  if(!amt||parseFloat(amt)<50){showToast('⚠️ Enter the amount you sent');return;}
+  const m=METHODS[selMethodIdx];const p=PLANS[selPlanIdx];
+  try{
+    await req('POST','/api/client/deposits',{amount:parseFloat(amt),method:m.name+' ('+m.net+')',tx_hash:tx,plan:p.name});
+    document.getElementById('depDetails').innerHTML=`
+      <div class="cd-row"><span>Amount</span><span style="color:var(--gold);font-weight:700">$${parseFloat(amt).toLocaleString()}</span></div>
+      <div class="cd-row"><span>Method</span><span>${m.name} (${m.net})</span></div>
+      <div class="cd-row"><span>Plan</span><span>${p.name}</span></div>
+      <div class="cd-row"><span>Status</span><span style="color:var(--gold)">⏳ Pending Review</span></div>`;
+    document.getElementById('depModal').classList.add('show');
+  }catch(e){showToast('⚠️ '+(e.error||'Error'));}
+}
+
+// ── WITHDRAW ──────────────────────────────────────────────────────
+async function submitWithdraw(){
+  const amt=parseFloat(document.getElementById('wdAmt').value)||0;
+  const pin=document.getElementById('wdPin').value;
+  const method=document.getElementById('wdMethod').value;
+  const wallet=document.getElementById('wdWallet').value;
+  if(amt<20){showToast('⚠️ Minimum withdrawal is $20');return;}
+  if(amt>(user?.balance||0)){showToast('⚠️ Amount exceeds your balance');return;}
+  if(!pin||pin.length!==4){showToast('⚠️ Enter your 4-digit PIN');return;}
+  if(!wallet.trim()){showToast('⚠️ Enter your wallet address');return;}
+  try{
+    await req('POST','/api/client/withdrawals',{amount:amt,method,wallet});
+    document.getElementById('wdModal').classList.add('show');
+    loadWdHistory();
+  }catch(e){showToast('⚠️ '+(e.error||'Error'));}
+}
+
+// ── PROFILE ───────────────────────────────────────────────────────
+async function saveProfile(){
+  try{await req('PUT','/api/client/profile',{name:document.getElementById('pName').value,phone:document.getElementById('pPhone').value,country:document.getElementById('pCountry').value});showToast('✅ Profile updated!');}catch(e){showToast('⚠️ '+(e.error||'Error'));}
+}
+async function changePw(){
+  const old=document.getElementById('cpOld').value,nw=document.getElementById('cpNew').value,cf=document.getElementById('cpNew2').value;
+  if(!old||!nw){showToast('⚠️ Fill in all fields');return;}
+  if(nw!==cf){showToast('⚠️ Passwords do not match');return;}
+  if(nw.length<6){showToast('⚠️ Min 6 characters');return;}
+  try{await req('PUT','/api/client/password',{currentPassword:old,newPassword:nw});showToast('✅ Password updated!');document.getElementById('cpOld').value='';document.getElementById('cpNew').value='';document.getElementById('cpNew2').value='';}catch(e){showToast('⚠️ '+(e.error||'Error'));}
+}
+
+// ── SUPPORT CHAT ──────────────────────────────────────────────────
+async function loadChatMsgs(){
+  try{
+    const msgs=await req('GET','/api/client/support');
+    const box=document.getElementById('chatMsgs');
+    const empty=document.getElementById('chatEmpty');
+    if(!msgs.length){if(empty)empty.style.display='flex';return;}
+    if(empty)empty.style.display='none';
+    const wasBottom=box.scrollHeight-box.scrollTop<=box.clientHeight+60;
+    box.innerHTML='';
+    msgs.forEach(m=>{
+      const div=document.createElement('div');
+      div.className='cmsg '+(m.sender==='client'?'mine':'theirs');
+      div.innerHTML=`<div class="mbubble">${m.message.replace(/\n/g,'<br/>')}</div><div class="mtime">${m.sender==='admin'?'Support · ':''}${new Date(m.date).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</div>`;
+      box.appendChild(div);
+    });
+    if(wasBottom)box.scrollTop=box.scrollHeight;
+  }catch(e){}
+}
+async function sendMsg(){
+  const inp=document.getElementById('chatInput');
+  const msg=inp.value.trim();
+  if(!msg)return;
+  inp.value='';
+  try{await req('POST','/api/client/support',{message:msg});loadChatMsgs();}catch(e){showToast('⚠️ Could not send');inp.value=msg;}
+}
+async function checkUnread(){
+  try{
+    const d=await req('GET','/api/client/support/unread');
+    const badge=document.getElementById('nbadge');
+    const chatB=document.getElementById('chatBadge');
+    if(d.count>0){badge.textContent=d.count;badge.classList.add('show');chatB.textContent=d.count;chatB.style.display='inline-block';}
+    else{badge.classList.remove('show');chatB.style.display='none';}
+  }catch(e){}
+}
+function goSupport(){showTab('support',document.getElementById('supportTabEl'));}
+
+// ── TABS / UTILS ──────────────────────────────────────────────────
+function showTab(id,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  if(el)el.classList.add('active');
+  if(id==='deposit'){goStep(1);updSummary();}
+  if(id==='support'){
+    loadChatMsgs();
+    clearInterval(chatPoll);
+    chatPoll=setInterval(loadChatMsgs,5000);
+    document.getElementById('nbadge').classList.remove('show');
+    document.getElementById('chatBadge').style.display='none';
+  }else{clearInterval(chatPoll);}
+}
+function closeM(id){document.getElementById(id+'Modal').classList.remove('show');}
+document.querySelectorAll('.mover').forEach(o=>o.addEventListener('click',function(e){if(e.target===this)this.classList.remove('show');}));
+function logout(){sessionStorage.clear();window.location.href='/';}
+function copyRef(){navigator.clipboard.writeText(document.getElementById('refLink').textContent).catch(()=>{});showToast('✅ Referral link copied!');}
+function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.style.display='block';setTimeout(()=>t.style.display='none',3200);}
+// ── KYC functions ─────────────────────────────────────────────────
+function previewKycFile(input, previewId, zoneId) {
+  const file = input.files[0]; if (!file) return;
+  const zone = document.getElementById(zoneId);
+  const prev = document.getElementById(previewId);
+  zone.style.borderColor = 'var(--green)';
+  zone.style.background = 'rgba(0,208,132,.05)';
+  zone.querySelector('div:nth-child(2)').textContent = '✅ ' + file.name;
+  prev.style.display = 'block';
+  if (file.type.startsWith('image/')) {
+    const reader = new FileReader();
+    reader.onload = e => { prev.innerHTML = `<img src="${e.target.result}" style="max-height:100px;max-width:100%;border-radius:6px;object-fit:contain;">`; };
+    reader.readAsDataURL(file);
+  } else {
+    prev.innerHTML = `<div style="background:rgba(255,69,96,.1);border-radius:6px;padding:8px 12px;font-size:.78rem;color:#ff8a9a;">📄 PDF: ${file.name}</div>`;
+  }
+}
+
+async function submitKYC() {
+  const idType = document.getElementById('kycIdType').value;
+  const idNum  = document.getElementById('kycIdNumber').value.trim();
+  const idFile = document.getElementById('kycIdFile').files[0];
+  const addrFile = document.getElementById('kycAddrFile').files[0];
+  if (!idType) { showToast('⚠️ Please select your ID type'); return; }
+  if (!idFile)   { showToast('⚠️ Please upload your Government ID document'); return; }
+  if (!addrFile) { showToast('⚠️ Please upload your Proof of Address'); return; }
+  const btn = document.querySelector('#tab-kyc .btn-g');
+  btn.disabled = true; btn.textContent = '⏳ Uploading documents…';
+  try {
+    const fd = new FormData();
+    fd.append('kyc_id_type',   idType);
+    fd.append('kyc_id_number', idNum);
+    fd.append('kyc_id',        idFile);
+    fd.append('kyc_addr',      addrFile);
+    const selfieFile = document.getElementById('kycSelfieFile').files[0];
+    if (selfieFile) fd.append('kyc_selfie', selfieFile);
+    const r = await fetch(API + '/api/client/kyc', { method:'POST', body:fd, headers:{'Authorization':'Bearer '+token} });
+    const d = await r.json();
+    if (!r.ok) throw d;
+    document.getElementById('kycSubmitMsg').innerHTML = '✅ <strong>Documents submitted successfully!</strong><br/>Our compliance team will review your documents within 24 hours and notify you.';
+    document.getElementById('kycSubmitMsg').style.display = 'block';
+    document.getElementById('kycStatusBadge').textContent = '⏳ Under Review';
+    document.getElementById('kycStatusBadge').style.color = 'var(--gold)';
+    showToast('✅ KYC documents submitted! Admin will review shortly.');
+  } catch(e) {
+    showToast('⚠️ ' + (e.error || 'Upload failed. Please try again.'));
+  }
+  btn.disabled = false; btn.textContent = '🪪 Submit KYC Documents';
+}
+
+function loadKycStatus(u) {
+  const statusBadge = document.getElementById('kycStatusBadge');
+  const verifiedBanner = document.getElementById('kycVerifiedBanner');
+  const formSection = document.getElementById('kycFormSection');
+  if (!statusBadge) return;
+  if (u.kyc_status === 'verified') {
+    verifiedBanner.style.display = 'block';
+    formSection.style.display = 'none';
+    statusBadge.textContent = '✅ Verified';
+    statusBadge.style.color = 'var(--green)';
+  } else if (u.kyc_status === 'pending') {
+    statusBadge.textContent = '⏳ Under Review';
+    statusBadge.style.color = 'var(--gold)';
+  } else if (u.kyc_status === 'rejected') {
+    statusBadge.textContent = '❌ Rejected — Please resubmit';
+    statusBadge.style.color = 'var(--red)';
+  }
+}
+
+// ── Upgrade / Withdrawal notifications ────────────────────────────
+function loadNotifications(u) {
+  // Upgrade message
+  if (u.upgrade_message && !u.upgrade_message.seen) {
+    const b = document.getElementById('upgradeBanner');
+    const m = document.getElementById('upgradeMsg');
+    if (b && m) {
+      m.textContent = u.upgrade_message.message || ('Upgrade your account to ' + (u.upgrade_message.new_plan||'a higher plan') + ' and unlock higher daily returns! New balance: $' + (u.upgrade_message.new_balance||'').toLocaleString());
+      b.style.display = 'block';
+    }
+  }
+  // Withdrawal ready
+  if (u.withdrawal_ready) {
+    const wb = document.getElementById('withdrawalBanner');
+    const wm = document.getElementById('withdrawalMsg');
+    if (wb && wm) {
+      wm.textContent = u.withdrawal_message || 'Your trading cycle is complete! You can now withdraw your profits.';
+      wb.style.display = 'block';
+    }
+  }
+}
+
+async function dismissUpgrade() {
+  try { await req('POST','/api/client/dismiss-upgrade'); } catch(e) {}
+  document.getElementById('upgradeBanner').style.display = 'none';
+}
+async function dismissWithdrawal() {
+  try { await req('POST','/api/client/dismiss-withdrawal'); } catch(e) {}
+  document.getElementById('withdrawalBanner').style.display = 'none';
+}
+
+function buildTicker(){
+  const items=[{s:'BTC/USD',p:'$67,420',c:'+3.24%',u:true},{s:'ETH/USD',p:'$3,560',c:'+2.10%',u:true},{s:'EUR/USD',p:'1.0842',c:'-0.15%',u:false},{s:'XAU/USD',p:'$2,320',c:'+0.82%',u:true},{s:'BNB/USD',p:'$580',c:'+1.65%',u:true},{s:'AAPL',p:'$213.40',c:'+1.45%',u:true}];
+  const h=items.map(i=>`<div class="ti"><span class="ts">${i.s}</span><span>${i.p}</span><span class="${i.u?'tup':'tdn'}">${i.c}</span></div>`).join('');
+  document.getElementById('tkr').innerHTML=h+h;
+}
+</script>
+
+<!-- WhatsApp Floating Button -->
+<a href="https://wa.me/12158924891?text=Hello%2C%20I%20need%20support%20with%20my%20VitalTradeOption%20account" target="_blank" id="waBtn" title="Chat with us on WhatsApp"
+   style="position:fixed;bottom:28px;right:24px;z-index:999;width:58px;height:58px;background:#25D366;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(37,211,102,.5);text-decoration:none;transition:.2s;animation:waPulse 2.5s infinite;">
+  <svg width="30" height="30" viewBox="0 0 30 30" fill="white">
+    <path d="M15 2C7.8 2 2 7.8 2 15c0 2.3.6 4.5 1.7 6.4L2 28l6.8-1.7C10.6 27.4 12.8 28 15 28c7.2 0 13-5.8 13-13S22.2 2 15 2zm6.4 17.9c-.3.8-1.5 1.5-2.1 1.6-.5.1-1.2.1-1.9-.1-.4-.1-1-.3-1.7-.6-3-1.3-5-4.3-5.1-4.5-.1-.2-1.1-1.5-1.1-2.8 0-1.3.7-2 .9-2.2.3-.3.6-.3.8-.3h.6c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .6l-.5.7c-.1.1-.2.3-.1.5.4.7.9 1.4 1.5 1.9.6.6 1.3 1 2 1.2.2.1.4 0 .5-.1l.6-.8c.2-.2.4-.3.6-.2l1.9.9c.2.1.4.2.5.4.1.6-.1 1.5-.4 2.3z"/>
+  </svg>
+</a>
+<style>
+@keyframes waPulse{
+  0%,100%{box-shadow:0 4px 20px rgba(37,211,102,.5);transform:scale(1);}
+  50%{box-shadow:0 4px 32px rgba(37,211,102,.8);transform:scale(1.05);}
+}
+</style>
+</body>
+</html>

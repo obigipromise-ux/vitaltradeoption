@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Admin Panel — VitalTradeOption</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--gold:#f0b429;--gd:#c48f0a;--dark:#0a0e1a;--card:#111827;--card2:#1a2235;--green:#00d084;--red:#ff4560;--blue:#4f8ef7;--purple:#a78bfa;--text:#e2e8f0;--muted:#8492a6;--border:rgba(255,255,255,.08);--sb:195px;}
+body{font-family:'Segoe UI',sans-serif;background:var(--dark);color:var(--text);display:flex;min-height:100vh;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* ── LOGIN ─────────────────────────────────────────────── */
+#loginWrap{position:fixed;inset:0;z-index:999;background:#060910;display:flex;align-items:center;justify-content:center;}
+#loginWrap.gone{display:none;}
+.lcard{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:38px;width:90%;max-width:390px;animation:fadeUp .4s ease;text-align:center;}
+.lcard .logo-box{width:46px;height:46px;background:linear-gradient(135deg,var(--gold),var(--gd));border-radius:11px;display:inline-flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:#000;margin-bottom:10px;}
+.lcard h2{font-size:1.2rem;font-weight:800;margin-bottom:4px;}
+.lcard p{font-size:.8rem;color:var(--muted);margin-bottom:22px;}
+.lfield{margin-bottom:14px;text-align:left;}
+.lfield label{font-size:.7rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:5px;}
+.lfield-wrap{position:relative;}
+.lfield input{width:100%;padding:11px 38px 11px 13px;background:var(--card2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:.9rem;outline:none;transition:.2s;}
+.lfield input:focus{border-color:var(--gold);}
+.lfield-ico{position:absolute;right:11px;top:50%;transform:translateY(-50%);color:var(--muted);cursor:pointer;font-size:.9rem;}
+.lerr{display:none;background:rgba(255,69,96,.1);border:1px solid rgba(255,69,96,.3);border-radius:7px;padding:9px 12px;font-size:.8rem;color:var(--red);margin-bottom:12px;}
+.lerr.show{display:block;}
+.lattempts{font-size:.72rem;color:var(--muted);margin-top:10px;}
+.lattempts span{color:var(--red);font-weight:700;}
+.btn-login{width:100%;padding:12px;border-radius:8px;background:linear-gradient(135deg,var(--gold),var(--gd));border:none;color:#000;font-size:.95rem;font-weight:800;cursor:pointer;transition:.2s;}
+.btn-login:hover{opacity:.88;}
+.btn-login:disabled{opacity:.5;cursor:not-allowed;}
+.lock-wrap{display:none;position:fixed;inset:0;z-index:1000;background:rgba(6,9,16,.97);align-items:center;justify-content:center;flex-direction:column;gap:14px;text-align:center;}
+.lock-wrap.show{display:flex;}
+.lcd{font-size:3rem;font-weight:900;color:var(--gold);}
+
+/* ── SIDEBAR ────────────────────────────────────────────── */
+.sidebar{width:var(--sb);background:#060910;border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:50;}
+.sb-logo{padding:16px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
+.sb-ico{width:30px;height:30px;background:linear-gradient(135deg,var(--gold),var(--gd));border-radius:7px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;color:#000;flex-shrink:0;}
+.sb-txt{font-size:.78rem;font-weight:800;line-height:1.25;}
+.sb-txt span{color:var(--gold);}
+.sb-sec{font-size:.6rem;color:var(--muted);font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:16px 14px 6px;}
+.ni{display:flex;align-items:center;gap:8px;padding:9px 14px;cursor:pointer;border-left:3px solid transparent;transition:.2s;font-size:.8rem;color:var(--muted);position:relative;}
+.ni:hover{background:rgba(240,180,41,.05);color:var(--text);}
+.ni.active{border-left-color:var(--gold);background:rgba(240,180,41,.08);color:var(--gold);}
+.ni .ic{font-size:.9rem;width:17px;text-align:center;}
+.nbdg{position:absolute;right:10px;background:var(--red);color:#fff;font-size:.58rem;font-weight:800;padding:1px 6px;border-radius:10px;min-width:18px;text-align:center;}
+.nbdg.gold{background:var(--gold);color:#000;}
+.sb-foot{margin-top:auto;padding:14px;border-top:1px solid var(--border);}
+.sb-user{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.sb-av{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gd));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.78rem;color:#000;flex-shrink:0;}
+.sb-info span{display:block;font-size:.76rem;font-weight:700;color:var(--gold);}
+.sb-info small{font-size:.66rem;color:var(--muted);}
+.btn-lo{width:100%;padding:7px;border-radius:6px;background:rgba(255,69,96,.1);border:1px solid rgba(255,69,96,.2);color:var(--red);font-size:.74rem;font-weight:700;cursor:pointer;}
+
+/* ── MAIN ───────────────────────────────────────────────── */
+.main{margin-left:var(--sb);flex:1;display:flex;flex-direction:column;}
+.topbar{background:#060910;border-bottom:1px solid var(--border);height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;position:sticky;top:0;z-index:40;}
+.topbar-title{font-size:.92rem;font-weight:700;}
+.topbar-right{display:flex;align-items:center;gap:10px;}
+.tbbtn{background:none;border:1px solid var(--border);border-radius:7px;color:var(--muted);padding:6px 12px;font-size:.76rem;cursor:pointer;transition:.2s;}
+.tbbtn:hover{border-color:var(--gold);color:var(--gold);}
+.live{display:flex;align-items:center;gap:5px;font-size:.72rem;color:var(--green);}
+.ldot{width:7px;height:7px;background:var(--green);border-radius:50%;animation:pulse 1.5s infinite;}
+.sess-bar{background:rgba(240,180,41,.04);border-top:1px solid var(--border);padding:6px 20px;display:flex;justify-content:space-between;font-size:.7rem;color:var(--muted);position:fixed;bottom:0;left:var(--sb);right:0;z-index:30;}
+.sess-tmr{color:var(--gold);font-weight:700;}
+.sess-tmr.warn{color:var(--red);}
+.content{padding:20px;flex:1;padding-bottom:46px;}
+.page{display:none;animation:fadeUp .3s ease;}
+.page.active{display:block;}
+
+/* CARDS */
+.card{background:var(--card);border:1px solid var(--border);border-radius:11px;overflow:hidden;margin-bottom:16px;}
+.card-head{padding:13px 17px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.card-title{font-size:.86rem;font-weight:700;}
+.card-body{padding:16px;}
+.sgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:16px;}
+.sc{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;position:relative;overflow:hidden;}
+.sc::after{content:'';position:absolute;top:-20px;right:-20px;width:65px;height:65px;border-radius:50%;opacity:.06;}
+.sc.gold::after{background:var(--gold);}.sc.green::after{background:var(--green);}.sc.blue::after{background:var(--blue);}.sc.red::after{background:var(--red);}.sc.purple::after{background:var(--purple);}.sc.orange::after{background:#f97316;}
+.slbl{font-size:.67rem;color:var(--muted);margin-bottom:7px;}
+.sv{font-size:1.6rem;font-weight:900;margin-bottom:4px;}
+.sv.gold{color:var(--gold);}.sv.green{color:var(--green);}.sv.blue{color:var(--blue);}.sv.red{color:var(--red);}.sv.purple{color:var(--purple);}.sv.orange{color:#f97316;}
+.ssub{font-size:.7rem;}.ssub.up{color:var(--green);}.ssub.dn{color:var(--red);}.ssub.neutral{color:var(--muted);}
+
+/* TABLE */
+.scrollable{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+thead tr{background:rgba(255,255,255,.02);}
+th{padding:8px 13px;text-align:left;font-size:.65rem;color:var(--muted);font-weight:700;letter-spacing:.4px;text-transform:uppercase;white-space:nowrap;}
+td{padding:10px 13px;font-size:.81rem;border-top:1px solid rgba(255,255,255,.04);}
+tr:hover td{background:rgba(255,255,255,.015);}
+.badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:.65rem;font-weight:700;}
+.badge.active,.badge.approved,.badge.win{background:rgba(0,208,132,.13);color:var(--green);}
+.badge.pending,.badge.open{background:rgba(240,180,41,.13);color:var(--gold);}
+.badge.suspended,.badge.rejected,.badge.loss{background:rgba(255,69,96,.13);color:var(--red);}
+.badge.verified{background:rgba(0,208,132,.13);color:var(--green);}
+.badge.not_submitted{background:rgba(132,146,166,.1);color:var(--muted);}
+
+/* BUTTONS */
+.bsm{padding:6px 12px;border-radius:6px;font-size:.74rem;font-weight:700;cursor:pointer;border:none;transition:.2s;}
+.bsm.gold{background:linear-gradient(135deg,var(--gold),var(--gd));color:#000;}
+.bsm.green{background:rgba(0,208,132,.15);color:var(--green);border:1px solid rgba(0,208,132,.3);}
+.bsm.red{background:rgba(255,69,96,.15);color:var(--red);border:1px solid rgba(255,69,96,.3);}
+.bsm.blue{background:rgba(79,142,247,.15);color:var(--blue);border:1px solid rgba(79,142,247,.3);}
+.bsm.out{background:none;border:1px solid var(--border);color:var(--muted);}
+.bsm.out:hover{border-color:var(--gold);color:var(--gold);}
+.action-row{display:flex;gap:5px;flex-wrap:wrap;}
+.iBtn{width:27px;height:27px;border-radius:5px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.8rem;transition:.2s;}
+.iBtn:hover{border-color:var(--gold);color:var(--gold);}
+.iBtn.d:hover{border-color:var(--red);color:var(--red);}
+.uc{display:flex;align-items:center;gap:8px;}
+.uav{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gd));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.76rem;color:#000;flex-shrink:0;}
+.uav.b{background:linear-gradient(135deg,#00d084,#007c50);}
+.uav.c{background:linear-gradient(135deg,#4f8ef7,#1d5fc7);}
+.uav.d{background:linear-gradient(135deg,#a78bfa,#6d28d9);}
+.uav.e{background:linear-gradient(135deg,#f97316,#c2410c);}
+.uname{font-weight:600;font-size:.8rem;}
+.uemail{font-size:.68rem;color:var(--muted);}
+.search-box{display:flex;align-items:center;gap:7px;background:var(--card2);border:1px solid var(--border);border-radius:7px;padding:7px 11px;flex:1;min-width:150px;}
+.search-box input{background:none;border:none;color:var(--text);font-size:.8rem;outline:none;width:100%;}
+.fsel{background:var(--card2);border:1px solid var(--border);border-radius:7px;color:var(--text);padding:7px 11px;font-size:.78rem;outline:none;}
+.filter-row{display:flex;gap:9px;flex-wrap:wrap;}
+
+/* FORMS */
+.fgrp{margin-bottom:12px;}
+.fgrp label{font-size:.7rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.3px;display:block;margin-bottom:5px;}
+.fgrp input,.fgrp select,.fgrp textarea{width:100%;padding:9px 11px;background:var(--card2);border:1px solid var(--border);border-radius:7px;color:var(--text);font-size:.84rem;outline:none;transition:.2s;font-family:'Segoe UI',sans-serif;}
+.fgrp input:focus,.fgrp select:focus,.fgrp textarea:focus{border-color:var(--gold);}
+.fgrp textarea{resize:vertical;min-height:55px;}
+.frow2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.frow3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;}
+
+/* SUPPORT CHAT */
+.chat-layout{display:grid;grid-template-columns:250px 1fr;height:540px;border:1px solid var(--border);border-radius:11px;overflow:hidden;}
+.chat-sb{background:var(--card2);border-right:1px solid var(--border);display:flex;flex-direction:column;}
+.chat-sb-head{padding:12px 13px;border-bottom:1px solid var(--border);font-size:.8rem;font-weight:700;}
+.convos{overflow-y:auto;flex:1;}
+.convo{padding:11px 13px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.04);transition:.2s;display:flex;align-items:center;gap:9px;}
+.convo:hover{background:rgba(255,255,255,.03);}
+.convo.active{background:rgba(240,180,41,.08);border-left:3px solid var(--gold);}
+.convo-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gd));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.82rem;color:#000;flex-shrink:0;}
+.convo-info{flex:1;min-width:0;}
+.convo-name{font-size:.8rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.convo-prev{font-size:.7rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px;}
+.convo-badge{background:var(--red);color:#fff;font-size:.58rem;font-weight:800;padding:1px 5px;border-radius:10px;flex-shrink:0;}
+.chat-main-area{display:flex;flex-direction:column;background:var(--dark);}
+.chat-no-sel{flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:9px;color:var(--muted);}
+.chat-active-area{display:none;flex-direction:column;flex:1;min-height:0;}
+.chat-hdr{padding:12px 15px;background:var(--card2);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:9px;}
+.chat-hdr-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gd));display:flex;align-items:center;justify-content:center;font-weight:800;color:#000;font-size:.82rem;}
+.chat-msgs{flex:1;overflow-y:auto;padding:13px;display:flex;flex-direction:column;gap:8px;}
+.cmsg{max-width:72%;display:flex;flex-direction:column;gap:2px;}
+.cmsg.fc{align-self:flex-start;align-items:flex-start;}
+.cmsg.fa{align-self:flex-end;align-items:flex-end;}
+.mbubble{padding:8px 12px;border-radius:10px;font-size:.8rem;line-height:1.55;word-break:break-word;}
+.fc .mbubble{background:var(--card2);color:var(--text);}
+.fa .mbubble{background:linear-gradient(135deg,var(--gold),var(--gd));color:#000;}
+.mtime{font-size:.62rem;color:var(--muted);}
+.chat-inp{padding:11px 13px;border-top:1px solid var(--border);display:flex;gap:8px;background:var(--card2);}
+.chat-inp textarea{flex:1;background:var(--card);border:1px solid var(--border);border-radius:7px;color:var(--text);font-size:.8rem;padding:8px 11px;resize:none;outline:none;font-family:'Segoe UI',sans-serif;max-height:75px;}
+.chat-inp textarea:focus{border-color:var(--gold);}
+.chat-send{padding:8px 14px;border-radius:7px;background:linear-gradient(135deg,var(--gold),var(--gd));border:none;color:#000;font-weight:800;font-size:.78rem;cursor:pointer;}
+
+/* MODAL */
+.mover{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;align-items:center;justify-content:center;}
+.mover.show{display:flex;}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:13px;width:90%;max-width:470px;padding:26px;position:relative;max-height:90vh;overflow-y:auto;animation:fadeUp .3s ease;}
+.mcl{position:absolute;top:12px;right:15px;background:none;border:none;color:var(--muted);font-size:1.3rem;cursor:pointer;}
+.modal h2{font-size:1.1rem;font-weight:800;margin-bottom:3px;}
+.modal .msub{font-size:.76rem;color:var(--muted);margin-bottom:16px;}
+.sync-info{background:rgba(0,208,132,.06);border:1px solid rgba(0,208,132,.2);border-radius:7px;padding:9px 12px;font-size:.74rem;color:#6ee7b7;margin-bottom:14px;}
+.mbtns{display:flex;gap:8px;margin-top:14px;}
+.mbtn{flex:1;padding:10px;border-radius:7px;font-size:.84rem;font-weight:700;cursor:pointer;}
+.mbtn.gold{background:linear-gradient(135deg,var(--gold),var(--gd));border:none;color:#000;}
+.mbtn.out{background:none;border:1px solid var(--border);color:var(--muted);}
+
+.toast{position:fixed;bottom:40px;right:20px;background:var(--card2);border:1px solid var(--green);border-radius:9px;padding:11px 16px;font-size:.82rem;color:var(--green);display:none;z-index:500;animation:fadeUp .3s ease;}
+@media(max-width:900px){
+  :root{--sb:0px;}
+  .sidebar{display:none;}
+  .sess-bar{left:0;bottom:52px;}
+  .main{padding-bottom:52px;}
+}
+
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:49;}
+.sidebar-overlay.show{display:block;}
+@media(max-width:900px){
+  #sidebarToggle{display:flex !important;}
+  .sidebar.mob-open{display:flex;z-index:55;}
+}
+/* MOBILE BOTTOM NAV */
+.mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:60;background:#060910;border-top:1px solid var(--border);height:52px;overflow-x:auto;white-space:nowrap;-webkit-overflow-scrolling:touch;}
+.mob-nav::-webkit-scrollbar{display:none;}
+.mob-btn{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:4px 14px;cursor:pointer;border:none;background:none;color:var(--muted);font-size:.58rem;min-width:64px;height:52px;transition:.2s;border-top:2px solid transparent;white-space:nowrap;}
+.mob-btn .mbi{font-size:1.1rem;}
+.mob-btn.active{color:var(--gold);border-top-color:var(--gold);}
+@media(max-width:900px){.mob-nav{display:block;}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginWrap">
+  <div class="lcard">
+    <div class="logo-box">V</div>
+    <h2>Admin Panel</h2>
+    <p>🔒 VitalTradeOption — Authorised access only</p>
+    <div class="lerr" id="lErr"></div>
+    <div class="lfield"><label>Username</label><div class="lfield-wrap"><input type="text" id="lUser" placeholder="admin username" onkeydown="if(event.key==='Enter')tryLogin()"/><span class="lfield-ico">👤</span></div></div>
+    <div class="lfield"><label>Password</label><div class="lfield-wrap"><input type="password" id="lPass" placeholder="admin password" onkeydown="if(event.key==='Enter')tryLogin()"/><span class="lfield-ico" id="lEye" onclick="const i=document.getElementById('lPass');i.type=i.type==='password'?'text':'password';this.textContent=i.type==='password'?'👁️':'🙈'">👁️</span></div></div>
+    <button class="btn-login" id="lBtn" onclick="tryLogin()">🔓 Login to Admin Panel</button>
+    <div class="lattempts">Failed attempts: <span id="lAttempts">0</span> / 5</div>
+  </div>
+</div>
+<div class="lock-wrap" id="lockWrap">
+  <div style="font-size:3rem;">🔒</div>
+  <h3 style="font-weight:800;color:var(--red);">Temporarily Locked</h3>
+  <p style="color:var(--muted);max-width:260px;">Too many failed login attempts.</p>
+  <div class="lcd" id="lcd">60</div>
+  <p style="color:var(--muted);font-size:.8rem;">seconds remaining</p>
+</div>
+
+<!-- SIDEBAR -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+<aside class="sidebar">
+  <div class="sb-logo"><div class="sb-ico">V</div><div class="sb-txt">Vital<span>Trade</span><br/>Admin</div></div>
+  <div class="sb-sec">Main</div>
+  <div class="ni active" onclick="showPage('overview',this)"><span class="ic">📊</span>Overview</div>
+  <div class="ni" onclick="showPage('registrations',this)"><span class="ic">📝</span>Registrations<span class="nbdg gold" id="nb-reg" style="display:none">0</span></div>
+  <div class="ni" onclick="showPage('users',this)"><span class="ic">👥</span>Users</div>
+  <div class="ni" onclick="showPage('trades',this)"><span class="ic">📈</span>Trade Manager</div>
+  <div class="ni" onclick="showPage('deposits',this)"><span class="ic">💰</span>Deposits<span class="nbdg" id="nb-dep" style="display:none">0</span></div>
+  <div class="ni" onclick="showPage('withdrawals',this)"><span class="ic">💸</span>Withdrawals<span class="nbdg" id="nb-wd" style="display:none">0</span></div>
+  <div class="ni" onclick="showPage('support',this)"><span class="ic">💬</span>Support Chat<span class="nbdg" id="nb-sup" style="display:none">0</span></div>
+  <div class="sb-sec">Config</div>
+  <div class="ni" onclick="showPage('plans',this)"><span class="ic">💎</span>Manage Plans</div>
+  <div class="sb-foot">
+    <div class="sb-user"><div class="sb-av">A</div><div class="sb-info"><span id="sbUser">admin</span><small>Super Admin</small></div></div>
+    <button class="btn-lo" onclick="adminLogout()">⏏ Logout</button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <button onclick="toggleSidebar()" style="display:none;background:none;border:1px solid var(--border);border-radius:7px;padding:6px 10px;color:var(--muted);cursor:pointer;font-size:1rem;" id="sidebarToggle">☰</button>
+      <div class="topbar-title" id="pageTitle">Overview</div>
+    </div>
+    <div class="topbar-right">
+      <div class="live"><div class="ldot"></div>Live</div>
+      <a href="https://wa.me/12158924891" target="_blank" style="display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:7px;background:rgba(37,211,102,.1);border:1px solid rgba(37,211,102,.3);color:#25D366;font-size:.76rem;font-weight:700;text-decoration:none;">💬 WhatsApp</a>
+      <button class="tbbtn" onclick="refreshAll()">🔄 Refresh</button>
+      <button class="tbbtn bsm gold" style="border:none;padding:7px 14px;" onclick="openM('addUser')">+ Add Client</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- OVERVIEW -->
+    <div class="page active" id="page-overview">
+      <div class="sgrid">
+        <div class="sc gold"><div class="slbl">👥 Total Clients</div><div class="sv gold" id="s-total">—</div><div class="ssub neutral">Registered</div></div>
+        <div class="sc green"><div class="slbl">✅ Active</div><div class="sv green" id="s-active">—</div><div class="ssub up">Can trade</div></div>
+        <div class="sc orange"><div class="slbl">📝 Pending</div><div class="sv orange" id="s-pend">—</div><div class="ssub neutral">Awaiting approval</div></div>
+        <div class="sc blue"><div class="slbl">💼 Total Balance</div><div class="sv blue" id="s-bal">—</div></div>
+        <div class="sc green"><div class="slbl">📈 Total Invested</div><div class="sv green" id="s-inv">—</div></div>
+        <div class="sc purple"><div class="slbl">💰 Total Profit</div><div class="sv purple" id="s-prof">—</div></div>
+        <div class="sc red"><div class="slbl">⏳ Pending Deps</div><div class="sv red" id="s-pdep">—</div></div>
+        <div class="sc red"><div class="slbl">⏳ Pending Wds</div><div class="sv red" id="s-pwd">—</div></div>
+        <div class="sc red"><div class="slbl">💬 Unread Msgs</div><div class="sv red" id="s-msg">—</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div class="card"><div class="card-head"><div class="card-title">📝 Pending Registrations</div><button class="bsm gold" onclick="showPage('registrations',document.querySelectorAll('.ni')[1])">View All</button></div><div id="pendingPreview"><div style="padding:20px;text-align:center;color:var(--muted);font-size:.8rem;">Loading…</div></div></div>
+        <div class="card"><div class="card-head"><div class="card-title">🕐 Recent Activity</div></div><div class="scrollable"><table><thead><tr><th>Client</th><th>Amount</th><th>Type</th><th>Date</th></tr></thead><tbody id="recentTbody"></tbody></table></div></div>
+      </div>
+    </div>
+
+    <!-- REGISTRATIONS -->
+    <div class="page" id="page-registrations">
+      <div style="background:rgba(240,180,41,.06);border:1px solid rgba(240,180,41,.18);border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:.8rem;color:var(--text);">📝 Clients who register on the broker site appear here for your review. <strong style="color:var(--gold)">Approve</strong> to activate their account or <strong style="color:var(--red)">Reject</strong> to decline.</div>
+      <div class="card"><div class="card-head"><div class="card-title">Pending Registrations</div><div id="regCount" style="font-size:.78rem;color:var(--muted)"></div></div>
+        <div class="scrollable"><table><thead><tr><th>Client</th><th>Country</th><th>Phone</th><th>KYC</th><th>Registered</th><th>Status</th><th>Actions</th></tr></thead><tbody id="regTbody"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- USERS -->
+    <div class="page" id="page-users">
+      <div style="background:rgba(0,208,132,.05);border:1px solid rgba(0,208,132,.18);border-radius:8px;padding:10px 15px;margin-bottom:14px;font-size:.78rem;color:#6ee7b7;">✅ Balance and plan changes sync <strong>instantly</strong> to the client portal — clients see updates on next refresh.</div>
+      <div class="card">
+        <div class="card-head"><div class="card-title">👥 All Clients</div>
+          <div class="filter-row">
+            <div class="search-box">🔍<input type="text" id="usrSearch" placeholder="Search name or email…" oninput="filterUsers(this.value)"/></div>
+            <select class="fsel" id="usrStatusFilter" onchange="filterUsers(document.getElementById('usrSearch').value)"><option value="">All Status</option><option value="active">Active</option><option value="pending">Pending</option><option value="suspended">Suspended</option></select>
+            <button class="bsm gold" onclick="openM('addUser')">+ Add Client</button>
+          </div>
+        </div>
+        <div class="scrollable"><table><thead><tr><th>Client</th><th>Plan</th><th>Balance</th><th>Profit</th><th>Status</th><th>Joined</th><th>Actions</th></tr></thead><tbody id="usersTbody"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- TRADE MANAGER -->
+    <div class="page" id="page-trades">
+      <div style="background:rgba(240,180,41,.05);border:1px solid rgba(240,180,41,.18);border-radius:8px;padding:10px 15px;margin-bottom:14px;font-size:.78rem;color:var(--text);">📈 Add trades to any client's account. <strong style="color:var(--green)">Win</strong> = credits balance · <strong style="color:var(--red)">Loss</strong> = deducts balance · <strong style="color:var(--blue)">Open</strong> = no change.</div>
+      <div class="card"><div class="card-head"><div class="card-title">➕ Add Trade</div></div>
+        <div class="card-body">
+          <div class="frow3">
+            <div class="fgrp"><label>Client</label><select id="tradeUsr"><option value="">Select client…</option></select></div>
+            <div class="fgrp"><label>Instrument</label><select id="tradeInst"><option>BTC/USD</option><option>ETH/USD</option><option>EUR/USD</option><option>GBP/USD</option><option>XAU/USD</option><option>BNB/USD</option><option>SOL/USD</option><option>OIL/USD</option><option>AAPL</option><option>TSLA</option></select></div>
+            <div class="fgrp"><label>Direction</label><select id="tradeDir"><option>UP</option><option>DOWN</option></select></div>
+          </div>
+          <div class="frow3">
+            <div class="fgrp"><label>Trade Amount ($)</label><input type="number" id="tradeAmt" placeholder="e.g. 500"/></div>
+            <div class="fgrp"><label>P&L ($) — enter positive</label><input type="number" id="tradePnl" placeholder="e.g. 460"/></div>
+            <div class="fgrp"><label>Result</label><select id="tradeResult"><option value="win">✅ Win — credits balance</option><option value="loss">❌ Loss — deducts balance</option><option value="open">🔵 Open — no change</option></select></div>
+          </div>
+          <div class="frow2">
+            <div class="fgrp"><label>Duration</label><input type="text" id="tradeDur" placeholder="e.g. 5m, 1h"/></div>
+            <div class="fgrp"><label>Note</label><input type="text" id="tradeNote" placeholder="Optional note"/></div>
+          </div>
+          <button class="bsm gold" style="padding:10px 24px;" onclick="addTrade()">➕ Add Trade to Client Account</button>
+        </div>
+      </div>
+      <div class="card"><div class="card-head"><div class="card-title">📈 All Trades</div>
+        <select class="fsel" id="tradeFilter" onchange="loadTradesFiltered()"><option value="">All Clients</option></select>
+      </div>
+        <div class="scrollable"><table><thead><tr><th>Client</th><th>Instrument</th><th>Direction</th><th>Amount</th><th>P&L</th><th>Duration</th><th>Result</th><th>Date</th><th></th></tr></thead><tbody id="tradesTbody"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- DEPOSITS -->
+    <div class="page" id="page-deposits">
+      <div style="background:rgba(0,208,132,.05);border:1px solid rgba(0,208,132,.18);border-radius:8px;padding:10px 15px;margin-bottom:14px;font-size:.78rem;color:#6ee7b7;">💰 Approving a deposit <strong>automatically credits</strong> the client's balance.</div>
+      <div class="card"><div class="card-head"><div class="card-title">💰 Deposit Requests</div>
+        <select class="fsel" onchange="filterDeps(this.value)"><option value="">All</option><option value="pending">Pending</option><option value="approved">Approved</option><option value="rejected">Rejected</option></select>
+      </div>
+        <div class="scrollable"><table><thead><tr><th>Client</th><th>Amount</th><th>Method</th><th>Plan</th><th>TX Hash</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead><tbody id="depTbody"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- WITHDRAWALS -->
+    <div class="page" id="page-withdrawals">
+      <div style="background:rgba(255,69,96,.05);border:1px solid rgba(255,69,96,.18);border-radius:8px;padding:10px 15px;margin-bottom:14px;font-size:.78rem;color:#fca5a5;">💸 Approving a withdrawal <strong>automatically deducts</strong> the amount from the client's balance.</div>
+      <div class="card"><div class="card-head"><div class="card-title">💸 Withdrawal Requests</div>
+        <div style="display:flex;gap:8px;">
+          <select class="fsel" onchange="filterWds(this.value)"><option value="">All</option><option value="pending">Pending</option><option value="approved">Approved</option><option value="rejected">Rejected</option></select>
+          <button class="bsm green" onclick="approveAllWds()">✅ Approve All Pending</button>
+        </div>
+      </div>
+        <div class="scrollable"><table><thead><tr><th>Client</th><th>Amount</th><th>Method</th><th>Wallet</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead><tbody id="wdTbody"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- SUPPORT CHAT -->
+    <div class="page" id="page-support">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
+        <div style="background:rgba(79,142,247,.05);border:1px solid rgba(79,142,247,.2);border-radius:8px;padding:10px 15px;font-size:.78rem;color:#93c5fd;flex:1;">💬 Replies appear instantly in the client's Support tab.</div>
+        <button class="bsm gold" onclick="openNewConvoModal()" style="white-space:nowrap;">+ New Message</button>
+      </div>
+      <div class="chat-layout">
+        <div class="chat-sb">
+          <div class="chat-sb-head">💬 Conversations</div>
+          <div class="convos" id="convoList"><div style="padding:16px;text-align:center;font-size:.78rem;color:var(--muted);">Loading…</div></div>
+        </div>
+        <div class="chat-main-area" id="chatMainArea">
+          <div class="chat-no-sel" id="chatNoSel"><span style="font-size:2.5rem;">💬</span>Select a conversation</div>
+          <div class="chat-active-area" id="chatActiveArea">
+            <div class="chat-hdr"><div class="chat-hdr-av" id="chatHdrAv">A</div><div><div style="font-weight:700;font-size:.86rem;" id="chatHdrName">—</div><div style="font-size:.7rem;color:var(--muted);" id="chatHdrEmail">—</div></div></div>
+            <div class="chat-msgs" id="chatMsgs"></div>
+            <div class="chat-inp"><textarea id="adminInput" placeholder="Type reply…" rows="2" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendReply();}"></textarea><button class="chat-send" onclick="sendReply()">Send ➤</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PLANS -->
+    <!-- EMAIL & CONTACT SETTINGS -->
+    <div class="page" id="page-plans">
+      <div class="card"><div class="card-head"><div class="card-title">💎 Investment Plans Configuration</div><button class="bsm gold" onclick="showToast('✅ Plans saved!')">💾 Save All</button></div>
+        <div class="card-body"><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;" id="plansGrid"></div></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="sess-bar">
+    <span>🟢 Admin: <strong id="sessUser">admin</strong></span>
+    <span>Auto-logout in <span class="sess-tmr" id="sessTmr">30:00</span></span>
+  </div>
+</div>
+
+<!-- ADD USER MODAL -->
+<div class="mover" id="addUserModal">
+  <div class="modal">
+    <button class="mcl" onclick="closeM('addUser')">×</button>
+    <h2>Add New Client</h2>
+    <p class="msub">Create account — client can login immediately</p>
+    <div class="frow2">
+      <div class="fgrp"><label>First Name</label><input type="text" id="au-fn" placeholder="John"/></div>
+      <div class="fgrp"><label>Last Name</label><input type="text"  id="au-ln" placeholder="Doe"/></div>
+    </div>
+    <div class="fgrp"><label>Email Address</label><input type="email" id="au-email" placeholder="client@email.com"/></div>
+    <div class="frow2">
+      <div class="fgrp"><label>Phone</label><input type="tel" id="au-phone" placeholder="+234 800 000 0000"/></div>
+      <div class="fgrp"><label>Country</label><input type="text" id="au-country" placeholder="Nigeria"/></div>
+    </div>
+    <div class="frow2">
+      <div class="fgrp"><label>Plan</label><select id="au-plan"><option>Starter</option><option>Growth</option><option>Premium</option><option>VIP Elite</option></select></div>
+      <div class="fgrp"><label>Initial Balance ($)</label><input type="number" id="au-balance" placeholder="0"/></div>
+    </div>
+    <div class="fgrp"><label>Password</label><input type="password" id="au-pw" placeholder="Default: client123"/></div>
+    <div class="mbtns">
+      <button class="mbtn out" onclick="closeM('addUser')">Cancel</button>
+      <button class="mbtn gold" onclick="createUser()">✅ Create Account</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT USER MODAL -->
+<div class="mover" id="editUserModal">
+  <div class="modal">
+    <button class="mcl" onclick="closeM('editUser')">×</button>
+    <h2>Edit Client Account</h2>
+    <div class="sync-info">✅ Changes sync instantly to client portal — client sees updated values on next refresh.</div>
+    <div id="editUserErr" style="display:none;background:rgba(255,69,96,.1);border:1px solid rgba(255,69,96,.3);border-radius:7px;padding:9px 12px;font-size:.8rem;color:var(--red);margin-bottom:12px;"></div>
+    <div class="fgrp"><label>Full Name</label><input type="text" id="eu-name"/></div>
+    <div class="fgrp"><label>Email (read-only)</label><input type="email" id="eu-email" readonly style="opacity:.6;cursor:not-allowed"/></div>
+    <div class="fgrp"><label>Plan</label><select id="eu-plan"><option>Starter</option><option>Growth</option><option>Premium</option><option>VIP Elite</option></select></div>
+    <div class="frow2">
+      <div class="fgrp"><label>💰 Balance ($)</label><input type="number" id="eu-balance" step="0.01" style="border-color:var(--gold)"/></div>
+      <div class="fgrp"><label>Status</label><select id="eu-status"><option value="active">Active</option><option value="pending">Pending</option><option value="suspended">Suspended</option></select></div>
+    </div>
+    <div class="frow2">
+      <div class="fgrp"><label>📈 Total Profit ($)</label><input type="number" id="eu-profit" step="0.01"/></div>
+      <div class="fgrp"><label>💸 Total Withdrawn ($)</label><input type="number" id="eu-wd" step="0.01"/></div>
+    </div>
+    <div class="frow2">
+      <div class="fgrp"><label>☀️ Today's Earnings ($)</label><input type="number" id="eu-today" step="0.01"/></div>
+      <div class="fgrp"><label>📊 Daily ROI (%)</label><input type="number" id="eu-roi" step="0.5"/></div>
+    </div>
+    <div class="fgrp"><label>New Password (blank = keep current)</label><input type="password" id="eu-pw" placeholder="Leave blank to keep"/></div>
+    
+    <!-- UPGRADE MESSAGE -->
+    <div style="border-top:1px solid var(--border);margin:16px 0;padding-top:16px;">
+      <div style="font-size:.72rem;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">🚀 Account Upgrade Notification</div>
+      <div class="frow2">
+        <div class="fgrp"><label>Upgrade to Plan</label><select id="eu-upgrade-plan"><option value="">No upgrade</option><option>Growth</option><option>Premium</option><option>VIP Elite</option></select></div>
+        <div class="fgrp"><label>Required Deposit ($)</label><input type="number" id="eu-upgrade-amount" placeholder="e.g. 5000"/></div>
+      </div>
+      <div class="fgrp"><label>Upgrade Message to Client</label>
+        <textarea id="eu-upgrade-msg" placeholder="e.g. Congratulations! Your account qualifies for an upgrade to the Premium plan. Deposit $10,000 to unlock 20% daily ROI…" style="min-height:65px;"></textarea>
+      </div>
+      <button class="bsm gold" style="width:100%;padding:10px;margin-bottom:4px;" onclick="sendUpgradeMsg()">🚀 Send Upgrade Notification to Client</button>
+    </div>
+
+    <!-- WITHDRAWAL READY -->
+    <div style="border-top:1px solid var(--border);padding-top:16px;margin-bottom:6px;">
+      <div style="font-size:.72rem;color:var(--green);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">💸 Withdrawal Ready Notification</div>
+      <div class="fgrp"><label>Withdrawal Message to Client</label>
+        <textarea id="eu-withdrawal-msg" placeholder="e.g. Congratulations! Your trading cycle is complete. Your profits are ready — please proceed to withdraw your earnings." style="min-height:55px;"></textarea>
+      </div>
+      <button class="bsm green" style="width:100%;padding:10px;margin-bottom:4px;" onclick="sendWithdrawalReady()">💸 Notify Client to Withdraw Now</button>
+    </div>
+
+    <div class="mbtns">
+      <button class="mbtn out" onclick="closeM('editUser')">Cancel</button>
+      <button class="mbtn gold" id="saveUserBtn" onclick="saveUser()">💾 Save & Sync to Portal</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- CREDIT BALANCE MODAL -->
+<div class="mover" id="creditModal">
+  <div class="modal" style="max-width:360px;">
+    <button class="mcl" onclick="closeM('credit')">×</button>
+    <h2>💰 Credit Balance</h2>
+    <div class="msub" id="creditModalSub">Add funds to client account</div>
+    <div class="sync-info">✅ Balance updates instantly on client's dashboard.</div>
+    <div class="fgrp">
+      <label>Amount to Credit (USD)</label>
+      <input type="number" id="creditAmt" placeholder="e.g. 500" min="1" step="0.01"
+             style="font-size:1.2rem;font-weight:700;border-color:var(--gold);padding:14px;"
+             onkeydown="if(event.key==='Enter')confirmCredit()"/>
+    </div>
+    <div style="background:var(--card2);border-radius:8px;padding:12px;margin-bottom:14px;font-size:.8rem;color:var(--muted);">
+      Current balance: <strong id="creditCurrentBal" style="color:var(--gold);">$0</strong>
+    </div>
+    <div class="mbtns">
+      <button class="mbtn out" onclick="closeM('credit')">Cancel</button>
+      <button class="mbtn gold" onclick="confirmCredit()">💰 Add to Balance</button>
+    </div>
+  </div>
+</div>
+
+<!-- START CONVO MODAL (admin initiates chat) -->
+<div class="mover" id="newConvoModal">
+  <div class="modal" style="max-width:380px;">
+    <button class="mcl" onclick="closeM('newConvo')">×</button>
+    <h2>💬 Start Conversation</h2>
+    <p class="msub">Select a client to send them a message</p>
+    <div class="fgrp">
+      <label>Select Client</label>
+      <select id="newConvoClient" style="padding:11px 12px;"></select>
+    </div>
+    <div class="fgrp">
+      <label>Message</label>
+      <textarea id="newConvoMsg" placeholder="Type your message to the client…" style="min-height:80px;"></textarea>
+    </div>
+    <div class="mbtns">
+      <button class="mbtn out" onclick="closeM('newConvo')">Cancel</button>
+      <button class="mbtn gold" onclick="sendNewConvo()">Send Message ➤</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- VERIFY LINK MODAL -->
+<div class="mover" id="verifyModal">
+  <div class="modal" style="max-width:480px;">
+    <button class="mcl" onclick="closeM('verify')">×</button>
+    <h2>🔗 Email Verification Link</h2>
+    <p class="msub" id="verifyModalSub">Copy and send this link to the client</p>
+    <div style="background:var(--card2);border:1px solid rgba(240,180,41,.25);border-radius:9px;padding:14px;margin-bottom:16px;">
+      <div style="font-size:.68rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px;">Verification Link</div>
+      <div id="verifyLinkText" style="font-family:monospace;font-size:.76rem;color:var(--gold);word-break:break-all;line-height:1.6;"></div>
+    </div>
+    <div style="background:rgba(79,142,247,.06);border:1px solid rgba(79,142,247,.2);border-radius:8px;padding:12px;margin-bottom:14px;font-size:.78rem;color:#93c5fd;line-height:1.7;">
+      📋 Copy this link and send it to the client via WhatsApp, email, or any message platform. When they click it, their email is verified and account moves to <strong>Pending Approval</strong>.
+    </div>
+    <div class="mbtns">
+      <button class="mbtn out" onclick="closeM('verify')">Close</button>
+      <button class="mbtn gold" onclick="copyVerifyLink()">📋 Copy Link</button>
+    </div>
+  </div>
+</div>
+
+<!-- KYC REVIEW MODAL -->
+<div class="mover" id="kycModal">
+  <div class="modal" style="max-width:480px;">
+    <button class="mcl" onclick="closeM('kyc')">×</button>
+    <h2>🪪 KYC Document Review</h2>
+    <p class="msub" id="kycModalSub">Review submitted documents</p>
+    <div id="kycModalContent" style="background:var(--card2);border-radius:9px;padding:14px;margin-bottom:16px;font-size:.82rem;"></div>
+    <div style="display:flex;gap:10px;margin-bottom:14px;">
+      <button class="bsm green" style="flex:1;padding:11px;" onclick="approveKYC()">✅ Approve KYC</button>
+      <button class="bsm red"   style="flex:1;padding:11px;" onclick="rejectKYC()">❌ Reject KYC</button>
+    </div>
+    <div id="kycRejectInput" style="display:none;">
+      <div class="fgrp"><label>Rejection Reason</label><textarea id="kycRejectReason" placeholder="Tell the client why their documents were rejected…" style="min-height:60px;"></textarea></div>
+      <button class="bsm red" style="width:100%;padding:10px;" onclick="confirmRejectKYC()">Confirm Rejection</button>
+    </div>
+    <div class="mbtns"><button class="mbtn out" onclick="closeM('kyc')">Close</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = window.location.origin;
+let adminToken = sessionStorage.getItem('vto_admin_token') || null;
+let allUsers=[], allDeps=[], allWds=[], allTrades=[];
+let activeConvoId=null, chatPoll=null, statsPoll=null;
+let failAttempts=0, isLocked=false, lockTimer=null, sessSecs=1800, sessInterval=null;
+let editingId=null;
+
+async function aFetch(method,path,body){
+  const h={'Content-Type':'application/json','Authorization':'Bearer '+(adminToken||'')};
+  const r=await fetch(API+path,{method,headers:h,body:body?JSON.stringify(body):undefined});
+  const d=await r.json(); if(!r.ok) throw d; return d;
+}
+
+// ── ADMIN AUTH ────────────────────────────────────────────────────
+async function tryLogin(){
+  if(isLocked) return;
+  const u=document.getElementById('lUser').value.trim();
+  const p=document.getElementById('lPass').value;
+  const err=document.getElementById('lErr');
+  const btn=document.getElementById('lBtn');
+  err.classList.remove('show');
+  if(!u||!p){err.textContent='Please enter username and password.';err.classList.add('show');return;}
+  btn.disabled=true; btn.textContent='⏳ Verifying…';
+  try{
+    const d=await aFetch('POST','/api/auth/admin',{username:u,password:p});
+    adminToken=d.token;
+    sessionStorage.setItem('vto_admin_token',adminToken);
+    document.getElementById('sbUser').textContent=u;
+    document.getElementById('sessUser').textContent=u;
+    failAttempts=0;
+    document.getElementById('loginWrap').classList.add('gone');
+    startSession(); refreshAll(); startPolling();
+  }catch(e){
+    failAttempts++;
+    document.getElementById('lAttempts').textContent=failAttempts;
+    document.getElementById('lPass').value='';
+    if(failAttempts>=5){triggerLock();}
+    else{err.textContent=`❌ Invalid credentials. ${5-failAttempts} attempt${5-failAttempts!==1?'s':''} remaining.`;err.classList.add('show');}
+    btn.disabled=false; btn.textContent='🔓 Login to Admin Panel';
+  }
+}
+function triggerLock(){
+  isLocked=true;
+  document.getElementById('loginWrap').classList.add('gone');
+  document.getElementById('lockWrap').classList.add('show');
+  let s=60; document.getElementById('lcd').textContent=s;
+  lockTimer=setInterval(()=>{s--;document.getElementById('lcd').textContent=s;if(s<=0){clearInterval(lockTimer);isLocked=false;failAttempts=0;document.getElementById('lAttempts').textContent='0';document.getElementById('lockWrap').classList.remove('show');document.getElementById('loginWrap').classList.remove('gone');document.getElementById('lBtn').disabled=false;document.getElementById('lBtn').textContent='🔓 Login to Admin Panel';document.getElementById('lErr').classList.remove('show');}},1000);
+}
+function adminLogout(){
+  clearInterval(statsPoll);clearInterval(chatPoll);clearInterval(sessInterval);
+  adminToken=null;sessionStorage.removeItem('vto_admin_token');
+  document.getElementById('loginWrap').classList.remove('gone');
+  document.getElementById('lPass').value='';document.getElementById('lErr').classList.remove('show');
+  document.getElementById('lBtn').disabled=false;document.getElementById('lBtn').textContent='🔓 Login to Admin Panel';
+}
+// Session restore
+(async()=>{
+  const tok=sessionStorage.getItem('vto_admin_token');
+  if(!tok)return;
+  adminToken=tok;
+  try{await aFetch('GET','/api/admin/stats');document.getElementById('loginWrap').classList.add('gone');startSession();refreshAll();startPolling();}
+  catch(e){sessionStorage.removeItem('vto_admin_token');}
+})();
+function startSession(){
+  clearInterval(sessInterval);sessSecs=1800;
+  sessInterval=setInterval(()=>{sessSecs--;const m=String(Math.floor(sessSecs/60)).padStart(2,'0'),s=String(sessSecs%60).padStart(2,'0');const el=document.getElementById('sessTmr');if(el){el.textContent=`${m}:${s}`;el.classList.toggle('warn',sessSecs<=300);}if(sessSecs<=0){clearInterval(sessInterval);adminLogout();}},1000);
+}
+function startPolling(){clearInterval(statsPoll);statsPoll=setInterval(()=>{loadStats();if(activeConvoId)loadConvoMsgs(activeConvoId);},12000);}
+
+// ── DATA LOADERS ─────────────────────────────────────────────────
+async function refreshAll(){await Promise.all([loadStats(),loadUsers(),loadDeps(),loadWds(),loadTrades(),loadSupportConvos()]);}
+
+async function loadStats(){
+  try{
+    const s=await aFetch('GET','/api/admin/stats');
+    setText('s-total',s.totalUsers||0);
+    setText('s-active',s.active||0);
+    setText('s-pend',s.pending||0);
+    setText('s-bal','$'+(s.totalBal||0).toLocaleString('en',{maximumFractionDigits:0}));
+    setText('s-inv','$'+(s.totalInvest||0).toLocaleString('en',{maximumFractionDigits:0}));
+    setText('s-prof','$'+(s.totalProfit||0).toLocaleString('en',{maximumFractionDigits:0}));
+    setText('s-pdep',s.pendingDeps||0);
+    setText('s-pwd',s.pendingWds||0);
+    setText('s-msg',s.unreadMsgs||0);
+    setBadge('nb-reg',s.pending||0,'gold');
+    setBadge('nb-dep',s.pendingDeps||0,'red');
+    setBadge('nb-wd',s.pendingWds||0,'red');
+    setBadge('nb-sup',s.unreadMsgs||0,'red');
+  }catch(e){}
+}
+function setText(id,v){const el=document.getElementById(id);if(el)el.textContent=v;}
+function setBadge(id,n,cls='red'){const el=document.getElementById(id);if(!el)return;el.textContent=n;el.style.display=n>0?'inline-block':'none';el.className='nbdg'+(cls==='gold'?' gold':'');}
+
+async function loadUsers(){
+  try{
+    allUsers=await aFetch('GET','/api/admin/users');
+    renderUsers(allUsers); renderRegistrations(allUsers);
+    // populate trade selects
+    const active=allUsers.filter(u=>u.status==='active');
+    ['tradeUsr','tradeFilter'].forEach(sid=>{
+      const s=document.getElementById(sid); if(!s)return;
+      const prev=s.value; s.innerHTML='<option value="">'+(sid==='tradeFilter'?'All Clients':'Select client...')+'</option>';
+      active.forEach(u=>{const o=document.createElement('option');o.value=u.id;o.textContent=u.name+' ('+u.email+')';s.appendChild(o);});
+      if(prev)s.value=prev;
+    });
+    // overview pending preview
+    const pend=allUsers.filter(u=>u.status==='pending').slice(0,4);
+    document.getElementById('pendingPreview').innerHTML=pend.length
+      ?pend.map(u=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 15px;border-bottom:1px solid rgba(255,255,255,.04);"><div><div style="font-size:.8rem;font-weight:600">${u.name}</div><div style="font-size:.7rem;color:var(--muted)">${u.email}</div></div><div style="display:flex;gap:5px;"><button class="bsm green" onclick="approveUser(${u.id})">✅ Approve</button><button class="bsm red" onclick="rejectUser(${u.id})">❌ Reject</button></div></div>`).join('')
+      :'<div style="padding:18px;text-align:center;font-size:.8rem;color:var(--muted);">No pending registrations ✅</div>';
+    // recent activity (mock from users)
+    document.getElementById('recentTbody').innerHTML=allUsers.slice(0,6).map(u=>`<tr><td style="font-size:.8rem">${u.name}</td><td style="color:var(--gold);font-weight:700">$${(u.balance||0).toLocaleString()}</td><td><span class="badge ${u.status}">${u.status}</span></td><td style="color:var(--muted);font-size:.72rem">${u.joined||'—'}</td></tr>`).join('');
+  }catch(e){}
+}
+
+function renderUsers(data){
+  const avClasses=['','b','c','d','e'];
+  document.getElementById('usersTbody').innerHTML=data.filter(u=>u.status!=='pending').map((u,i)=>`<tr>
+    <td><div class="uc"><div class="uav ${avClasses[i%5]}">${(u.initials||u.name[0]).toUpperCase()}</div><div><div class="uname">${u.name}</div><div class="uemail">${u.email}</div></div></div></td>
+    <td>${u.plan||'—'}</td>
+    <td style="font-weight:700;color:var(--gold)">$${parseFloat(u.balance||0).toLocaleString()}</td>
+    <td style="color:var(--green)">+$${parseFloat(u.profit||0).toLocaleString()}</td>
+    <td><span class="badge ${u.status}">${u.status.charAt(0).toUpperCase()+u.status.slice(1)}</span></td>
+    <td style="color:var(--muted);font-size:.72rem">${u.joined||'—'}</td>
+    <td><div class="action-row">
+      <button class="iBtn" title="Edit" onclick="editUser(${u.id})">✏️</button>
+      <button class="iBtn" title="Quick Credit" onclick="quickCredit(${u.id},'${u.name}')">💰</button>
+      <button class="iBtn" title="${u.status==='suspended'?'Reactivate':'Suspend'}" onclick="toggleSuspend(${u.id},${u.status==='suspended'})">${u.status==='suspended'?'✅':'🚫'}</button>
+      <button class="iBtn d" title="Delete" onclick="deleteUser(${u.id},'${u.name}')">🗑️</button>
+    </div></td></tr>`).join('');
+}
+function filterUsers(q){
+  const sf=document.getElementById('usrStatusFilter').value;
+  renderUsers(allUsers.filter(u=>{
+    const qm=!q||(u.name.toLowerCase().includes(q.toLowerCase())||u.email.toLowerCase().includes(q.toLowerCase()));
+    const sm=!sf||u.status===sf;
+    return qm&&sm&&u.status!=='pending';
+  }));
+}
+function renderRegistrations(users){
+  const pend=users.filter(u=>u.status==='pending');
+  document.getElementById('regCount').textContent=`${pend.length} pending`;
+  document.getElementById('regTbody').innerHTML=pend.length?pend.map(u=>`<tr>
+    <td><div class="uc"><div class="uav">${(u.initials||u.name[0]).toUpperCase()}</div><div><div class="uname">${u.name}</div><div class="uemail">${u.email}</div></div></div></td>
+    <td>${u.country||'—'}</td>
+    <td>${u.phone||'—'}</td>
+    <td style="color:var(--muted);font-size:.72rem">${u.joined||'—'}</td>
+    <td><span class="badge pending">Pending</span></td>
+    <td><div class="action-row">
+      <button class="bsm green" onclick="approveUser(${u.id})">✅ Approve</button>
+      <button class="bsm red"   onclick="rejectUser(${u.id})">❌ Reject</button>
+    </div></td></tr>`).join('')
+  :'<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:22px;">No pending registrations — all clear ✅</td></tr>';
+}
+
+// User actions
+async function approveUser(id){try{await aFetch('POST',`/api/admin/users/${id}/approve`);showToast('✅ Account approved! Client can now login.');await refreshAll();}catch(e){showToast('⚠️ '+(e.error||'Error'));}}
+async function rejectUser(id){if(!confirm('Reject this registration?'))return;try{await aFetch('PUT',`/api/admin/users/${id}`,{status:'rejected'});showToast('Registration rejected.');await refreshAll();}catch(e){showToast('⚠️ '+(e.error||'Error'));}}
+function editUser(id){
+  const u=allUsers.find(x=>x.id===id); if(!u)return;
+  editingId=id;
+  document.getElementById('eu-name').value=u.name;
+  document.getElementById('eu-email').value=u.email;
+  document.getElementById('eu-plan').value=u.plan||'Starter';
+  document.getElementById('eu-balance').value=u.balance||0;
+  document.getElementById('eu-status').value=u.status||'active';
+  document.getElementById('eu-profit').value=u.profit||0;
+  document.getElementById('eu-wd').value=u.withdrawn||0;
+  document.getElementById('eu-today').value=u.today_earned||0;
+  document.getElementById('eu-roi').value=u.roi||5;
+  document.getElementById('eu-pw').value='';
+  openM('editUser');
+}
+async function saveUser(){
+  if(!editingId)return;
+  const saveBtn=document.querySelector('#editUserModal .mbtn.gold');
+  if(saveBtn){saveBtn.disabled=true;saveBtn.textContent='Saving…';}
+  const body={
+    name:   document.getElementById('eu-name').value.trim(),
+    plan:   document.getElementById('eu-plan').value,
+    balance:parseFloat(document.getElementById('eu-balance').value)||0,
+    status: document.getElementById('eu-status').value,
+    profit: parseFloat(document.getElementById('eu-profit').value)||0,
+    withdrawn:   parseFloat(document.getElementById('eu-wd').value)||0,
+    today_earned:parseFloat(document.getElementById('eu-today').value)||0,
+    roi:    parseFloat(document.getElementById('eu-roi').value)||0,
+  };
+  const pw=document.getElementById('eu-pw').value;
+  if(pw) body.password=pw;
+  try{
+    await aFetch('PUT',`/api/admin/users/${editingId}`,body);
+    closeM('editUser');
+    showToast('✅ '+body.name+' updated! Balance: $'+body.balance.toLocaleString()+'. Client portal synced.');
+    await refreshAll();
+  }catch(e){
+    showToast('⚠️ Save failed: '+(e.error||e.message||'Server error'));
+  }finally{
+    if(saveBtn){saveBtn.disabled=false;saveBtn.textContent='💾 Save & Sync to Portal';}
+  }
+}
+let creditingId=null;
+function quickCredit(id,name){
+  creditingId=id;
+  document.getElementById('creditModalSub').textContent='Adding funds to: '+name;
+  const user=allUsers.find(u=>u.id===id);
+  document.getElementById('creditCurrentBal').textContent='$'+parseFloat(user?.balance||0).toLocaleString();
+  document.getElementById('creditAmt').value='';
+  openM('credit');
+  setTimeout(()=>document.getElementById('creditAmt').focus(),200);
+}
+async function confirmCredit(){
+  const amt=parseFloat(document.getElementById('creditAmt').value);
+  if(!amt||isNaN(amt)||amt<=0){showToast('⚠️ Enter a valid amount');return;}
+  try{
+    await aFetch('POST',`/api/admin/users/${creditingId}/credit`,{amount:amt});
+    closeM('credit');
+    const name=allUsers.find(u=>u.id===creditingId)?.name||'Client';
+    showToast(`✅ $${amt.toLocaleString()} credited to ${name}! Dashboard updated.`);
+    await refreshAll();
+  }catch(e){showToast('⚠️ '+(e.error||'Error'));}
+}
+async function toggleSuspend(id,isSusp){
+  try{await aFetch('PUT',`/api/admin/users/${id}`,{status:isSusp?'active':'suspended'});showToast(isSusp?'✅ Account reactivated.':'🚫 Account suspended.');await refreshAll();}
+  catch(e){showToast('⚠️ '+(e.error||'Error'));}
+}
+async function deleteUser(id,name){
+  if(!confirm(`Delete ${name}? This cannot be undone.`))return;
+  try{await aFetch('DELETE',`/api/admin/users/${id}`);showToast('User deleted.');await refreshAll();}
+  catch(e){showToast('⚠️ '+(e.error||'Error'));}
+}
+async function createUser(){
+  const name=(document.getElementById('au-fn').value+' '+document.getElementById('au-ln').value).trim();
+  const email=document.getElementById('au-email').value.trim();
+  const phone=document.getElementById('au-phone').value;
+  const country=document.getElementById('au-country').value||'Nigeria';
+  const plan=document.getElementById('au-plan').value;
+  const balance=parseFloat(document.getElementById('au-balance').value)||0;
+  const pw=document.getElementById('au-pw').value||'client123';
+  if(!name||!email){showToast('⚠️ Name and email required');return;}
+  try{await aFetch('POST','/api/admin/users',{name,email,password:pw,plan,balance,country,phone});closeM('addUser');showToast('✅ Account created! Client can login now.');await refreshAll();}
+  catch(e){showToast('⚠️ '+(e.error||e.message||'Error'));}
+}
+
+// Trades
+async function loadTrades(){
+  try{allTrades=await aFetch('GET','/api/admin/trades');renderTrades(allTrades);}catch(e){}
+}
+async function loadTradesFiltered(){
+  const uid=document.getElementById('tradeFilter').value;
+  renderTrades(uid?allTrades.filter(t=>String(t.user_id)===uid):allTrades);
+}
+function renderTrades(data){
+  document.getElementById('tradesTbody').innerHTML=data.length?data.map(t=>`<tr>
+    <td><div style="font-size:.8rem;font-weight:600">${t.user_name||'—'}</div></td>
+    <td style="font-weight:700;color:var(--gold)">${t.instrument}</td>
+    <td style="color:${t.direction==='UP'?'var(--green)':'var(--red)'}"><strong>${t.direction==='UP'?'▲':'▼'} ${t.direction}</strong></td>
+    <td>${t.amount?'$'+parseFloat(t.amount).toLocaleString():'—'}</td>
+    <td style="font-weight:700;color:${t.result==='open'?'var(--blue)':parseFloat(t.pnl)>0?'var(--green)':'var(--red)'}">
+      ${t.result==='open'?'Open':parseFloat(t.pnl)>0?'+$'+parseFloat(t.pnl).toLocaleString():'-$'+Math.abs(parseFloat(t.pnl)).toLocaleString()}</td>
+    <td style="color:var(--muted)">${t.duration||'—'}</td>
+    <td><span class="badge ${t.result}">${t.result.charAt(0).toUpperCase()+t.result.slice(1)}</span></td>
+    <td style="color:var(--muted);font-size:.72rem">${new Date(t.date).toLocaleDateString()}</td>
+    <td><button class="iBtn d" onclick="deleteTrade(${t.id})">🗑️</button></td></tr>`).join('')
+  :'<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:20px;">No trades yet</td></tr>';
+}
+async function addTrade(){
+  const uid=document.getElementById('tradeUsr').value;
+  const inst=document.getElementById('tradeInst').value;
+  const dir=document.getElementById('tradeDir').value;
+  const amt=parseFloat(document.getElementById('tradeAmt').value)||0;
+  const pnl=parseFloat(document.getElementById('tradePnl').value)||0;
+  const result=document.getElementById('tradeResult').value;
+  const dur=document.getElementById('tradeDur').value;
+  if(!uid){showToast('⚠️ Select a client');return;}
+  try{await aFetch('POST','/api/admin/trades',{user_id:parseInt(uid),instrument:inst,direction:dir,amount:amt,pnl,result,duration:dur});
+  showToast(`✅ Trade added! ${result==='win'?'+$'+pnl+' credited.':result==='loss'?'-$'+pnl+' deducted.':'Open trade added.'}`);
+  await loadTrades();await loadUsers();await loadStats();}catch(e){showToast('⚠️ '+(e.error||'Error'));}
+}
+async function deleteTrade(id){if(!confirm('Delete this trade?'))return;try{await aFetch('DELETE',`/api/admin/trades/${id}`);showToast('Trade deleted.');await loadTrades();}catch(e){showToast('⚠️ '+(e.error||'Error'));}}
+
+// Deposits
+async function loadDeps(){try{allDeps=await aFetch('GET','/api/admin/deposits');filterDeps('');}catch(e){}}
+function filterDeps(status){
+  const data=status?allDeps.filter(d=>d.status===status):allDeps;
+  document.getElementById('depTbody').innerHTML=data.length?data.map(d=>`<tr>
+    <td><div style="font-size:.8rem;font-weight:600">${d.user_name||'—'}</div><div style="font-size:.7rem;color:var(--muted)">${d.user_email||''}</div></td>
+    <td style="font-weight:700;color:var(--gold)">$${parseFloat(d.amount).toLocaleString()}</td>
+    <td style="font-size:.76rem">${d.method||'—'}</td>
+    <td>${d.plan||'—'}</td>
+    <td style="font-family:monospace;font-size:.7rem;color:var(--muted)">${d.tx_hash?d.tx_hash.slice(0,14)+'…':'—'}</td>
+    <td style="color:var(--muted);font-size:.72rem">${new Date(d.date).toLocaleString()}</td>
+    <td><span class="badge ${d.status}">${d.status.charAt(0).toUpperCase()+d.status.slice(1)}</span></td>
+    <td><div class="action-row">${d.status==='pending'
+      ?`<button class="bsm green" onclick="approveDep(${d.id})">✅ Approve</button><button class="bsm red" onclick="rejectDep(${d.id})">❌</button>`
+      :'<span style="color:var(--muted);font-size:.74rem">Done</span>'}</div></td></tr>`).join('')
+  :'<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:20px;">No deposits yet</td></tr>';
+}
+async function approveDep(id){try{await aFetch('PUT',`/api/admin/deposits/${id}`,{status:'approved',credit:true});showToast('✅ Deposit approved & balance credited!');await refreshAll();}catch(e){showToast('⚠️ '+(e.error||'Error'));}}
+async function rejectDep(id){try{await aFetch('PUT',`/api/admin/deposits/${id}`,{status:'rejected'});showToast('Deposit rejected.');await loadDeps();}catch(e){showToast('⚠️ '+(e.error||'Error'));}}
+
+// Withdrawals
+async function loadWds(){try{allWds=await aFetch('GET','/api/admin/withdrawals');filterWds('');}catch(e){}}
+function filterWds(status){
+  const data=status?allWds.filter(w=>w.status===status):allWds;
+  document.getElementById('wdTbody').innerHTML=data.length?data.map(w=>`<tr>
+    <td><div style="font-size:.8rem;font-weight:600">${w.user_name||'—'}</div><div style="font-size:.7rem;color:var(--muted)">${w.user_email||''}</div></td>
+    <td style="font-weight:700">$${parseFloat(w.amount).toLocaleString()}</td>
+    <td style="font-size:.76rem">${w.method||'—'}</td>
+    <td style="font-family:monospace;font-size:.7rem;color:var(--muted);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${w.wallet||'—'}</td>
+    <td style="color:var(--muted);font-size:.72rem">${new Date(w.date).toLocaleString()}</td>
+    <td><span class="badge ${w.status}">${w.status.charAt(0).toUpperCase()+w.status.slice(1)}</span></td>
+    <td><div class="action-row">${w.status==='pending'
+      ?`<button class="bsm green" onclick="approveWd(${w.id})">✅ Approve</button><button class="bsm red" onclick="rejectWd(${w.id})">❌</button>`
+      :'<span style="color:var(--muted);font-size:.74rem">Done</span>'}</div></td></tr>`).join('')
+  :'<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:20px;">No withdrawals yet</td></tr>';
+}
+async function approveWd(id){try{await aFetch('PUT',`/api/admin/withdrawals/${id}`,{status:'approved',deduct:true});showToast('✅ Withdrawal approved & balance deducted!');await refreshAll();}catch(e){showToast('⚠️ '+(e.error||'Error'));}}
+async function rejectWd(id){try{await aFetch('PUT',`/api/admin/withdrawals/${id}`,{status:'rejected'});showToast('Withdrawal rejected.');await loadWds();}catch(e){showToast('⚠️ '+(e.error||'Error'));}}
+async function approveAllWds(){
+  const pend=allWds.filter(w=>w.status==='pending');
+  if(!pend.length){showToast('No pending withdrawals.');return;}
+  if(!confirm(`Approve all ${pend.length} pending withdrawals?`))return;
+  await Promise.all(pend.map(w=>aFetch('PUT',`/api/admin/withdrawals/${w.id}`,{status:'approved',deduct:true}).catch(()=>{})));
+  showToast(`✅ ${pend.length} withdrawals approved!`);await refreshAll();
+}
+
+// Support Chat
+let convos=[];
+async function loadSupportConvos(){
+  try{
+    convos=await aFetch('GET','/api/admin/support');
+    document.getElementById('convoList').innerHTML=convos.length?convos.map(c=>`
+      <div class="convo ${activeConvoId===c.user_id?'active':''}" onclick="selectConvo(${c.user_id},'${c.user_name}','${c.user_email}',this)">
+        <div class="convo-av">${(c.user_name||'?')[0].toUpperCase()}</div>
+        <div class="convo-info"><div class="convo-name">${c.user_name}</div><div class="convo-prev">${c.last?.message||'No messages'}</div></div>
+        ${c.unread>0?`<div class="convo-badge">${c.unread}</div>`:''}
+      </div>`).join('')
+    :'<div style="padding:18px;text-align:center;font-size:.78rem;color:var(--muted);">No client messages yet</div>';
+    if(activeConvoId)loadConvoMsgs(activeConvoId);
+  }catch(e){}
+}
+function selectConvo(uid,name,email,el){
+  activeConvoId=uid;
+  document.querySelectorAll('.convo').forEach(c=>c.classList.remove('active'));
+  if(el)el.classList.add('active');
+  document.getElementById('chatNoSel').style.display='none';
+  const ca=document.getElementById('chatActiveArea');
+  ca.style.cssText='display:flex !important;flex-direction:column;flex:1;';
+  document.getElementById('chatHdrAv').textContent=(name||'?')[0].toUpperCase();
+  document.getElementById('chatHdrName').textContent=name;
+  document.getElementById('chatHdrEmail').textContent=email;
+  loadConvoMsgs(uid);
+  clearInterval(chatPoll);chatPoll=setInterval(()=>loadConvoMsgs(uid),5000);
+}
+async function loadConvoMsgs(uid){
+  try{
+    const msgs=await aFetch('GET',`/api/admin/support/${uid}`);
+    const box=document.getElementById('chatMsgs');
+    const wasBottom=box.scrollHeight-box.scrollTop<=box.clientHeight+60;
+    box.innerHTML='';
+    if(!msgs.length){box.innerHTML='<div style="text-align:center;color:var(--muted);font-size:.8rem;padding:20px;">No messages yet. Send the first message below.</div>';return;}
+    msgs.forEach(m=>{
+      const div=document.createElement('div');
+      div.className='cmsg '+(m.sender==='client'?'fc':'fa');
+      div.innerHTML=`<div class="mbubble">${m.message.replace(/\n/g,'<br/>')}</div><div class="mtime">${m.sender==='client'?m.user_name+' · ':''} ${new Date(m.date).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</div>`;
+      box.appendChild(div);
+    });
+    if(wasBottom)box.scrollTop=box.scrollHeight;
+    loadSupportConvos();
+  }catch(e){}
+}
+async function sendReply(){
+  if(!activeConvoId){showToast('⚠️ Select a conversation first');return;}
+  const inp=document.getElementById('adminInput');
+  const msg=inp.value.trim();
+  if(!msg)return;
+  inp.value='';
+  const btn=document.querySelector('.chat-send');
+  if(btn){btn.disabled=true;btn.textContent='Sending…';}
+  try{
+    await aFetch('POST',`/api/admin/support/${activeConvoId}`,{message:msg});
+    await loadConvoMsgs(activeConvoId);
+    await loadSupportConvos();
+  }catch(e){
+    showToast('⚠️ Could not send message: '+(e.error||'Server error'));
+    inp.value=msg;
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent='Send ➤';}
+  }
+}
+function openNewConvoModal(){
+  const active=allUsers.filter(u=>u.status==='active');
+  const sel=document.getElementById('newConvoClient');
+  sel.innerHTML=active.map(u=>`<option value="${u.id}">${u.name} (${u.email})</option>`).join('');
+  document.getElementById('newConvoMsg').value='';
+  openM('newConvo');
+}
+async function sendNewConvo(){
+  const uid=parseInt(document.getElementById('newConvoClient').value);
+  const msg=document.getElementById('newConvoMsg').value.trim();
+  if(!msg){showToast('⚠️ Enter a message');return;}
+  try{
+    await aFetch('POST',`/api/admin/support/${uid}`,{message:msg});
+    closeM('newConvo');
+    showToast('✅ Message sent! Client will see it in their Support tab.');
+    showPage('support',document.querySelector('.ni[onclick*="support"]'));
+    activeConvoId=uid;
+    await loadSupportConvos();
+    const user=allUsers.find(u=>u.id===uid);
+    if(user) selectConvoById(uid,user.name,user.email);
+  }catch(e){showToast('⚠️ '+(e.error||'Error'));}
+}
+function selectConvoById(uid,name,email){
+  activeConvoId=uid;
+  document.getElementById('chatNoSel').style.display='none';
+  const ca=document.getElementById('chatActiveArea');
+  ca.style.cssText='display:flex !important;flex-direction:column;flex:1;';
+  document.getElementById('chatHdrAv').textContent=(name||'?')[0].toUpperCase();
+  document.getElementById('chatHdrName').textContent=name;
+  document.getElementById('chatHdrEmail').textContent=email;
+  loadConvoMsgs(uid);
+}
+
+// Plans
+(function renderPlans(){
+  const plans=[
+    {name:'Starter',tier:'STARTER',roi:5,min:50,max:999,dur:7,ref:3,color:'var(--gold)'},
+    {name:'Growth',tier:'GROWTH',roi:12,min:1000,max:9999,dur:14,ref:5,color:'var(--green)'},
+    {name:'Premium',tier:'PREMIUM',roi:20,min:10000,max:49999,dur:21,ref:8,color:'var(--blue)'},
+    {name:'VIP Elite',tier:'VIP ELITE',roi:30,min:50000,max:999999,dur:30,ref:10,color:'var(--purple)'},
+  ];
+  const g=document.getElementById('plansGrid');if(!g)return;
+  g.innerHTML=plans.map(p=>`<div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px;">
+    <div style="font-size:.66rem;color:${p.color};font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;">${p.tier}</div>
+    <div style="font-size:.9rem;font-weight:700;margin-bottom:14px;">${p.name} Plan</div>
+    <div class="fgrp"><label>Daily ROI (%)</label><input type="number" value="${p.roi}" step="0.5"/></div>
+    <div class="frow2">
+      <div class="fgrp"><label>Min Deposit ($)</label><input type="number" value="${p.min}"/></div>
+      <div class="fgrp"><label>Max Deposit ($)</label><input type="number" value="${p.max}"/></div>
+    </div>
+    <div class="frow2">
+      <div class="fgrp"><label>Duration (days)</label><input type="number" value="${p.dur}"/></div>
+      <div class="fgrp"><label>Referral (%)</label><input type="number" value="${p.ref}"/></div>
+    </div>
+    <button class="bsm gold" style="width:100%;padding:9px;" onclick="showToast('${p.name} plan saved!')">Save Plan</button>
+  </div>`).join('');
+})();
+
+// Nav
+
+// Sidebar toggle for mobile
+function toggleSidebar(){
+  const sb=document.querySelector('.sidebar');
+  const ov=document.getElementById('sidebarOverlay');
+  sb.classList.toggle('mob-open');
+  if(sb.classList.contains('mob-open')){ov.classList.add('show');}
+  else{ov.classList.remove('show');}
+}
+function closeSidebar(){
+  document.querySelector('.sidebar').classList.remove('mob-open');
+  document.getElementById('sidebarOverlay').classList.remove('show');
+}
+function mobPage(id, mobEl){
+  // sync mobile nav active state
+  document.querySelectorAll('.mob-btn').forEach(b=>b.classList.remove('active'));
+  if(mobEl) mobEl.classList.add('active');
+  // find matching sidebar item and call showPage
+  const sidebarItem = Array.from(document.querySelectorAll('.ni')).find(n=>n.getAttribute('onclick')&&n.getAttribute('onclick').includes("'"+id+"'"));
+  showPage(id, sidebarItem||null);
+  // scroll to top
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function showPage(id,el){
+  closeSidebar();
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
+  const pg=document.getElementById('page-'+id);if(pg)pg.classList.add('active');
+  if(el)el.classList.add('active');
+  const titles={overview:'Overview',registrations:'Client Registrations',users:'User Management',trades:'Trade Manager',deposits:'Deposits',withdrawals:'Withdrawals',support:'Support Chat',plans:'Manage Plans'};
+  document.getElementById('pageTitle').textContent=titles[id]||id;
+  if(id==='support'){clearInterval(chatPoll);loadSupportConvos();}else{clearInterval(chatPoll);}
+  if(id==='deposits')loadDeps();
+  if(id==='withdrawals')loadWds();
+  if(id==='trades'){loadTrades();}
+}
+function openM(id){document.getElementById(id+'Modal').classList.add('show');document.body.style.overflow='hidden';}
+function closeM(id){document.getElementById(id+'Modal').classList.remove('show');document.body.style.overflow='';}
+document.querySelectorAll('.mover').forEach(o=>o.addEventListener('click',function(e){if(e.target===this){this.classList.remove('show');document.body.style.overflow='';}}) );
+
+// ── Verification link ─────────────────────────────────────────────
+let verifyLinkUrl = '';
+async function showVerifyLink(id){
+  try{
+    const d=await aFetch('GET',`/api/admin/verify-link/${id}`);
+    if(!d.link){showToast('ℹ️ Email already verified — no link needed.');return;}
+    document.getElementById('verifyModalSub').textContent=`Send to: ${d.name} (${d.email})`;
+    document.getElementById('verifyLinkText').textContent=d.link;
+    verifyLinkUrl=d.link;
+    openM('verify');
+  }catch(e){showToast('⚠️ '+(e.error||'Error'));}
+}
+function copyVerifyLink(){
+  navigator.clipboard.writeText(verifyLinkUrl).catch(()=>{});
+  showToast('✅ Verification link copied! Send it to the client.');
+}
+
+// ── Upgrade message ───────────────────────────────────────────────
+async function sendUpgradeMsg(){
+  if(!editingId)return;
+  const msg=document.getElementById('eu-upgrade-msg').value.trim();
+  const plan=document.getElementById('eu-upgrade-plan').value;
+  const amt=document.getElementById('eu-upgrade-amount').value;
+  if(!msg){showToast('⚠️ Enter an upgrade message first');return;}
+  try{
+    await aFetch('POST',`/api/admin/users/${editingId}/upgrade-message`,{message:msg,new_plan:plan||null,new_balance:amt?parseFloat(amt):null});
+    showToast('🚀 Upgrade notification sent! Client will see it on their dashboard.');
+    document.getElementById('eu-upgrade-msg').value='';
+    document.getElementById('eu-upgrade-plan').value='';
+    document.getElementById('eu-upgrade-amount').value='';
+  }catch(e){showToast('⚠️ '+(e.error||'Error'));}
+}
+
+// ── Withdrawal ready ──────────────────────────────────────────────
+async function sendWithdrawalReady(){
+  if(!editingId)return;
+  const msg=document.getElementById('eu-withdrawal-msg').value.trim();
+  if(!msg){showToast('⚠️ Enter a withdrawal message first');return;}
+  try{
+    await aFetch('POST',`/api/admin/users/${editingId}/withdrawal-ready`,{message:msg});
+    showToast('💸 Withdrawal notification sent! Client will see it on their dashboard.');
+    document.getElementById('eu-withdrawal-msg').value='';
+  }catch(e){showToast('⚠️ '+(e.error||'Error'));}
+}
+
+// ── KYC review ────────────────────────────────────────────────────
+let kycReviewId=null;
+function reviewKYC(id){
+  kycReviewId=id;
+  const u=allUsers.find(x=>x.id===id);
+  if(!u)return;
+  document.getElementById('kycModalSub').textContent=u.name+' ('+u.email+')';
+  const docs=u.kyc_docs||[];
+  document.getElementById('kycModalContent').innerHTML=`
+    <div style="margin-bottom:10px;"><strong>ID Type:</strong> ${u.kyc_id_type||'—'}</div>
+    <div style="margin-bottom:10px;"><strong>ID Number:</strong> ${u.kyc_id_number||'—'}</div>
+    <div style="margin-bottom:10px;"><strong>KYC Status:</strong> <span style="color:var(--gold)">${u.kyc_status||'not_submitted'}</span></div>
+    <div style="margin-bottom:10px;"><strong>Documents:</strong></div>
+    ${docs.length?docs.map(d=>`<div style="padding:6px 10px;background:rgba(0,208,132,.08);border-radius:6px;margin-bottom:6px;font-size:.78rem;">✅ ${d.type.toUpperCase()}: ${d.name}</div>`).join(''):'<div style="color:var(--muted);">No documents uploaded yet</div>'}
+    ${u.kyc_reject_reason?`<div style="margin-top:10px;color:var(--red);font-size:.8rem;">Last rejection reason: ${u.kyc_reject_reason}</div>`:''}
+  `;
+  document.getElementById('kycRejectInput').style.display='none';
+  openM('kyc');
+}
+async function approveKYC(){
+  if(!kycReviewId)return;
+  try{await aFetch('PUT',`/api/admin/kyc/${kycReviewId}`,{status:'verified'});closeM('kyc');showToast('✅ KYC verified! Client is now fully verified.');await refreshAll();}
+  catch(e){showToast('⚠️ '+(e.error||'Error'));}
+}
+function rejectKYC(){document.getElementById('kycRejectInput').style.display='block';}
+async function confirmRejectKYC(){
+  const reason=document.getElementById('kycRejectReason').value.trim();
+  if(!reason){showToast('⚠️ Enter a rejection reason');return;}
+  try{await aFetch('PUT',`/api/admin/kyc/${kycReviewId}`,{status:'rejected',reason});closeM('kyc');showToast('KYC rejected. Client will be notified to resubmit.');await refreshAll();}
+  catch(e){showToast('⚠️ '+(e.error||'Error'));}
+}
+
+
+async function getAndCopyLink(id, email){
+  try{
+    const d=await aFetch('GET',`/api/admin/verify-link/${id}`);
+    if(!d.link){
+      showToast('ℹ️ Email already verified — no link needed. Just click ✅ Approve.');
+      return;
+    }
+    // Copy to clipboard
+    await navigator.clipboard.writeText(d.link).catch(()=>{});
+    showToast(`✅ Verification link COPIED! Paste and send to: ${email} via WhatsApp/email`);
+    // Also show in a popup for easy access
+    if(confirm(`Link copied!\n\nSend this to ${d.name} (${email}):\n\n${d.link}\n\nClick OK to open WhatsApp to send it.`)){
+      const waMsg=encodeURIComponent(`Hello ${d.name},\n\nWelcome to VitalTradeOption! Please click the link below to verify your email and activate your account:\n\n${d.link}\n\nThank you,\nVitalTradeOption Team`);
+      window.open('https://wa.me/?text='+waMsg,'_blank');
+    }
+  }catch(e){showToast('⚠️ '+(e.error||'Error getting link'));}
+}
+
+function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.style.display='block';setTimeout(()=>t.style.display='none',3500);}
+</script>
+
+<!-- MOBILE BOTTOM NAVIGATION -->
+<div class="mob-nav" id="mobNav">
+  <button class="mob-btn active" onclick="mobPage('overview',this)"><span class="mbi">📊</span>Overview</button>
+  <button class="mob-btn" onclick="mobPage('registrations',this)"><span class="mbi">📝</span>Register</button>
+  <button class="mob-btn" onclick="mobPage('users',this)"><span class="mbi">👥</span>Users</button>
+  <button class="mob-btn" onclick="mobPage('trades',this)"><span class="mbi">📈</span>Trades</button>
+  <button class="mob-btn" onclick="mobPage('deposits',this)"><span class="mbi">💰</span>Deposits</button>
+  <button class="mob-btn" onclick="mobPage('withdrawals',this)"><span class="mbi">💸</span>Withdraw</button>
+  <button class="mob-btn" onclick="mobPage('support',this)"><span class="mbi">💬</span>Support</button>
+  <button class="mob-btn" onclick="mobPage('plans',this)"><span class="mbi">💎</span>Plans</button>
+  <button class="mob-btn" onclick="adminLogout()" style="color:var(--red);"><span class="mbi">⏏</span>Logout</button>
+</div>
+
+<!-- WhatsApp Floating Button -->
+<a href="https://wa.me/12158924891?text=Hello%2C%20I%20need%20support%20with%20my%20VitalTradeOption%20account" target="_blank" id="waBtn" title="Chat with us on WhatsApp"
+   style="position:fixed;bottom:28px;right:24px;z-index:999;width:58px;height:58px;background:#25D366;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(37,211,102,.5);text-decoration:none;transition:.2s;animation:waPulse 2.5s infinite;">
+  <svg width="30" height="30" viewBox="0 0 30 30" fill="white">
+    <path d="M15 2C7.8 2 2 7.8 2 15c0 2.3.6 4.5 1.7 6.4L2 28l6.8-1.7C10.6 27.4 12.8 28 15 28c7.2 0 13-5.8 13-13S22.2 2 15 2zm6.4 17.9c-.3.8-1.5 1.5-2.1 1.6-.5.1-1.2.1-1.9-.1-.4-.1-1-.3-1.7-.6-3-1.3-5-4.3-5.1-4.5-.1-.2-1.1-1.5-1.1-2.8 0-1.3.7-2 .9-2.2.3-.3.6-.3.8-.3h.6c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .6l-.5.7c-.1.1-.2.3-.1.5.4.7.9 1.4 1.5 1.9.6.6 1.3 1 2 1.2.2.1.4 0 .5-.1l.6-.8c.2-.2.4-.3.6-.2l1.9.9c.2.1.4.2.5.4.1.6-.1 1.5-.4 2.3z"/>
+  </svg>
+</a>
+<style>
+@keyframes waPulse{
+  0%,100%{box-shadow:0 4px 20px rgba(37,211,102,.5);transform:scale(1);}
+  50%{box-shadow:0 4px 32px rgba(37,211,102,.8);transform:scale(1.05);}
+}
+</style>
+</body>
+</html>

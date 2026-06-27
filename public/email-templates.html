@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>VTO Email Templates</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Segoe UI',sans-serif;background:#0a0e1a;color:#e2e8f0;padding:20px;}
+.page-title{text-align:center;font-size:1.4rem;font-weight:900;color:#f0b429;margin-bottom:6px;}
+.page-sub{text-align:center;font-size:.85rem;color:#8492a6;margin-bottom:28px;}
+.tab-bar{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:28px;}
+.tab-btn{padding:9px 18px;border-radius:8px;background:rgba(240,180,41,.08);border:1px solid rgba(240,180,41,.2);color:#8492a6;font-size:.82rem;font-weight:700;cursor:pointer;transition:.2s;}
+.tab-btn:hover,.tab-btn.active{background:linear-gradient(135deg,#f0b429,#c48f0a);border-color:transparent;color:#000;}
+.template-wrap{display:none;max-width:660px;margin:0 auto;}
+.template-wrap.active{display:block;}
+.instructions{background:rgba(240,180,41,.06);border:1px solid rgba(240,180,41,.18);border-radius:12px;padding:16px 20px;margin-bottom:18px;font-size:.82rem;line-height:1.75;color:#e2e8f0;}
+.instructions strong{color:#f0b429;}
+.instructions ol{padding-left:18px;margin-top:8px;}
+.copy-btn{display:inline-flex;align-items:center;gap:7px;padding:9px 20px;border-radius:8px;background:linear-gradient(135deg,#f0b429,#c48f0a);border:none;color:#000;font-size:.82rem;font-weight:800;cursor:pointer;margin-bottom:16px;transition:.2s;}
+.copy-btn:hover{opacity:.88;}
+/* Email shell */
+.email-shell{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5);}
+.email-pre{background:#f8f9fa;padding:8px 28px;font-size:.75rem;color:#6b7280;border-bottom:1px solid #e5e7eb;}
+.email-header{background:linear-gradient(135deg,#0a0e1a 0%,#111827 100%);padding:28px 40px;text-align:center;}
+.email-logo{display:inline-flex;align-items:center;gap:9px;margin-bottom:5px;}
+.elo-ico{width:38px;height:38px;background:linear-gradient(135deg,#f0b429,#c48f0a);border-radius:9px;display:inline-flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;color:#000;}
+.elo-txt{font-size:1.1rem;font-weight:800;color:#fff;}
+.elo-txt span{color:#f0b429;}
+.email-tag{font-size:.72rem;color:#8492a6;margin-top:3px;}
+.email-body{padding:36px 40px;}
+.hero-box{background:linear-gradient(135deg,#f0fdf4,#dcfce7);border-radius:12px;padding:24px;text-align:center;margin-bottom:24px;}
+.hero-box.gold{background:linear-gradient(135deg,#fefce8,#fef3c7);}
+.hero-box.blue{background:linear-gradient(135deg,#eff6ff,#dbeafe);}
+.hero-box.purple{background:linear-gradient(135deg,#faf5ff,#ede9fe);}
+.hero-icon{font-size:2.8rem;margin-bottom:10px;}
+.hero-box h2{font-size:1.25rem;font-weight:900;color:#111827;margin-bottom:4px;}
+.hero-box p{font-size:.85rem;color:#6b7280;}
+.amt-box{background:#f9fafb;border:2px solid #e5e7eb;border-radius:10px;padding:20px;text-align:center;margin-bottom:22px;}
+.amt-label{font-size:.72rem;color:#6b7280;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
+.amt-val{font-size:2rem;font-weight:900;}
+.amt-val.green{color:#059669;}
+.amt-val.gold{color:#d97706;}
+.amt-val.blue{color:#2563eb;}
+.detail-box{background:#f9fafb;border-radius:9px;padding:18px;margin-bottom:20px;}
+.detail-box h4{font-size:.72rem;color:#374151;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;}
+.det-row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #e5e7eb;font-size:.84rem;}
+.det-row:last-child{border-bottom:none;}
+.det-row span:first-child{color:#6b7280;}
+.det-row span:last-child{font-weight:600;color:#111827;}
+.cta-btn{display:block;background:linear-gradient(135deg,#f0b429,#c48f0a);border-radius:9px;padding:14px;text-align:center;color:#000;font-weight:800;font-size:.95rem;text-decoration:none;margin-bottom:22px;}
+.body-text{font-size:.85rem;color:#374151;line-height:1.75;}
+.body-text strong{color:#111827;}
+.steps-list{display:flex;flex-direction:column;gap:12px;margin-bottom:22px;}
+.step-item{display:flex;align-items:center;gap:13px;background:#f9fafb;border-radius:9px;padding:13px;}
+.step-num{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#f0b429,#c48f0a);display:flex;align-items:center;justify-content:center;font-weight:900;color:#000;font-size:.88rem;flex-shrink:0;}
+.step-text h5{font-size:.85rem;font-weight:700;color:#111827;margin-bottom:2px;}
+.step-text p{font-size:.77rem;color:#6b7280;}
+.warning-box{background:#fef3c7;border:1px solid #fde68a;border-radius:8px;padding:13px 16px;margin-bottom:20px;font-size:.8rem;color:#92400e;line-height:1.65;}
+.upgrade-compare{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;margin-bottom:20px;}
+.plan-box{background:#f9fafb;border:2px solid #e5e7eb;border-radius:10px;padding:14px;text-align:center;}
+.plan-box.new{border-color:#3b82f6;background:#eff6ff;}
+.plan-box .pn{font-size:.72rem;color:#6b7280;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;}
+.plan-box .pv{font-size:1rem;font-weight:800;color:#111827;}
+.plan-box .pr{font-size:.82rem;color:#059669;font-weight:700;margin-top:4px;}
+.email-footer{background:#f9fafb;border-top:1px solid #e5e7eb;padding:22px 40px;text-align:center;}
+.email-footer p{font-size:.73rem;color:#9ca3af;line-height:1.7;}
+.email-footer a{color:#f0b429;text-decoration:none;}
+.divider{height:1px;background:#e5e7eb;margin:14px 0;}
+</style>
+</head>
+<body>
+
+<div class="page-title">📧 VitalTradeOption — Email Templates</div>
+<p class="page-sub">Copy these ready-made emails to send to your clients</p>
+
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="show('welcome',this)">👋 Welcome / Registration</button>
+  <button class="tab-btn" onclick="show('upgrade',this)">🚀 Account Upgrade</button>
+  <button class="tab-btn" onclick="show('withdrawal',this)">💸 Withdraw Now</button>
+  <button class="tab-btn" onclick="show('deposit',this)">💰 Deposit Confirmed</button>
+</div>
+
+<!-- ══════════ WELCOME EMAIL ══════════ -->
+<div class="template-wrap active" id="tmpl-welcome">
+  <div class="instructions">
+    <strong>📋 When to send:</strong> Immediately after a new client registers their account.<br/>
+    <strong>How to use:</strong>
+    <ol>
+      <li>Copy the email text below</li>
+      <li>Replace <strong style="color:#f0b429;">[CLIENT NAME]</strong> and <strong style="color:#f0b429;">[EMAIL]</strong> with the client's details</li>
+      <li>Send from your email to the client's email address</li>
+    </ol>
+  </div>
+  <button class="copy-btn" onclick="copyEmail('welcome-text')">📋 Copy Email Text</button>
+
+  <div id="welcome-text">
+  <div class="email-shell">
+    <div class="email-pre">Subject: ✅ Welcome to VitalTradeOption — Verify Your Email to Get Started</div>
+    <div class="email-header">
+      <div class="email-logo"><div class="elo-ico">V</div><div class="elo-txt">Vital<span>Trade</span>Option</div></div>
+      <div class="email-tag">Professional Trading & Investment Platform</div>
+    </div>
+    <div class="email-body">
+      <div class="hero-box gold">
+        <div class="hero-icon">🎉</div>
+        <h2>Welcome to VitalTradeOption!</h2>
+        <p>Your account has been created successfully</p>
+      </div>
+      <div class="body-text">
+        <p>Dear <strong>[CLIENT NAME]</strong>,</p><br/>
+        <p>Welcome to <strong>VitalTradeOption</strong> — the professional trading and investment platform trusted by thousands of investors across 52+ countries.</p><br/>
+        <p>Your account has been created and is one step away from activation. Please complete the following steps to start trading:</p>
+      </div><br/>
+      <div class="steps-list">
+        <div class="step-item"><div class="step-num">1</div><div class="step-text"><h5>Verify Your Email</h5><p>Click the verification link we sent to confirm your email address</p></div></div>
+        <div class="step-item"><div class="step-num">2</div><div class="step-text"><h5>Wait for Admin Approval</h5><p>Our team will review and activate your account within a few hours</p></div></div>
+        <div class="step-item"><div class="step-num">3</div><div class="step-text"><h5>Submit KYC Documents</h5><p>Upload your ID and proof of address to fully verify your account</p></div></div>
+        <div class="step-item"><div class="step-num">4</div><div class="step-text"><h5>Make Your First Deposit</h5><p>Fund your account and start earning daily returns immediately</p></div></div>
+      </div>
+      <div class="detail-box">
+        <h4>Your Account Details</h4>
+        <div class="det-row"><span>Full Name</span><span>[CLIENT NAME]</span></div>
+        <div class="det-row"><span>Email</span><span>[EMAIL]</span></div>
+        <div class="det-row"><span>Starting Plan</span><span>Starter — 5% Daily ROI</span></div>
+        <div class="det-row"><span>Account Status</span><span style="color:#d97706;">⏳ Pending Verification</span></div>
+      </div>
+      <a class="cta-btn" href="https://vitaltradeoption.onrender.com">🚀 Login to My Account</a>
+      <div class="body-text">
+        <p>If you have any questions, our support team is available 24/7 via the live chat inside your dashboard.</p><br/>
+        <p>Welcome aboard,<br/><strong>The VitalTradeOption Team</strong></p>
+      </div>
+    </div>
+    <div class="email-footer">
+      <p>© 2025 VitalTradeOption Ltd · All Rights Reserved<br/>
+      <a href="#">Privacy Policy</a> · <a href="#">Terms of Service</a> · <a href="#">Support</a></p>
+      <div class="divider"></div>
+      <p style="color:#d1d5db;font-size:.7rem;">You received this because you registered at VitalTradeOption.</p>
+    </div>
+  </div>
+  </div>
+</div>
+
+<!-- ══════════ UPGRADE EMAIL ══════════ -->
+<div class="template-wrap" id="tmpl-upgrade">
+  <div class="instructions">
+    <strong>📋 When to send:</strong> When you want to notify a client that their account qualifies for an upgrade to a higher plan.<br/>
+    <strong>How to use:</strong> Replace all <strong style="color:#f0b429;">[PLACEHOLDERS]</strong> with the client's specific details and the upgrade plan information.
+  </div>
+  <button class="copy-btn" onclick="copyEmail('upgrade-text')">📋 Copy Email Text</button>
+
+  <div id="upgrade-text">
+  <div class="email-shell">
+    <div class="email-pre">Subject: 🚀 Account Upgrade Available — Unlock Higher Returns Today!</div>
+    <div class="email-header">
+      <div class="email-logo"><div class="elo-ico">V</div><div class="elo-txt">Vital<span>Trade</span>Option</div></div>
+      <div class="email-tag">Professional Trading & Investment Platform</div>
+    </div>
+    <div class="email-body">
+      <div class="hero-box blue">
+        <div class="hero-icon">🚀</div>
+        <h2>Account Upgrade Available!</h2>
+        <p>You qualify for a higher earning tier</p>
+      </div>
+      <div class="body-text">
+        <p>Dear <strong>[CLIENT NAME]</strong>,</p><br/>
+        <p>Congratulations on your progress with VitalTradeOption! Based on your trading activity and account performance, you now qualify for an <strong>account upgrade</strong> that will significantly increase your daily earnings.</p>
+      </div><br/>
+      <div class="upgrade-compare">
+        <div class="plan-box"><div class="pn">Current Plan</div><div class="pv">[CURRENT PLAN]</div><div class="pr">[X]% / day</div></div>
+        <div style="font-size:1.5rem;color:#3b82f6;font-weight:900;">➜</div>
+        <div class="plan-box new"><div class="pn">Upgrade To</div><div class="pv">[NEW PLAN]</div><div class="pr">[Y]% / day</div></div>
+      </div>
+      <div class="amt-box" style="border-color:#fde68a;background:#fefce8;">
+        <div class="amt-label">Required Deposit for Upgrade</div>
+        <div class="amt-val gold">$[UPGRADE AMOUNT]</div>
+        <div style="font-size:.78rem;color:#92400e;margin-top:6px;">One-time deposit to activate your new tier</div>
+      </div>
+      <div class="detail-box">
+        <h4>Upgrade Benefits</h4>
+        <div class="det-row"><span>New Daily ROI</span><span style="color:#059669;font-weight:700;">[Y]% per day</span></div>
+        <div class="det-row"><span>Estimated Daily Earnings</span><span style="color:#059669;">+$[DAILY EARNINGS] / day</span></div>
+        <div class="det-row"><span>Trading Cycle</span><span>[DURATION] days</span></div>
+        <div class="det-row"><span>Referral Commission</span><span>[REF]% on referrals</span></div>
+        <div class="det-row"><span>Support Level</span><span>Priority / Dedicated Manager</span></div>
+      </div>
+      <a class="cta-btn" href="https://vitaltradeoption.onrender.com/client">💰 Make Upgrade Deposit Now →</a>
+      <div class="warning-box">
+        ⏰ <strong>Limited Time:</strong> This upgrade offer is available for the next 72 hours. After that, standard deposit requirements apply. Login to your dashboard and proceed to the Deposit section to activate your upgrade.
+      </div>
+      <div class="body-text">
+        <p>To upgrade your account:</p>
+        <ol style="padding-left:18px;margin-top:8px;line-height:2;">
+          <li>Login to your VitalTradeOption dashboard</li>
+          <li>Click the <strong>💰 Deposit</strong> tab</li>
+          <li>Select your preferred cryptocurrency</li>
+          <li>Send exactly <strong>$[UPGRADE AMOUNT]</strong> to the displayed address</li>
+          <li>Click "Notify Admin" — your plan will be upgraded within 30 minutes</li>
+        </ol><br/>
+        <p>If you need assistance, contact our support team via live chat inside your dashboard.</p><br/>
+        <p>Trade smarter, earn more,<br/><strong>The VitalTradeOption Team</strong></p>
+      </div>
+    </div>
+    <div class="email-footer">
+      <p>© 2025 VitalTradeOption Ltd · All Rights Reserved<br/>
+      <a href="#">Privacy Policy</a> · <a href="#">Terms of Service</a> · <a href="#">Support</a></p>
+    </div>
+  </div>
+  </div>
+</div>
+
+<!-- ══════════ WITHDRAWAL EMAIL ══════════ -->
+<div class="template-wrap" id="tmpl-withdrawal">
+  <div class="instructions">
+    <strong>📋 When to send:</strong> When a client's trading cycle is complete and their profits are ready to be withdrawn.<br/>
+    <strong>How to use:</strong> Replace all <strong style="color:#f0b429;">[PLACEHOLDERS]</strong> with the client's actual account figures.
+  </div>
+  <button class="copy-btn" onclick="copyEmail('withdrawal-text')">📋 Copy Email Text</button>
+
+  <div id="withdrawal-text">
+  <div class="email-shell">
+    <div class="email-pre">Subject: 💸 Your Profits Are Ready — Withdraw Your Earnings Now!</div>
+    <div class="email-header">
+      <div class="email-logo"><div class="elo-ico">V</div><div class="elo-txt">Vital<span>Trade</span>Option</div></div>
+      <div class="email-tag">Professional Trading & Investment Platform</div>
+    </div>
+    <div class="email-body">
+      <div class="hero-box">
+        <div class="hero-icon">🎉</div>
+        <h2>Your Profits Are Ready!</h2>
+        <p>Your trading cycle is complete — time to withdraw</p>
+      </div>
+      <div class="amt-box" style="border-color:#bbf7d0;background:#f0fdf4;">
+        <div class="amt-label">Total Withdrawable Balance</div>
+        <div class="amt-val green">$[TOTAL BALANCE]</div>
+        <div style="font-size:.78rem;color:#059669;margin-top:6px;">Including capital + all earned profits</div>
+      </div>
+      <div class="body-text">
+        <p>Dear <strong>[CLIENT NAME]</strong>,</p><br/>
+        <p>Excellent news! Your <strong>[PLAN NAME]</strong> trading cycle has been successfully completed. Your profits have been calculated and your full balance is now available for withdrawal.</p>
+      </div><br/>
+      <div class="detail-box">
+        <h4>Your Earnings Summary</h4>
+        <div class="det-row"><span>Original Investment</span><span>$[INVESTED]</span></div>
+        <div class="det-row"><span>Total Profit Earned</span><span style="color:#059669;font-weight:700;">+$[PROFIT]</span></div>
+        <div class="det-row"><span>Total Balance</span><span style="font-weight:800;font-size:1rem;">$[TOTAL BALANCE]</span></div>
+        <div class="det-row"><span>ROI Achieved</span><span style="color:#059669;">[ROI]%</span></div>
+        <div class="det-row"><span>Trading Period</span><span>[DURATION] days</span></div>
+        <div class="det-row"><span>Status</span><span style="color:#059669;">✅ Ready to Withdraw</span></div>
+      </div>
+      <a class="cta-btn" style="background:linear-gradient(135deg,#00d084,#00a86b);" href="https://vitaltradeoption.onrender.com/client">💸 Withdraw My Profits Now →</a>
+      <div class="steps-list">
+        <div class="step-item"><div class="step-num">1</div><div class="step-text"><h5>Login to Your Dashboard</h5><p>Go to vitaltradeoption.onrender.com/client and login</p></div></div>
+        <div class="step-item"><div class="step-num">2</div><div class="step-text"><h5>Click the 💸 Withdraw Tab</h5><p>Enter the amount you wish to withdraw</p></div></div>
+        <div class="step-item"><div class="step-num">3</div><div class="step-text"><h5>Select Payment Method</h5><p>Choose Bitcoin, USDT BEP-20, Ethereum or USDT ERC-20</p></div></div>
+        <div class="step-item"><div class="step-num">4</div><div class="step-text"><h5>Enter Your Wallet Address</h5><p>Paste your crypto wallet address and submit the request</p></div></div>
+      </div>
+      <div class="warning-box">
+        ⏰ <strong>Important:</strong> Please submit your withdrawal request within <strong>7 days</strong>. Withdrawals are processed within 1–24 hours after submission. Minimum withdrawal is $20.
+      </div>
+      <div class="body-text">
+        <p>Want to keep growing your wealth? After withdrawing your profits, you can <strong>reinvest your capital</strong> to start a new trading cycle and continue earning daily returns.</p><br/>
+        <p>Congratulations on your earnings,<br/><strong>The VitalTradeOption Team</strong></p>
+      </div>
+    </div>
+    <div class="email-footer">
+      <p>© 2025 VitalTradeOption Ltd · All Rights Reserved<br/>
+      <a href="#">Privacy Policy</a> · <a href="#">Terms of Service</a> · <a href="#">Support</a></p>
+    </div>
+  </div>
+  </div>
+</div>
+
+<!-- ══════════ DEPOSIT CONFIRMED EMAIL ══════════ -->
+<div class="template-wrap" id="tmpl-deposit">
+  <div class="instructions">
+    <strong>📋 When to send:</strong> After you approve a client's deposit in the admin panel and their balance has been credited.<br/>
+    <strong>How to use:</strong> Replace all <strong style="color:#f0b429;">[PLACEHOLDERS]</strong> with the client's deposit details.
+  </div>
+  <button class="copy-btn" onclick="copyEmail('deposit-text')">📋 Copy Email Text</button>
+
+  <div id="deposit-text">
+  <div class="email-shell">
+    <div class="email-pre">Subject: ✅ Deposit Confirmed — Your Account Has Been Credited!</div>
+    <div class="email-header">
+      <div class="email-logo"><div class="elo-ico">V</div><div class="elo-txt">Vital<span>Trade</span>Option</div></div>
+      <div class="email-tag">Professional Trading & Investment Platform</div>
+    </div>
+    <div class="email-body">
+      <div class="hero-box gold">
+        <div class="hero-icon">✅</div>
+        <h2>Deposit Confirmed!</h2>
+        <p>Your funds are active and earning returns</p>
+      </div>
+      <div class="amt-box" style="border-color:#fde68a;background:#fefce8;">
+        <div class="amt-label">Amount Deposited</div>
+        <div class="amt-val gold">$[DEPOSIT AMOUNT]</div>
+      </div>
+      <div class="body-text">
+        <p>Dear <strong>[CLIENT NAME]</strong>,</p><br/>
+        <p>Great news! Your deposit of <strong>$[DEPOSIT AMOUNT]</strong> has been confirmed and credited to your VitalTradeOption account. Your <strong>[PLAN NAME]</strong> is now active and earning returns.</p>
+      </div><br/>
+      <div class="detail-box">
+        <h4>Transaction Details</h4>
+        <div class="det-row"><span>Amount Deposited</span><span style="font-weight:800;">$[DEPOSIT AMOUNT]</span></div>
+        <div class="det-row"><span>Plan Activated</span><span>[PLAN NAME]</span></div>
+        <div class="det-row"><span>Daily ROI</span><span style="color:#059669;font-weight:700;">[ROI]% per day</span></div>
+        <div class="det-row"><span>Est. Daily Earnings</span><span style="color:#059669;">+$[DAILY EARNINGS]</span></div>
+        <div class="det-row"><span>Payment Method</span><span>[CRYPTO METHOD]</span></div>
+        <div class="det-row"><span>Date</span><span>[DATE]</span></div>
+        <div class="det-row"><span>Status</span><span style="color:#059669;">✅ Confirmed & Active</span></div>
+      </div>
+      <div class="amt-box" style="border-color:#e9d5ff;background:#faf5ff;">
+        <div class="amt-label">Projected Monthly Earnings</div>
+        <div class="amt-val blue">$[MONTHLY EARNINGS]</div>
+        <div style="font-size:.78rem;color:#7c3aed;margin-top:6px;">Based on [ROI]% daily ROI</div>
+      </div>
+      <a class="cta-btn" href="https://vitaltradeoption.onrender.com/client">📊 View My Dashboard →</a>
+      <div class="body-text">
+        <p>Your profits are automatically credited to your account balance every 24 hours. You can withdraw your earnings at any time through the Withdraw section of your dashboard.</p><br/>
+        <p>To your financial growth,<br/><strong>The VitalTradeOption Team</strong></p>
+      </div>
+    </div>
+    <div class="email-footer">
+      <p>© 2025 VitalTradeOption Ltd · All Rights Reserved<br/>
+      <a href="#">Privacy Policy</a> · <a href="#">Terms of Service</a> · <a href="#">Support</a></p>
+    </div>
+  </div>
+  </div>
+</div>
+
+<script>
+function show(id, btn){
+  document.querySelectorAll('.template-wrap').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tmpl-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+function copyEmail(id){
+  const el=document.getElementById(id);
+  // Extract text content for copying
+  const text=el.innerText||el.textContent;
+  navigator.clipboard.writeText(text).then(()=>{
+    const btns=document.querySelectorAll('.copy-btn');
+    btns.forEach(b=>{if(b.textContent.includes('Copy')){b.textContent='✅ Copied!';setTimeout(()=>b.textContent='📋 Copy Email Text',2000);}});
+  }).catch(()=>{
+    // Fallback: select all text in the element
+    const range=document.createRange();
+    range.selectNodeContents(el);
+    const sel=window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+    alert('Press Ctrl+C (or Cmd+C on Mac) to copy the selected email.');
+  });
+}
+</script>
+</body>
+</html>
