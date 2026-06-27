@@ -253,6 +253,7 @@ tr:hover td{background:rgba(255,255,255,.015);}
     <div class="topbar-right">
       <div class="live"><div class="ldot"></div>Live</div>
       <a href="https://wa.me/12158924891" target="_blank" style="display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:7px;background:rgba(37,211,102,.1);border:1px solid rgba(37,211,102,.3);color:#25D366;font-size:.76rem;font-weight:700;text-decoration:none;">💬 WhatsApp</a>
+      <button class="tbbtn" onclick="testEmail()" title="Test email delivery">📧 Test Email</button>
       <button class="tbbtn" onclick="refreshAll()">🔄 Refresh</button>
       <button class="tbbtn bsm gold" style="border:none;padding:7px 14px;" onclick="openM('addUser')">+ Add Client</button>
     </div>
@@ -281,7 +282,10 @@ tr:hover td{background:rgba(255,255,255,.015);}
 
     <!-- REGISTRATIONS -->
     <div class="page" id="page-registrations">
-      <div style="background:rgba(240,180,41,.06);border:1px solid rgba(240,180,41,.18);border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:.8rem;color:var(--text);">📝 Clients who register on the broker site appear here for your review. <strong style="color:var(--gold)">Approve</strong> to activate their account or <strong style="color:var(--red)">Reject</strong> to decline.</div>
+      <div style="background:rgba(240,180,41,.06);border:1px solid rgba(240,180,41,.18);border-radius:8px;padding:12px 16px;margin-bottom:12px;font-size:.8rem;color:var(--text);line-height:1.7;">
+        📝 Clients who register appear here. <strong style="color:var(--gold)">⏳ Email Unverified</strong> = waiting for client to click the link &nbsp;|&nbsp; <strong style="color:var(--gold)">📋 Pending Approval</strong> = email verified, needs your approval<br/>
+        <strong style="color:var(--blue)">🔗 Copy Verify Link</strong> = copy the verification URL to send via WhatsApp if email fails &nbsp;|&nbsp; <strong>📧 Resend Email</strong> = resend verification email
+      </div>
       <div class="card"><div class="card-head"><div class="card-title">Pending Registrations</div><div id="regCount" style="font-size:.78rem;color:var(--muted)"></div></div>
         <div class="scrollable"><table><thead><tr><th>Client</th><th>Country</th><th>Phone</th><th>KYC</th><th>Registered</th><th>Status</th><th>Actions</th></tr></thead><tbody id="regTbody"></tbody></table></div>
       </div>
@@ -707,7 +711,7 @@ function renderRegistrations(users){
     <td>${u.country||'—'}</td>
     <td>${u.phone||'—'}</td>
     <td style="color:var(--muted);font-size:.72rem">${u.joined||'—'}</td>
-    <td><span class="badge pending">Pending</span></td>
+    <td><span class="badge ${u.status==='pending_verification'?'open':'pending'}">${u.status==='pending_verification'?'⏳ Email Unverified':'📋 Pending Approval'}</span></td>
     <td><div class="action-row">
       <button class="bsm green" onclick="approveUser(${u.id})">✅ Approve</button>
       <button class="bsm red"   onclick="rejectUser(${u.id})">❌ Reject</button>
@@ -1127,6 +1131,17 @@ async function confirmRejectKYC(){
 }
 
 
+async function resendVerifyEmail(id){
+  try{
+    const u=allUsers.find(x=>x.id===id);
+    const d=await aFetch('GET',`/api/admin/verify-link/${id}`);
+    if(!d.link){showToast('ℹ️ Email already verified.');return;}
+    // Try sending email via server
+    const r=await aFetch('POST',`/api/admin/resend-verify/${id}`,{});
+    showToast('✅ Verification email resent to '+d.email+'!');
+  }catch(e){showToast('⚠️ '+(e.error||'Could not resend'));}
+}
+
 async function getAndCopyLink(id, email){
   try{
     const d=await aFetch('GET',`/api/admin/verify-link/${id}`);
@@ -1143,6 +1158,15 @@ async function getAndCopyLink(id, email){
       window.open('https://wa.me/?text='+waMsg,'_blank');
     }
   }catch(e){showToast('⚠️ '+(e.error||'Error getting link'));}
+}
+
+async function testEmail(){
+  const dest=prompt('Send test email to (leave blank for broker email):');
+  if(dest===null)return;
+  try{
+    const d=await aFetch('POST','/api/admin/test-email',{to:dest||''});
+    showToast(d.ok?'✅ Test email sent! Check inbox.':'❌ Email failed: '+d.message);
+  }catch(e){showToast('❌ '+(e.error||'Email test failed — check GMAIL_APP_PASSWORD on Render'));}
 }
 
 function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.style.display='block';setTimeout(()=>t.style.display='none',3500);}
