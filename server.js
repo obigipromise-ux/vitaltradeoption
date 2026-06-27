@@ -165,11 +165,21 @@ async function initDB() {
 let mailer = null;
 
 function getMailer() {
-  if (!GMAIL_PASS) return null;
+  if (!GMAIL_PASS) {
+    console.log('[EMAIL] ⚠️  GMAIL_APP_PASSWORD not set — emails will not send');
+    return null;
+  }
   if (!mailer) {
+    // Try explicit SMTP settings for better Gmail compatibility
     mailer = nodemailer.createTransport({
-      service: 'gmail',
-      auth: { user: GMAIL_USER, pass: GMAIL_PASS },
+      host: 'smtp.gmail.com',
+      port: 587,
+      secure: false,
+      auth: {
+        user: GMAIL_USER,
+        pass: GMAIL_PASS.replace(/\s/g,''), // strip spaces from App Password
+      },
+      tls: { rejectUnauthorized: false },
     });
   }
   return mailer;
@@ -177,26 +187,37 @@ function getMailer() {
 
 async function sendEmail(to, toName, subject, html) {
   const m = getMailer();
-  if (!m) {
-    console.log(`[EMAIL] Not configured — would send to: ${to} | ${subject}`);
-    return false;
-  }
+  if (!m) return false;
+  const msg = {
+    from:    `"${BROKER_NAME}" <${GMAIL_USER}>`,
+    to:      `"${toName}" <${to}>`,
+    subject,
+    html,
+  };
   try {
-    await m.sendMail({
-      from:    `"${BROKER_NAME}" <${GMAIL_USER}>`,
-      to:      `"${toName}" <${to}>`,
-      subject,
-      html,
-    });
-    console.log(`[EMAIL] ✅ Sent to ${to} — ${subject}`);
+    const info = await m.sendMail(msg);
+    console.log(`[EMAIL] ✅ Sent to ${to} | MessageId: ${info.messageId}`);
     return true;
   } catch(e) {
-    console.error(`[EMAIL] ❌ Failed: ${e.message}`);
-    // Re-init mailer on auth error
-    mailer = null;
+    console.error(`[EMAIL] ❌ Error to ${to}: ${e.message}`);
+    mailer = null; // reset so it retries next time
     return false;
   }
 }
+
+// Test email endpoint (admin only)
+app.post('/api/admin/test-email', needA, async (req,res) => {
+  const {to} = req.body;
+  const dest = to || GMAIL_USER;
+  const ok = await sendEmail(dest, 'Admin', `Test email from ${BROKER_NAME}`,
+    emailShell(`<h3 style="color:#059669">✅ Email system is working!</h3>
+    <p class="bt">This is a test email from <strong>${BROKER_NAME}</strong>.<br/>
+    If you received this, email delivery is configured correctly.</p>
+    <div class="infobox"><div class="row"><span>SMTP Host</span><span>smtp.gmail.com:587</span></div>
+    <div class="row"><span>From Account</span><span>${GMAIL_USER}</span></div>
+    <div class="row"><span>Status</span><span style="color:#059669">✅ Working</span></div></div>`));
+  res.json({ ok, message: ok ? `Test email sent to ${dest}` : 'Email failed — check GMAIL_APP_PASSWORD on Render' });
+});
 
 // ── Email HTML builder ────────────────────────────────────────
 const emailShell = content => `<!DOCTYPE html><html><head><meta charset="UTF-8"/>
@@ -359,16 +380,26 @@ app.post('/api/auth/login', (req,res) => {
   res.json({ok:true, token, user:safe(user)});
 });
 
-// EMAIL VERIFICATION CLICK
+// EMAIL VERIFICATION CLICK — auto-activates account + redirects to main page
 app.get('/verify/:token', (req,res) => {
   const db = loadDB();
   const i  = db.users.findIndex(u=>u.verification_token===req.params.token);
-  if (i<0) return res.send(verifyPage(false,'Invalid or expired verification link.'));
-  db.users[i].status             = 'pending';
+  if (i<0) {
+    // Redirect to main page with error param
+    return res.redirect(BROKER_URL + '?verify_error=1');
+  }
+  const name = db.users[i].name.split(' ')[0];
+  db.users[i].status             = 'active';   // auto-approve on email verify
   db.users[i].verified_email     = true;
   db.users[i].verification_token = null;
+  db.users[i].approved_at        = now();
   saveDB(db);
-  res.send(verifyPage(true, db.users[i].name.split(' ')[0]));
+  // Send welcome email
+  sendEmail(db.users[i].email, db.users[i].name,
+    `Welcome to ${BROKER_NAME} — Your account is active!`,
+    emailApproved(db.users[i].name)).catch(()=>{});
+  // Redirect directly to main page with success param
+  res.redirect(BROKER_URL + '?verified=1&name=' + encodeURIComponent(name));
 });
 
 function verifyPage(success, nameOrMsg) {
@@ -408,6 +439,20 @@ app.post('/api/auth/resend-verify', (req,res) => {
   const link = `${BROKER_URL}/verify/${token}`;
   sendEmail(email, db.users[i].name, `Verify your email — ${BROKER_NAME}`, emailVerify(db.users[i].name,link)).catch(()=>{});
   res.json({ok:true, link, message:'Verification link sent'});
+});
+
+// ADMIN: Resend verification email
+app.post('/api/admin/resend-verify/:id', needA, async (req,res) => {
+  const db  = loadDB();
+  const i   = db.users.findIndex(u=>u.id===parseInt(req.params.id));
+  if (i<0) return res.status(404).json({error:'Not found'});
+  const token = crypto.randomBytes(32).toString('hex');
+  db.users[i].verification_token = token;
+  saveDB(db);
+  const link = BROKER_URL + '/verify/' + token;
+  const sent = await sendEmail(db.users[i].email, db.users[i].name,
+    `Verify your email — ${BROKER_NAME}`, emailVerify(db.users[i].name, link));
+  res.json({ ok:true, sent, link, email: db.users[i].email });
 });
 
 // GET VERIFY LINK (admin only)
@@ -524,7 +569,7 @@ app.get('/api/admin/stats', needA, (req,res) => {
   res.json({
     totalUsers:  db.users.length,
     active:      db.users.filter(u=>u.status==='active').length,
-    pending:     db.users.filter(u=>u.status==='pending').length,
+    pending:     db.users.filter(u=>u.status==='pending'||u.status==='pending_verification').length,
     pending_verification: db.users.filter(u=>u.status==='pending_verification').length,
     suspended:   db.users.filter(u=>u.status==='suspended').length,
     totalBal:    db.users.reduce((s,u)=>s+(u.balance||0),0),
