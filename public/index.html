@@ -202,6 +202,10 @@ footer h5{font-size:.82rem;font-weight:700;color:#fff;margin-bottom:14px;}
 .pending-screen{text-align:center;padding:20px 0;}
 .pend-ico{font-size:3rem;margin-bottom:14px;}
 
+/* Verified banner */
+.verified-banner{display:none;position:fixed;top:72px;left:50%;transform:translateX(-50%);z-index:150;background:linear-gradient(135deg,#059669,#047857);color:#fff;border-radius:12px;padding:14px 24px 14px 18px;box-shadow:0 8px 32px rgba(5,150,105,.4);font-size:.9rem;font-weight:700;display:flex;align-items:center;gap:12px;max-width:90%;animation:slideDown .4s ease;}
+@keyframes slideDown{from{opacity:0;transform:translateX(-50%) translateY(-20px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+.vb-close{background:rgba(255,255,255,.25);border:none;color:#fff;width:24px;height:24px;border-radius:50%;cursor:pointer;font-size:.9rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .toast{position:fixed;bottom:22px;right:22px;background:#1a2235;border:1px solid var(--green);border-radius:9px;padding:11px 18px;font-size:.83rem;color:var(--green);display:none;z-index:300;animation:fadeUp .3s ease;}
 
 @media(max-width:900px){.hero-visual{display:none;}.footer-grid{grid-template-columns:1fr 1fr;}.nav-links{display:none;}.hamburger{display:flex;}}
@@ -732,7 +736,44 @@ async function doRegister(){
 
 function toggleMenu(){document.querySelector('.nav-links').style.display=document.querySelector('.nav-links').style.display==='flex'?'none':'flex';}
 function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.style.display='block';setTimeout(()=>t.style.display='none',3000);}
+
+// Handle verification redirect params
+(function checkVerifyParams(){
+  const params=new URLSearchParams(window.location.search);
+  const banner=document.getElementById('verifiedBanner');
+  const title=document.getElementById('verifiedTitle');
+  const sub=document.getElementById('verifiedSub');
+  if(params.get('verified')==='1'){
+    const name=params.get('name')||'';
+    if(title) title.textContent=`${name?'Welcome, '+name+'! ':''} Email Verified Successfully!`;
+    if(sub)   sub.textContent='Your account is now active. Login below to start trading.';
+    if(banner){banner.style.display='flex';}
+    // Auto-open login modal
+    setTimeout(()=>openModal('login'),600);
+    // Clean URL
+    window.history.replaceState({},'','/');
+  }
+  if(params.get('verify_error')==='1'){
+    if(banner){
+      banner.style.background='linear-gradient(135deg,#dc2626,#b91c1c)';
+      banner.style.display='flex';
+      if(title) title.textContent='Invalid or Expired Verification Link';
+      if(sub)   sub.textContent='Please register again or contact support via WhatsApp.';
+      window.history.replaceState({},'','/');
+    }
+  }
+})();
 </script>
+
+<!-- Email Verified Banner -->
+<div class="verified-banner" id="verifiedBanner" style="display:none;">
+  <span style="font-size:1.5rem;">✅</span>
+  <div>
+    <div id="verifiedTitle">Email Verified Successfully!</div>
+    <div style="font-size:.78rem;opacity:.9;font-weight:400;margin-top:2px;" id="verifiedSub">Your account is now active. You can login below.</div>
+  </div>
+  <button class="vb-close" onclick="document.getElementById('verifiedBanner').style.display='none'">×</button>
+</div>
 
 <!-- WhatsApp Floating Button -->
 <a href="https://wa.me/12158924891?text=Hello%2C%20I%20need%20support%20with%20my%20VitalTradeOption%20account" target="_blank" id="waBtn" title="Chat with us on WhatsApp"
