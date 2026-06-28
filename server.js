@@ -165,20 +165,16 @@ async function initDB() {
 let mailer = null;
 
 function getMailer() {
-  if (!GMAIL_PASS) {
-    console.log('[EMAIL] ⚠️  GMAIL_APP_PASSWORD not set — emails will not send');
-    return null;
-  }
+  if (!GMAIL_PASS) return null;
   if (!mailer) {
-    // Try explicit SMTP settings for better Gmail compatibility
     mailer = nodemailer.createTransport({
       host: 'smtp.gmail.com',
       port: 587,
       secure: false,
-      auth: {
-        user: GMAIL_USER,
-        pass: GMAIL_PASS.replace(/\s/g,''), // strip spaces from App Password
-      },
+      auth: { user: GMAIL_USER, pass: GMAIL_PASS.replace(/\s/g,'') },
+      connectionTimeout: 8000,
+      greetingTimeout:   8000,
+      socketTimeout:     8000,
       tls: { rejectUnauthorized: false },
     });
   }
@@ -187,20 +183,17 @@ function getMailer() {
 
 async function sendEmail(to, toName, subject, html) {
   const m = getMailer();
-  if (!m) return false;
-  const msg = {
-    from:    `"${BROKER_NAME}" <${GMAIL_USER}>`,
-    to:      `"${toName}" <${to}>`,
-    subject,
-    html,
-  };
+  if (!m) { console.log(`[EMAIL] Skipped (no password): ${subject}`); return false; }
+  const msg = { from:`"${BROKER_NAME}" <${GMAIL_USER}>`, to:`"${toName}" <${to}>`, subject, html };
+  // 10 second hard timeout so email never blocks the server
+  const timeout = new Promise((_,rej) => setTimeout(()=>rej(new Error('timeout')), 10000));
   try {
-    const info = await m.sendMail(msg);
-    console.log(`[EMAIL] ✅ Sent to ${to} | MessageId: ${info.messageId}`);
+    const info = await Promise.race([m.sendMail(msg), timeout]);
+    console.log(`[EMAIL] ✅ Sent to ${to}`);
     return true;
   } catch(e) {
-    console.error(`[EMAIL] ❌ Error to ${to}: ${e.message}`);
-    mailer = null; // reset so it retries next time
+    console.error(`[EMAIL] ❌ ${e.message} → to:${to}`);
+    mailer = null;
     return false;
   }
 }
@@ -358,13 +351,21 @@ app.post('/api/auth/register', (req,res) => {
     chart_data:[0,0,0,0,0,0,0,0,0,0,0,0,0,0], created_at:now()
   };
   db.users.push(user);
-  saveDB(db);
+  saveDB(db);  // ← saved to GitHub BEFORE attempting email
 
   const verifyLink = `${BROKER_URL}/verify/${token}`;
-  sendEmail(em, name.trim(), `Verify your email — ${BROKER_NAME}`, emailVerify(name.trim(),verifyLink)).catch(()=>{});
 
-  res.json({ ok:true, verify_link:verifyLink,
-    message:`Account created! A verification email has been sent to ${em}. Please click the link to verify your account.` });
+  // Send email in background — non-blocking, server responds immediately
+  setImmediate(() => {
+    sendEmail(em, name.trim(), `Verify your email — ${BROKER_NAME}`, emailVerify(name.trim(), verifyLink))
+      .catch(() => {});
+  });
+
+  res.json({
+    ok: true,
+    verify_link: verifyLink,
+    message: `Account created! A verification email has been sent to ${em}. Click the link to verify your account.`
+  });
 });
 
 // CLIENT LOGIN
