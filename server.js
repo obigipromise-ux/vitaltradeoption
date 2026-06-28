@@ -205,19 +205,6 @@ async function sendEmail(to, toName, subject, html) {
   }
 }
 
-// Test email endpoint (admin only)
-app.post('/api/admin/test-email', needA, async (req,res) => {
-  const {to} = req.body;
-  const dest = to || GMAIL_USER;
-  const ok = await sendEmail(dest, 'Admin', `Test email from ${BROKER_NAME}`,
-    emailShell(`<h3 style="color:#059669">✅ Email system is working!</h3>
-    <p class="bt">This is a test email from <strong>${BROKER_NAME}</strong>.<br/>
-    If you received this, email delivery is configured correctly.</p>
-    <div class="infobox"><div class="row"><span>SMTP Host</span><span>smtp.gmail.com:587</span></div>
-    <div class="row"><span>From Account</span><span>${GMAIL_USER}</span></div>
-    <div class="row"><span>Status</span><span style="color:#059669">✅ Working</span></div></div>`));
-  res.json({ ok, message: ok ? `Test email sent to ${dest}` : 'Email failed — check GMAIL_APP_PASSWORD on Render' });
-});
 
 // ── Email HTML builder ────────────────────────────────────────
 const emailShell = content => `<!DOCTYPE html><html><head><meta charset="UTF-8"/>
@@ -315,6 +302,22 @@ const readTok  = req => { try { const t=(req.headers.authorization||'').replace(
 const needC    = (req,res,next) => { const p=readTok(req); if(!p||p.role!=='client') return res.status(401).json({error:'Unauthorized'}); req.user=p; next(); };
 const needA    = (req,res,next) => { const p=readTok(req); if(!p||p.role!=='admin')  return res.status(401).json({error:'Unauthorized'}); next(); };
 const safe     = u  => { const {password,...s}=u; return s; };
+
+// ══════════════════════════════════════════════════════════════
+//  TEST EMAIL ENDPOINT (placed here so needA is already defined)
+// ══════════════════════════════════════════════════════════════
+app.post('/api/admin/test-email', needA, async (req,res) => {
+  const {to} = req.body;
+  const dest = to || GMAIL_USER;
+  const html = `<div style="font-family:sans-serif;padding:20px;max-width:500px;margin:0 auto;background:#f9fafb;border-radius:12px;">
+    <h2 style="color:#059669;">✅ Email is working!</h2>
+    <p>This test email was sent by <strong>${BROKER_NAME}</strong>.</p>
+    <p>SMTP: smtp.gmail.com:587 | From: ${GMAIL_USER}</p>
+    <p style="color:#6b7280;font-size:.85rem;">If you see this, email delivery is correctly configured.</p>
+  </div>`;
+  const ok = await sendEmail(dest, 'Admin', `Test — ${BROKER_NAME} email system`, html);
+  res.json({ ok, message: ok ? 'Test email sent to ' + dest : 'Email failed — check GMAIL_APP_PASSWORD in Render env vars' });
+});
 
 // ══════════════════════════════════════════════════════════════
 //  AUTH ROUTES
