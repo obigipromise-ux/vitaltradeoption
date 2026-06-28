@@ -282,9 +282,12 @@ tr:hover td{background:rgba(255,255,255,.015);}
 
     <!-- REGISTRATIONS -->
     <div class="page" id="page-registrations">
-      <div style="background:rgba(240,180,41,.06);border:1px solid rgba(240,180,41,.18);border-radius:8px;padding:12px 16px;margin-bottom:12px;font-size:.8rem;color:var(--text);line-height:1.7;">
-        📝 Clients who register appear here. <strong style="color:var(--gold)">⏳ Email Unverified</strong> = waiting for client to click the link &nbsp;|&nbsp; <strong style="color:var(--gold)">📋 Pending Approval</strong> = email verified, needs your approval<br/>
-        <strong style="color:var(--blue)">🔗 Copy Verify Link</strong> = copy the verification URL to send via WhatsApp if email fails &nbsp;|&nbsp; <strong>📧 Resend Email</strong> = resend verification email
+      <div style="background:rgba(79,142,247,.07);border:1px solid rgba(79,142,247,.25);border-radius:10px;padding:14px 18px;margin-bottom:14px;font-size:.82rem;color:var(--text);line-height:1.8;">
+        <strong style="color:var(--blue);">📋 How to approve new clients:</strong><br/>
+        1. Client registers → appears below with status <strong style="color:var(--blue)">📧 Awaiting Email Verify</strong><br/>
+        2. Click <strong style="color:#25D366">📲 Send Link via WhatsApp</strong> → WhatsApp opens with message ready → send to client<br/>
+        3. Client clicks the link → account auto-activates → they can login immediately<br/>
+        4. Or click <strong style="color:var(--green)">✅ Approve Directly</strong> to skip email verification entirely
       </div>
       <div class="card"><div class="card-head"><div class="card-title">Pending Registrations</div><div id="regCount" style="font-size:.78rem;color:var(--muted)"></div></div>
         <div class="scrollable"><table><thead><tr><th>Client</th><th>Country</th><th>Phone</th><th>KYC</th><th>Registered</th><th>Status</th><th>Actions</th></tr></thead><tbody id="regTbody"></tbody></table></div>
@@ -711,7 +714,7 @@ function renderRegistrations(users){
     <td>${u.country||'—'}</td>
     <td>${u.phone||'—'}</td>
     <td style="color:var(--muted);font-size:.72rem">${u.joined||'—'}</td>
-    <td><span class="badge ${u.status==='pending_verification'?'open':'pending'}">${u.status==='pending_verification'?'⏳ Email Unverified':'📋 Pending Approval'}</span></td>
+    <td><span style="display:inline-block;padding:3px 9px;border-radius:20px;font-size:.67rem;font-weight:700;background:${u.status==='pending_verification'?'rgba(79,142,247,.13)':u.status==='pending'?'rgba(240,180,41,.13)':'rgba(255,69,96,.13)'};color:${u.status==='pending_verification'?'var(--blue)':u.status==='pending'?'var(--gold)':'var(--red)'}">${u.status==='pending_verification'?'📧 Awaiting Email Verify':u.status==='pending'?'⏳ Awaiting Approval':'❌ Rejected'}</span></td>
     <td><div class="action-row">
       <button class="bsm green" onclick="approveUser(${u.id})">✅ Approve</button>
       <button class="bsm red"   onclick="rejectUser(${u.id})">❌ Reject</button>
@@ -1131,6 +1134,20 @@ async function confirmRejectKYC(){
 }
 
 
+async function copyAndWhatsApp(id, name){
+  try{
+    const d=await aFetch('GET',`/api/admin/verify-link/${id}`);
+    if(!d.link){showToast('ℹ️ Email already verified — approve the account directly.');return;}
+    // Copy link
+    await navigator.clipboard.writeText(d.link).catch(()=>{});
+    // Open WhatsApp with pre-filled message
+    const msg=encodeURIComponent(
+      `Hello ${name}!\n\nWelcome to VitalTradeOption! Please click the link below to verify your email and activate your account:\n\n${d.link}\n\nAfter clicking, you will be redirected to our platform and can login immediately.\n\nThank you,\nVitalTradeOption Team`
+    );
+    window.open(`https://wa.me/?text=${msg}`,'_blank');
+    showToast('✅ Link copied + WhatsApp opened! Paste and send to client.');
+  }catch(e){showToast('⚠️ '+(e.error||'Error'));}
+}
 async function resendVerifyEmail(id){
   try{
     const u=allUsers.find(x=>x.id===id);
