@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
 <title>Admin Panel — VitalTradeOption</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -180,22 +180,32 @@ tr:hover td{background:rgba(255,255,255,.015);}
 .toast{position:fixed;bottom:40px;right:20px;background:var(--card2);border:1px solid var(--green);border-radius:9px;padding:11px 16px;font-size:.82rem;color:var(--green);display:none;z-index:500;animation:fadeUp .3s ease;}
 @media(max-width:900px){
   :root{--sb:0px;}
-  .sidebar{display:none;}
-  .sess-bar{left:0;bottom:52px;}
-  .main{padding-bottom:52px;}
+  .sidebar{display:none;width:220px;position:fixed;z-index:200;}
+  .sidebar.mob-open{display:flex;}
+  .main{margin-left:0 !important;padding-bottom:56px;}
+  .sess-bar{left:0;bottom:56px;font-size:.68rem;}
+  .content{padding:14px 12px;}
+  .topbar{padding:0 12px;height:52px;}
+  .topbar-title{font-size:.85rem;}
+  th{font-size:.62rem;padding:7px 8px;}
+  td{font-size:.78rem;padding:9px 8px;}
+  .bsm{font-size:.7rem;padding:5px 9px;}
+  .card-title{font-size:.82rem;}
+  .sv{font-size:1.4rem;}
+  .slbl{font-size:.65rem;}
 }
 
-.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:49;}
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:199;backdrop-filter:blur(2px);}
 .sidebar-overlay.show{display:block;}
 @media(max-width:900px){
   #sidebarToggle{display:flex !important;}
-  .sidebar.mob-open{display:flex;z-index:55;}
 }
 /* MOBILE BOTTOM NAV */
 .mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:60;background:#060910;border-top:1px solid var(--border);height:52px;overflow-x:auto;white-space:nowrap;-webkit-overflow-scrolling:touch;}
 .mob-nav::-webkit-scrollbar{display:none;}
-.mob-btn{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:4px 14px;cursor:pointer;border:none;background:none;color:var(--muted);font-size:.58rem;min-width:64px;height:52px;transition:.2s;border-top:2px solid transparent;white-space:nowrap;}
-.mob-btn .mbi{font-size:1.1rem;}
+.mob-btn{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:4px 10px;cursor:pointer;border:none;background:none;color:var(--muted);font-size:.6rem;min-width:58px;height:56px;transition:.2s;border-top:2px solid transparent;white-space:nowrap;}
+.mob-btn .mbi{font-size:1.3rem;}
+.mob-btn.active{color:var(--gold);border-top-color:var(--gold);}
 .mob-btn.active{color:var(--gold);border-top-color:var(--gold);}
 @media(max-width:900px){.mob-nav{display:block;}}
 </style>
@@ -564,6 +574,21 @@ tr:hover td{background:rgba(255,255,255,.015);}
   </div>
 </div>
 
+
+<!-- KYC DOCUMENTS VIEWER MODAL -->
+<div class="mover" id="kycViewModal">
+  <div class="modal" style="max-width:560px;max-height:90vh;overflow-y:auto;">
+    <button class="mcl" onclick="closeM('kycView')">×</button>
+    <h2>🪪 KYC Documents</h2>
+    <p class="msub" id="kycViewSub">Client identity documents</p>
+    <div id="kycViewContent" style="display:flex;flex-direction:column;gap:14px;"></div>
+    <div class="mbtns" style="margin-top:16px;">
+      <button class="mbtn out" onclick="closeM('kycView')">Close</button>
+      <button class="mbtn gold" id="kycApproveBtn" onclick="kycApprove()">✅ Approve KYC</button>
+      <button class="mbtn" style="background:rgba(255,69,96,.15);border:1px solid rgba(255,69,96,.3);color:var(--red);" onclick="kycReject()">❌ Reject</button>
+    </div>
+  </div>
+</div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -1021,9 +1046,9 @@ function selectConvoById(uid,name,email){
 function toggleSidebar(){
   const sb=document.querySelector('.sidebar');
   const ov=document.getElementById('sidebarOverlay');
-  sb.classList.toggle('mob-open');
-  if(sb.classList.contains('mob-open')){ov.classList.add('show');}
-  else{ov.classList.remove('show');}
+  const isOpen=sb.classList.contains('mob-open');
+  if(isOpen){sb.classList.remove('mob-open');ov.classList.remove('show');}
+  else{sb.classList.add('mob-open');ov.classList.add('show');}
 }
 function closeSidebar(){
   document.querySelector('.sidebar').classList.remove('mob-open');
@@ -1184,6 +1209,58 @@ async function testEmail(){
     const d=await aFetch('POST','/api/admin/test-email',{to:dest||''});
     showToast(d.ok?'✅ Test email sent! Check inbox.':'❌ Email failed: '+d.message);
   }catch(e){showToast('❌ '+(e.error||'Email test failed — check GMAIL_APP_PASSWORD on Render'));}
+}
+
+
+// ── KYC Document Viewer ───────────────────────────────────────────
+let kycViewUserId = null;
+async function viewKycDocs(id){
+  kycViewUserId = id;
+  const u = allUsers.find(x=>x.id===id);
+  try {
+    const d = await aFetch('GET',`/api/admin/kyc-docs/${id}`);
+    document.getElementById('kycViewSub').textContent = `${d.name} (${d.email}) — Status: ${d.kyc_status||'Not submitted'}`;
+    const content = document.getElementById('kycViewContent');
+    content.innerHTML = '';
+    // Info row
+    content.innerHTML += `<div class="card-body" style="background:var(--card2);border-radius:8px;padding:12px;font-size:.8rem;">
+      <div style="display:flex;flex-wrap:wrap;gap:12px;">
+        <div><strong>ID Type:</strong> ${d.kyc_id_type||'—'}</div>
+        <div><strong>ID Number:</strong> ${d.kyc_id_number||'—'}</div>
+        <div><strong>Submitted:</strong> ${d.kyc_submitted_at?new Date(d.kyc_submitted_at).toLocaleDateString():'—'}</div>
+      </div></div>`;
+    if (!d.kyc_docs||d.kyc_docs.length===0) {
+      content.innerHTML += '<div style="text-align:center;padding:20px;color:var(--muted);">No documents uploaded yet.</div>';
+    } else {
+      d.kyc_docs.forEach(doc=>{
+        const label = doc.field==='kyc_id'?'🪪 Government ID':doc.field==='kyc_addr'?'🏠 Proof of Address':'📸 Selfie with ID';
+        if (doc.data && doc.mime && doc.mime.startsWith('image/')) {
+          content.innerHTML += `<div style="background:var(--card2);border-radius:10px;overflow:hidden;"><div style="padding:10px 13px;font-size:.78rem;font-weight:700;color:var(--gold);">${label}: ${doc.name}</div><img src="${doc.data}" style="width:100%;max-height:300px;object-fit:contain;background:#000;" onclick="this.style.maxHeight=this.style.maxHeight==='none'?'300px':'none';" title="Click to expand"/></div>`;
+        } else if (doc.data && doc.mime==='application/pdf') {
+          content.innerHTML += `<div style="background:var(--card2);border-radius:10px;padding:14px;"><div style="font-size:.78rem;font-weight:700;color:var(--gold);margin-bottom:8px;">${label}</div><a href="${doc.data}" download="${doc.name}" class="bsm gold">📄 Download PDF: ${doc.name}</a></div>`;
+        } else {
+          content.innerHTML += `<div style="background:var(--card2);border-radius:8px;padding:12px;font-size:.8rem;"><span style="color:var(--gold)">${label}:</span> ${doc.name} (${doc.size?Math.round(doc.size/1024)+'KB':'?'}) — <em style="color:var(--muted)">Preview unavailable</em></div>`;
+        }
+      });
+    }
+    openM('kycView');
+  } catch(e) { showToast('⚠️ Could not load KYC docs: '+(e.error||e.message||'Error')); }
+}
+async function kycApprove(){
+  if(!kycViewUserId)return;
+  try {
+    await aFetch('PUT',`/api/admin/kyc/${kycViewUserId}`,{status:'verified'});
+    await aFetch('POST',`/api/admin/users/${kycViewUserId}/approve`);
+    showToast('✅ KYC approved & account activated!'); closeM('kycView'); await refreshAll();
+  } catch(e){showToast('⚠️ '+(e.error||'Error'));}
+}
+async function kycReject(){
+  const reason=prompt('Rejection reason (will be shown to client):');
+  if(!reason)return;
+  try {
+    await aFetch('PUT',`/api/admin/kyc/${kycViewUserId}`,{status:'rejected',reason});
+    showToast('KYC rejected.'); closeM('kycView'); await refreshAll();
+  } catch(e){showToast('⚠️ '+(e.error||'Error'));}
 }
 
 function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.style.display='block';setTimeout(()=>t.style.display='none',3500);}
