@@ -343,7 +343,7 @@ app.post('/api/auth/register', (req,res) => {
     trades_wins:0, trades_losses:0, trades_volume:0,
     refs:0, ref_earned:0, ref_pending:0,
     ref_code: name.replace(/\s/g,'').toUpperCase().slice(0,3)+Math.floor(Math.random()*9000+1000),
-    status:'pending_verification', verification_token:token, verified_email:false,
+    status:'pending_kyc', verification_token:null, verified_email:true, kyc_docs:[],
     kyc_status:'not_submitted', kyc_docs:[],
     upgrade_message:null, withdrawal_ready:false, withdrawal_message:null,
     country:country||'', phone:phone||'',
@@ -351,20 +351,23 @@ app.post('/api/auth/register', (req,res) => {
     chart_data:[0,0,0,0,0,0,0,0,0,0,0,0,0,0], created_at:now()
   };
   db.users.push(user);
-  saveDB(db);  // ← saved to GitHub BEFORE attempting email
+  saveDB(db);
 
-  const verifyLink = `${BROKER_URL}/verify/${token}`;
+  // Auto-login: return token so client goes straight to KYC dashboard
+  const loginToken = signTok({ id: user.id, email: user.email, role: 'client' });
 
-  // Send email in background — non-blocking, server responds immediately
+  // Send welcome email in background (non-blocking)
+  const verifyLink = `${BROKER_URL}/client?tab=kyc`;
   setImmediate(() => {
-    sendEmail(em, name.trim(), `Verify your email — ${BROKER_NAME}`, emailVerify(name.trim(), verifyLink))
-      .catch(() => {});
+    sendEmail(em, name.trim(), `Welcome to ${BROKER_NAME} — Complete your KYC`,
+      emailVerify(name.trim(), verifyLink)).catch(() => {});
   });
 
   res.json({
     ok: true,
-    verify_link: verifyLink,
-    message: `Account created! A verification email has been sent to ${em}. Click the link to verify your account.`
+    token: loginToken,
+    user: safe(user),
+    message: 'Account created! Please complete your KYC verification to start trading.'
   });
 });
 
@@ -375,7 +378,7 @@ app.post('/api/auth/login', (req,res) => {
   const db   = loadDB();
   const user = db.users.find(u=>u.email===email.toLowerCase().trim());
   if (!user) return res.status(401).json({error:'Invalid email or password'});
-  if (user.status==='pending_verification') return res.status(403).json({error:'verify_email', message:'Please verify your email first. Check your inbox for the verification link.'});
+  // pending_kyc users CAN login — they just need to complete KYC on dashboard
   if (user.status==='pending')    return res.status(403).json({error:'pending',   message:'Your account is pending admin approval. You will be notified once activated.'});
   if (user.status==='suspended')  return res.status(403).json({error:'suspended', message:'Your account has been suspended. Contact support.'});
   if (user.status==='rejected')   return res.status(403).json({error:'rejected',  message:'Your registration was not approved. Contact support.'});
@@ -527,11 +530,26 @@ app.post('/api/client/kyc',
   upload.fields([{name:'kyc_id',maxCount:1},{name:'kyc_addr',maxCount:1},{name:'kyc_selfie',maxCount:1}]),
   (req,res)=>{
     const db=loadDB(); const i=db.users.findIndex(u=>u.id===req.user.id); if(i<0) return res.status(404).json({error:'Not found'});
-    db.users[i].kyc_status     = 'pending';
-    db.users[i].kyc_id_type    = req.body.kyc_id_type||'';
-    db.users[i].kyc_id_number  = req.body.kyc_id_number||'';
-    db.users[i].kyc_docs       = Object.values(req.files||{}).flat().map(f=>({name:f.originalname,size:f.size}));
+    const fs2 = require('fs');
+    const fileDocs = [];
+    for (const [field, files] of Object.entries(req.files||{})) {
+      for (const f of files) {
+        try {
+          const buf  = fs2.readFileSync(f.path);
+          const b64  = buf.toString('base64');
+          fileDocs.push({ field, name:f.originalname, mime:f.mimetype, size:f.size, data:'data:'+f.mimetype+';base64,'+b64 });
+          try { fs2.unlinkSync(f.path); } catch(e) {}
+        } catch(e) {
+          fileDocs.push({ field, name:f.originalname, mime:f.mimetype, size:f.size });
+        }
+      }
+    }
+    db.users[i].kyc_status       = 'pending';
+    db.users[i].kyc_id_type      = req.body.kyc_id_type||'';
+    db.users[i].kyc_id_number    = req.body.kyc_id_number||'';
+    db.users[i].kyc_docs         = fileDocs;
     db.users[i].kyc_submitted_at = now();
+    db.users[i].status = 'pending'; // move to pending after KYC submit
     saveDB(db); res.json({ok:true});
   }
 );
@@ -568,12 +586,29 @@ app.post('/api/client/dismiss-withdrawal', needC, (req,res) => {
 // ══════════════════════════════════════════════════════════════
 //  ADMIN ROUTES
 // ══════════════════════════════════════════════════════════════
+
+// View KYC documents (admin)
+app.get('/api/admin/kyc-docs/:id', needA, (req,res) => {
+  const db   = loadDB();
+  const user = db.users.find(u=>u.id===parseInt(req.params.id));
+  if (!user) return res.status(404).json({error:'Not found'});
+  res.json({
+    kyc_status:       user.kyc_status,
+    kyc_id_type:      user.kyc_id_type,
+    kyc_id_number:    user.kyc_id_number,
+    kyc_submitted_at: user.kyc_submitted_at,
+    kyc_docs:         user.kyc_docs||[],
+    name:             user.name,
+    email:            user.email,
+  });
+});
+
 app.get('/api/admin/stats', needA, (req,res) => {
   const db=loadDB();
   res.json({
     totalUsers:  db.users.length,
     active:      db.users.filter(u=>u.status==='active').length,
-    pending:     db.users.filter(u=>u.status==='pending'||u.status==='pending_verification').length,
+    pending:     db.users.filter(u=>['pending','pending_kyc'].includes(u.status)).length,
     pending_verification: db.users.filter(u=>u.status==='pending_verification').length,
     suspended:   db.users.filter(u=>u.status==='suspended').length,
     totalBal:    db.users.reduce((s,u)=>s+(u.balance||0),0),
