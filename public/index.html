@@ -448,20 +448,20 @@ footer h5{font-size:.82rem;font-weight:700;color:#fff;margin-bottom:14px;}
     </div>
     <div>
       <h5>Platform</h5>
-      <ul class="footer-links"><li><a href="#">About Us</a></li><li><a href="#">Our Team</a></li><li><a href="#">Security</a></li><li><a href="#">Careers</a></li></ul>
+      <ul class="footer-links"><li><a href="#" onclick="showInfoModal('about');return false;">About Us</a></li><li><a href="#" onclick="showInfoModal('team');return false;">Our Team</a></li><li><a href="#" onclick="showInfoModal('security');return false;">Security</a></li><li><a href="#" onclick="showInfoModal('careers');return false;">Careers</a></li></ul>
     </div>
     <div>
       <h5>Trading</h5>
-      <ul class="footer-links"><li><a href="#">Forex</a></li><li><a href="#">Cryptocurrency</a></li><li><a href="#">Stocks</a></li><li><a href="#">Commodities</a></li><li><a href="#">Binary Options</a></li></ul>
+      <ul class="footer-links"><li><a href="#" onclick="showInfoModal('forex');return false;">Forex</a></li><li><a href="#" onclick="showInfoModal('crypto');return false;">Cryptocurrency</a></li><li><a href="#" onclick="showInfoModal('stocks');return false;">Stocks</a></li><li><a href="#" onclick="showInfoModal('commodities');return false;">Commodities</a></li><li><a href="#" onclick="showInfoModal('binary');return false;">Binary Options</a></li></ul>
     </div>
     <div>
       <h5>Support</h5>
       <ul class="footer-links">
         <li><a href="https://wa.me/12158924891?text=Hello%2C%20I%20need%20support" target="_blank" style="color:#25D366;font-weight:700;">💬 WhatsApp Support</a></li>
-        <li><a href="#">Help Center</a></li>
-        <li><a href="#">Live Chat</a></li>
-        <li><a href="#">Terms of Service</a></li>
-        <li><a href="#">Privacy Policy</a></li>
+        <li><a href="#" onclick="showInfo('help');return false;">Help Center</a></li>
+        <li><a href="https://wa.me/12158924891?text=Hello+VitalTradeOption+I+need+support" target="_blank">💬 Live Chat (WhatsApp)</a></li>
+        <li><a href="#" onclick="showInfo('terms');return false;">Terms of Service</a></li>
+        <li><a href="#" onclick="showInfo('privacy');return false;">Privacy Policy</a></li>
         <li><a href="/admin" style="color:rgba(255,255,255,.15);font-size:.72rem;">Admin</a></li>
       </ul>
       <div style="margin-top:14px;background:rgba(37,211,102,.08);border:1px solid rgba(37,211,102,.25);border-radius:8px;padding:10px 12px;">
@@ -724,11 +724,15 @@ async function doRegister(){
     const r=await fetch(API+'/api/auth/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:(fname+' '+lname).trim(),email,password:pass,phone:(document.getElementById('rPhoneCode').value+' '+document.getElementById('rPhone').value).trim(),country})});
     const d=await r.json();
     if(!r.ok){err.textContent=d.error||'Registration failed';err.classList.add('show');}
-    else{
-      const regEmail=document.getElementById('rEmail').value;
-      ok.innerHTML='<div style="text-align:center"><div style="font-size:2.4rem;margin-bottom:8px">📧</div><strong style="font-size:.95rem;display:block;margin-bottom:8px;color:#f0b429">Check Your Email!</strong><p style="color:#8492a6;font-size:.82rem;line-height:1.7;margin-bottom:10px">A verification link has been sent to <strong style="color:#e2e8f0">'+regEmail+'</strong>.<br/>Click it to verify your account, then wait for admin approval.</p><div style="background:rgba(240,180,41,.08);border:1px solid rgba(240,180,41,.2);border-radius:8px;padding:10px;font-size:.76rem;color:#f0b429">📧 Verify Email → ⏳ Admin Approves → ✅ Start Trading</div></div>';
+    else if(d.token){
+      // Auto-login: save token and go straight to KYC dashboard
+      sessionStorage.setItem('vto_token', d.token);
+      if(d.user) sessionStorage.setItem('vto_user', JSON.stringify(d.user));
+      window.location.href = '/client?tab=kyc&new=1';
+    } else {
+      ok.innerHTML='<div style="text-align:center"><div style="font-size:2rem;margin-bottom:8px">✅</div><strong>Account Created!</strong><p style="color:#8492a6;font-size:.82rem;margin-top:8px;">Redirecting to your dashboard...</p></div>';
       ok.classList.add('show');
-      ['rFname','rLname','rEmail','rPhone','rPass','rPass2'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+      setTimeout(()=>{ window.location.href='/client?tab=kyc&new=1'; }, 1500);
     }
   }catch(e){err.textContent='Connection error. Please try again.';err.classList.add('show');}
   btn.disabled=false;btn.textContent='📝 Create My Account';
@@ -775,10 +779,104 @@ function showToast(m){const t=document.getElementById('toast');t.textContent=m;t
   <button class="vb-close" onclick="document.getElementById('verifiedBanner').style.display='none'">×</button>
 </div>
 
+
+<!-- INFO MODAL for footer links -->
+<div class="modal-overlay" id="infoModal" style="display:none;align-items:flex-start;padding-top:60px;">
+  <div class="modal-box" style="max-width:520px;max-height:80vh;overflow-y:auto;">
+    <button class="modal-close" onclick="closeInfoModal()">×</button>
+    <h2 id="infoTitle" style="font-size:1.2rem;font-weight:800;margin-bottom:16px;color:var(--gold);"></h2>
+    <div id="infoBody" style="font-size:.88rem;color:var(--muted);line-height:1.8;"></div>
+  </div>
+</div>
+
+<script>
+const INFO_CONTENT = {
+  about: {
+    title: '🏢 About VitalTradeOption',
+    body: `<p><strong style="color:#e2e8f0">VitalTradeOption</strong> is a professional online trading and investment platform founded with one mission: to make global financial markets accessible to every investor worldwide.</p>
+<br/><p>We provide individuals with access to Forex, Cryptocurrency, Stocks, Commodities, and Binary Options — all in one powerful platform trusted by over 24,800 traders across 52 countries.</p>
+<br/><h4 style="color:#f0b429;margin-bottom:8px;">Our Mission</h4>
+<p>To empower investors of all experience levels with professional-grade trading tools, consistent daily returns, and world-class support — so they can grow their wealth confidently.</p>
+<br/><h4 style="color:#f0b429;margin-bottom:8px;">Key Facts</h4>
+<ul style="padding-left:18px;line-height:2;">
+<li>Founded: 2022</li><li>Clients: 24,800+ across 52 countries</li>
+<li>Total Payouts: $186M+</li><li>Payout Success Rate: 98.6%</li>
+<li>Support: 24/7 live chat and WhatsApp</li></ul>`
+  },
+  team: {
+    title: '👥 Our Team',
+    body: `<p>VitalTradeOption is powered by a dedicated team of financial professionals, trading experts, and technology engineers committed to your success.</p>
+<br/><div style="display:grid;gap:16px;">
+<div style="background:rgba(255,255,255,.04);border-radius:10px;padding:14px;"><strong style="color:#f0b429">Chief Executive Officer</strong><br/><p>Former institutional trader with 15+ years in global financial markets. Leads strategy and platform growth.</p></div>
+<div style="background:rgba(255,255,255,.04);border-radius:10px;padding:14px;"><strong style="color:#f0b429">Head of Trading</strong><br/><p>Quantitative analyst specializing in algorithmic trading systems and risk management.</p></div>
+<div style="background:rgba(255,255,255,.04);border-radius:10px;padding:14px;"><strong style="color:#f0b429">Client Success Team</strong><br/><p>24/7 support team across multiple time zones ensuring every client gets the help they need.</p></div>
+<div style="background:rgba(255,255,255,.04);border-radius:10px;padding:14px;"><strong style="color:#f0b429">Compliance & Security</strong><br/><p>Dedicated team ensuring regulatory compliance and protecting client funds and data.</p></div></div>`
+  },
+  security: {
+    title: '🔒 Security & Safety',
+    body: `<p>Your security is our highest priority. VitalTradeOption employs multiple layers of protection to keep your funds and personal data safe.</p>
+<br/><ul style="padding-left:0;list-style:none;display:flex;flex-direction:column;gap:12px;">
+<li>🔐 <strong style="color:#e2e8f0">256-bit SSL Encryption</strong> — All data transmitted is encrypted using bank-grade SSL technology</li>
+<li>🏦 <strong style="color:#e2e8f0">Cold Wallet Storage</strong> — 95% of crypto funds stored in offline cold wallets, inaccessible to hackers</li>
+<li>🔑 <strong style="color:#e2e8f0">Two-Factor Authentication</strong> — Extra layer of login security for all accounts</li>
+<li>👁️ <strong style="color:#e2e8f0">KYC Verification</strong> — Identity verification prevents fraud and protects all clients</li>
+<li>🛡️ <strong style="color:#e2e8f0">Anti-Money Laundering</strong> — Strict AML policies in compliance with international standards</li>
+<li>📋 <strong style="color:#e2e8f0">Regular Audits</strong> — Platform security audited quarterly by independent security firms</li></ul>`
+  },
+  careers: {
+    title: '💼 Careers at VitalTradeOption',
+    body: `<p>Join our growing team of finance and technology professionals. We're always looking for talented individuals who share our passion for making investing accessible to everyone.</p>
+<br/><h4 style="color:#f0b429;margin-bottom:10px;">Current Openings</h4>
+<div style="display:flex;flex-direction:column;gap:12px;">
+<div style="background:rgba(240,180,41,.08);border:1px solid rgba(240,180,41,.2);border-radius:8px;padding:13px;"><strong>Senior Account Manager</strong><br/><span style="font-size:.8rem;color:var(--muted)">Remote · Full-time</span></div>
+<div style="background:rgba(240,180,41,.08);border:1px solid rgba(240,180,41,.2);border-radius:8px;padding:13px;"><strong>Client Support Specialist</strong><br/><span style="font-size:.8rem;color:var(--muted)">Remote · Full-time / Part-time</span></div>
+<div style="background:rgba(240,180,41,.08);border:1px solid rgba(240,180,41,.2);border-radius:8px;padding:13px;"><strong>Digital Marketing Manager</strong><br/><span style="font-size:.8rem;color:var(--muted)">Remote · Full-time</span></div>
+</div>
+<br/><p>To apply, contact us at: <strong style="color:#f0b429">support@vitaltradeoption.com</strong> with your CV and desired position.</p>`
+  },
+  forex: { title: '💱 Forex Trading', body: `<p><strong style="color:#e2e8f0">Foreign Exchange (Forex)</strong> is the world's largest financial market with over $7.5 trillion traded daily. VitalTradeOption gives you access to 50+ currency pairs with competitive spreads.</p><br/><ul style="padding-left:18px;line-height:2.2;"><li>Major pairs: EUR/USD, GBP/USD, USD/JPY</li><li>Minor pairs: EUR/GBP, AUD/USD, NZD/USD</li><li>Exotic pairs: USD/NGN, EUR/ZAR and more</li><li>24/5 trading — Monday to Friday</li><li>Leverage up to 1:500 available</li><li>Real-time pricing with no requotes</li></ul>` },
+  crypto: { title: '₿ Cryptocurrency Trading', body: `<p><strong style="color:#e2e8f0">Cryptocurrency</strong> markets offer 24/7 trading with high volatility and significant profit potential. Trade the world's leading digital assets on VitalTradeOption.</p><br/><ul style="padding-left:18px;line-height:2.2;"><li>Bitcoin (BTC), Ethereum (ETH), Solana (SOL)</li><li>BNB, XRP, USDT, DOGE and 50+ more</li><li>24/7 markets — trade any time</li><li>Instant execution, no slippage</li><li>Both spot and derivatives available</li></ul>` },
+  stocks: { title: '📈 Stock Trading', body: `<p><strong style="color:#e2e8f0">Global Stocks</strong> — invest in the world's most successful companies. Access US, European and Asian equity markets from a single account.</p><br/><ul style="padding-left:18px;line-height:2.2;"><li>US Tech: Apple, Tesla, Amazon, Google</li><li>Financial: JPMorgan, Goldman Sachs</li><li>European & Asian blue chips</li><li>Fractional shares available</li><li>No stamp duty on most markets</li></ul>` },
+  commodities: { title: '🏅 Commodities Trading', body: `<p><strong style="color:#e2e8f0">Commodities</strong> including precious metals, energy, and agricultural products provide portfolio diversification and inflation protection.</p><br/><ul style="padding-left:18px;line-height:2.2;"><li>Precious Metals: Gold (XAU), Silver (XAG)</li><li>Energy: Crude Oil (WTI & Brent), Natural Gas</li><li>Agriculture: Corn, Wheat, Cotton, Coffee</li><li>Trade on price movements without ownership</li></ul>` },
+  binary: { title: '⚡ Binary Options', body: `<p><strong style="color:#e2e8f0">Binary Options</strong> offer a simple, high-yield trading method where you predict whether an asset's price will go UP or DOWN within a set timeframe.</p><br/><ul style="padding-left:18px;line-height:2.2;"><li>Payouts up to 92% per trade</li><li>Timeframes: 1 minute to 24 hours</li><li>All major Forex, Crypto and Indices</li><li>Fixed risk — know your max loss upfront</li><li>Perfect for beginners and experts alike</li></ul>` },
+  help: { title: '❓ Help Center', body: `<h4 style="color:#f0b429;margin-bottom:10px;">Frequently Asked Questions</h4><div style="display:flex;flex-direction:column;gap:12px;"><div style="background:rgba(255,255,255,.04);border-radius:8px;padding:13px;"><strong>How do I make a deposit?</strong><p style="margin-top:6px;font-size:.83rem;">Login → Dashboard → Deposit tab → Select crypto method → Send funds to displayed address → Click Notify Admin.</p></div><div style="background:rgba(255,255,255,.04);border-radius:8px;padding:13px;"><strong>How long do withdrawals take?</strong><p style="margin-top:6px;font-size:.83rem;">Withdrawals are processed within 1–24 hours after submission. Crypto is usually faster.</p></div><div style="background:rgba(255,255,255,.04);border-radius:8px;padding:13px;"><strong>What is KYC verification?</strong><p style="margin-top:6px;font-size:.83rem;">KYC (Know Your Customer) is identity verification required to protect all users. Upload your government ID and proof of address.</p></div><div style="background:rgba(255,255,255,.04);border-radius:8px;padding:13px;"><strong>How do I contact support?</strong><p style="margin-top:6px;font-size:.83rem;">Use the live chat in your dashboard, WhatsApp us at +1 (215) 892-4891, or email support@vitaltradeoption.com.</p></div></div>` },
+  terms: { title: '📋 Terms of Service', body: `<p style="margin-bottom:14px;"><strong style="color:#f0b429">Last Updated: January 2025</strong></p><p>By using VitalTradeOption, you agree to these Terms of Service. Please read them carefully.</p><br/><h4 style="color:#f0b429;margin-bottom:8px;">1. Account Registration</h4><p>You must provide accurate information. You are responsible for maintaining account security. You must be 18+ to use this platform.</p><br/><h4 style="color:#f0b429;margin-bottom:8px;">2. Trading Risk</h4><p>Trading involves significant risk. Past performance does not guarantee future results. Only invest capital you can afford to lose.</p><br/><h4 style="color:#f0b429;margin-bottom:8px;">3. Deposits & Withdrawals</h4><p>All deposits are final. Withdrawals are processed within 24 hours. Minimum withdrawal is $20.</p><br/><h4 style="color:#f0b429;margin-bottom:8px;">4. KYC Compliance</h4><p>Users must complete KYC verification. We reserve the right to suspend accounts that violate our policies.</p><br/><p>For questions, contact: <strong style="color:#f0b429">support@vitaltradeoption.com</strong></p>` },
+  privacy: { title: '🔐 Privacy Policy', body: `<p style="margin-bottom:14px;"><strong style="color:#f0b429">Last Updated: January 2025</strong></p><p>VitalTradeOption is committed to protecting your privacy. This policy explains how we collect, use and protect your data.</p><br/><h4 style="color:#f0b429;margin-bottom:8px;">Data We Collect</h4><ul style="padding-left:18px;line-height:2;"><li>Name, email, phone number</li><li>Government ID and proof of address (KYC)</li><li>Transaction and trading history</li><li>Device and usage data</li></ul><br/><h4 style="color:#f0b429;margin-bottom:8px;">How We Use Your Data</h4><ul style="padding-left:18px;line-height:2;"><li>To provide and improve our services</li><li>Identity verification and fraud prevention</li><li>Regulatory compliance (AML/KYC)</li><li>Customer support</li></ul><br/><h4 style="color:#f0b429;margin-bottom:8px;">Data Protection</h4><p>All data is encrypted with 256-bit SSL. We never sell your personal data to third parties.</p>` },
+};
+
+function showInfoModal(key) {
+  const info = INFO_CONTENT[key];
+  if (!info) return;
+  document.getElementById('infoTitle').textContent = info.title;
+  document.getElementById('infoBody').innerHTML = info.body;
+  const m = document.getElementById('infoModal');
+  m.classList.add('show');
+  m.style.display = 'flex';
+}
+function closeInfoModal() {
+  const m = document.getElementById('infoModal');
+  m.classList.remove('show');
+  m.style.display = 'none';
+}
+document.getElementById('infoModal').addEventListener('click', function(e){if(e.target===this)closeInfoModal();});
+
+// Country → Currency map
+const CURRENCY_MAP = {
+  'Nigeria':'₦ NGN','Ghana':'₵ GHS','Kenya':'KSh KES','South Africa':'R ZAR',
+  'United Kingdom':'£ GBP','United States':'$ USD','Canada':'C$ CAD',
+  'Germany':'€ EUR','France':'€ EUR','India':'₹ INR','Australia':'A$ AUD',
+  'UAE':'د.إ AED','Other':'$ USD'
+};
+function updateCurrency(){
+  const c=document.getElementById('rCountry').value;
+  const b=document.getElementById('currencyBadge');
+  if(b)b.textContent=CURRENCY_MAP[c]||'$ USD';
+}
+</script>
 <!-- WhatsApp Floating Button -->
 <a href="https://wa.me/12158924891?text=Hello%2C%20I%20need%20support%20with%20my%20VitalTradeOption%20account" target="_blank" id="waBtn" title="Chat with us on WhatsApp"
-   style="position:fixed;bottom:28px;right:24px;z-index:999;width:58px;height:58px;background:#25D366;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(37,211,102,.5);text-decoration:none;transition:.2s;animation:waPulse 2.5s infinite;">
-  <svg width="30" height="30" viewBox="0 0 30 30" fill="white">
+   style="position:fixed;bottom:20px;right:14px;z-index:90;width:40px;height:40px;background:#25D366;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(37,211,102,.3);text-decoration:none;opacity:.85;" title="WhatsApp">
+  <svg width="24" height="24" viewBox="0 0 30 30" fill="white">
     <path d="M15 2C7.8 2 2 7.8 2 15c0 2.3.6 4.5 1.7 6.4L2 28l6.8-1.7C10.6 27.4 12.8 28 15 28c7.2 0 13-5.8 13-13S22.2 2 15 2zm6.4 17.9c-.3.8-1.5 1.5-2.1 1.6-.5.1-1.2.1-1.9-.1-.4-.1-1-.3-1.7-.6-3-1.3-5-4.3-5.1-4.5-.1-.2-1.1-1.5-1.1-2.8 0-1.3.7-2 .9-2.2.3-.3.6-.3.8-.3h.6c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .6l-.5.7c-.1.1-.2.3-.1.5.4.7.9 1.4 1.5 1.9.6.6 1.3 1 2 1.2.2.1.4 0 .5-.1l.6-.8c.2-.2.4-.3.6-.2l1.9.9c.2.1.4.2.5.4.1.6-.1 1.5-.4 2.3z"/>
   </svg>
 </a>
