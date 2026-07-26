@@ -1,0 +1,1207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
+<title>VitalTradeOption — Professional Broker Platform</title>
+<meta name="description" content="Trade Forex, Crypto, Stocks and more with VitalTradeOption. Licensed multi-asset broker."/>
+<style>
+:root{
+  --bg:#0a0e1a;--bg2:#111827;--bg3:#1a2235;
+  --gold:#f0b429;--gd:#c48f0a;
+  --green:#00d084;--red:#ff4560;--blue:#4f8ef7;
+  --text:#e2e8f0;--muted:#8492a6;
+  --border:rgba(255,255,255,.08);--border2:rgba(240,180,41,.2);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;line-height:1.5;}
+input,button,select{font-family:inherit;font-size:1rem;}
+button{cursor:pointer;}
+a{color:var(--gold);text-decoration:none;}
+
+/* ── NAV ────────────────────────────────── */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(10,14,26,.96);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);height:64px;display:flex;align-items:center;padding:0 5%;justify-content:space-between;}
+.nav-logo{display:flex;align-items:center;gap:10px;}
+.logo-box{width:36px;height:36px;background:linear-gradient(135deg,var(--gold),var(--gd));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;color:#000;}
+.logo-txt{font-size:1.05rem;font-weight:800;color:#fff;}
+.logo-txt span{color:var(--gold);}
+.nav-links{display:flex;gap:26px;list-style:none;}
+.nav-links a{color:var(--muted);font-size:.9rem;transition:.2s;}
+.nav-links a:hover{color:var(--gold);}
+.nav-btns{display:flex;gap:10px;align-items:center;}
+.btn-login{padding:8px 20px;border:1.5px solid rgba(240,180,41,.6);border-radius:7px;color:var(--gold);background:none;font-weight:600;transition:.2s;}
+.btn-login:hover{background:rgba(240,180,41,.1);}
+.btn-reg{padding:8px 20px;border-radius:7px;background:linear-gradient(135deg,var(--gold),var(--gd));border:none;color:#000;font-weight:700;transition:.2s;}
+.btn-reg:hover{transform:translateY(-1px);}
+.hamburger{display:none;flex-direction:column;gap:4px;cursor:pointer;padding:8px;}
+.hamburger span{width:22px;height:2px;background:var(--muted);border-radius:2px;}
+
+/* ── HERO ────────────────────────────────── */
+.hero{min-height:90vh;display:flex;align-items:center;padding:80px 5% 60px;background:radial-gradient(ellipse at 65% 50%,rgba(240,180,41,.08) 0%,transparent 55%),#060910;}
+.hero-content{max-width:600px;}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(240,180,41,.1);border:1px solid rgba(240,180,41,.3);border-radius:30px;padding:6px 14px;font-size:.78rem;color:var(--gold);margin-bottom:20px;}
+.live-dot{width:7px;height:7px;background:var(--green);border-radius:50%;animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.4)}}
+.hero h1{font-size:clamp(2rem,4.5vw,3.5rem);font-weight:900;line-height:1.1;margin-bottom:18px;}
+.hero h1 .hi{color:var(--gold);}
+.hero p{font-size:1.05rem;color:var(--muted);line-height:1.7;margin-bottom:32px;}
+.hero-cta{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:40px;}
+.btn-primary{padding:14px 32px;border-radius:9px;background:linear-gradient(135deg,var(--gold),var(--gd));border:none;color:#000;font-weight:800;font-size:1rem;transition:.2s;}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(240,180,41,.3);}
+.btn-secondary{padding:14px 28px;border-radius:9px;background:none;border:1.5px solid rgba(255,255,255,.2);color:#fff;font-weight:600;transition:.2s;}
+.btn-secondary:hover{border-color:var(--gold);color:var(--gold);}
+.hero-stats{display:flex;gap:36px;flex-wrap:wrap;}
+.hstat h3{font-size:1.7rem;font-weight:900;color:var(--gold);}
+.hstat p{font-size:.78rem;color:var(--muted);margin-top:2px;}
+
+/* ── SECTIONS ────────────────────────────── */
+section{padding:80px 5%;}
+.sec-tag{font-size:.75rem;color:var(--gold);font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;}
+.sec-h{font-size:clamp(1.6rem,3vw,2.4rem);font-weight:900;margin-bottom:14px;}
+.sec-sub{color:var(--muted);line-height:1.7;max-width:560px;font-size:.95rem;}
+.center{text-align:center;}
+.center .sec-sub{margin:0 auto 48px;}
+
+/* ── MARKETS GRID ────────────────────────── */
+.markets-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px;}
+.mkt-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:18px;transition:.2s;}
+.mkt-card:hover{border-color:rgba(240,180,41,.3);transform:translateY(-3px);}
+.mkt-icon{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.85rem;margin-bottom:12px;}
+.mkt-icon.crypto{background:rgba(247,147,26,.15);color:#f7931a;}
+.mkt-icon.forex{background:rgba(79,142,247,.15);color:#4f8ef7;}
+.mkt-icon.stock{background:rgba(0,208,132,.15);color:#00d084;}
+.mkt-icon.idx{background:rgba(167,139,250,.15);color:#a78bfa;}
+.mkt-icon.cmd{background:rgba(255,69,96,.15);color:#ff4560;}
+.mkt-sym{font-weight:700;font-size:.95rem;}
+.mkt-name{font-size:.75rem;color:var(--muted);margin-top:2px;}
+.mkt-price{font-size:1.05rem;font-weight:800;margin-top:8px;}
+.mkt-chg{font-size:.78rem;font-weight:600;margin-top:3px;}
+.up{color:var(--green);}
+.dn{color:var(--red);}
+
+/* ── PLANS / FEATURES ────────────────────── */
+.plans-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;margin-top:36px;}
+.plan-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:28px;text-align:center;transition:.25s;position:relative;}
+.plan-card.featured{border-color:var(--gold);transform:scale(1.02);}
+.plan-card:hover{transform:translateY(-4px);}
+.plan-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--gold),var(--gd));color:#000;padding:5px 14px;border-radius:20px;font-size:.7rem;font-weight:800;letter-spacing:1px;}
+.plan-name{font-size:1.2rem;font-weight:800;margin-bottom:6px;}
+.plan-min{color:var(--muted);font-size:.85rem;margin-bottom:18px;}
+.plan-roi{font-size:2.3rem;font-weight:900;color:var(--gold);margin-bottom:6px;}
+.plan-roi small{font-size:1rem;}
+.plan-feat{list-style:none;text-align:left;margin:18px 0;}
+.plan-feat li{padding:6px 0;font-size:.88rem;color:var(--muted);}
+.plan-feat li::before{content:"✓ ";color:var(--green);font-weight:800;}
+
+/* ── MODAL ───────────────────────────────── */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(8px);z-index:200;display:none;align-items:flex-start;justify-content:center;padding:80px 16px 16px;overflow-y:auto;}
+.modal-bg.show{display:flex;}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:32px;max-width:480px;width:100%;box-shadow:0 30px 60px rgba(0,0,0,.5);}
+.modal h2{font-size:1.4rem;margin-bottom:8px;}
+.modal-sub{color:var(--muted);font-size:.88rem;margin-bottom:24px;}
+.field{margin-bottom:14px;}
+.field label{display:block;font-size:.82rem;color:var(--muted);margin-bottom:6px;font-weight:600;}
+.field input,.field select{width:100%;padding:11px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:1rem;transition:.2s;outline:none;}
+.field input:focus,.field select:focus{border-color:var(--gold);}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.field-hint{font-size:.75rem;color:var(--muted);margin-top:4px;}
+.btn-full{width:100%;padding:13px;background:linear-gradient(135deg,var(--gold),var(--gd));border:none;color:#000;font-weight:800;border-radius:8px;font-size:1rem;margin-top:8px;transition:.2s;}
+.btn-full:hover{transform:translateY(-1px);}
+.btn-full:disabled{opacity:.6;cursor:not-allowed;}
+.switch-line{text-align:center;margin-top:18px;font-size:.88rem;color:var(--muted);}
+.switch-line a{color:var(--gold);font-weight:600;cursor:pointer;}
+.modal-close{position:absolute;top:14px;right:14px;background:none;border:none;color:var(--muted);font-size:1.6rem;cursor:pointer;}
+.modal-close:hover{color:#fff;}
+.error-line{display:none;padding:10px 14px;background:rgba(255,69,96,.1);border:1px solid rgba(255,69,96,.3);border-radius:8px;color:var(--red);font-size:.85rem;margin-bottom:14px;}
+.error-line.show{display:block;}
+.tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:24px;}
+.tab{padding:10px 0;margin-right:24px;background:none;border:none;color:var(--muted);font-weight:600;border-bottom:2px solid transparent;cursor:pointer;}
+.tab.active{color:var(--gold);border-bottom-color:var(--gold);}
+
+/* ── FLOATING TG BUTTON (hidden by default) ─── */
+.tg-float{position:fixed;right:18px;bottom:90px;width:48px;height:48px;border-radius:50%;background:#0088cc;color:#fff;display:none;align-items:center;justify-content:center;z-index:90;box-shadow:0 6px 20px rgba(0,136,204,.4);transition:.2s;text-decoration:none;}
+.tg-float:hover{transform:scale(1.08);}
+.tg-float svg{width:24px;height:24px;fill:#fff;}
+
+/* ── DASHBOARD ───────────────────────────── */
+.dash-header{background:var(--bg2);border-bottom:1px solid var(--border);padding:18px 5%;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+.dash-user{display:flex;align-items:center;gap:10px;}
+.user-av{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gd));display:flex;align-items:center;justify-content:center;color:#000;font-weight:800;}
+.dash-tabs{display:flex;gap:8px;overflow-x:auto;padding:14px 5%;background:var(--bg2);border-bottom:1px solid var(--border);scrollbar-width:none;}
+.dash-tabs::-webkit-scrollbar{display:none;}
+.dash-tabs .tabx{padding:9px 16px;background:var(--bg3);border-radius:20px;font-size:.85rem;font-weight:600;color:var(--muted);cursor:pointer;white-space:nowrap;}
+.dash-tabs .tabx.active{background:linear-gradient(135deg,var(--gold),var(--gd));color:#000;}
+.dash-content{padding:24px 5%;max-width:1400px;margin:0 auto;}
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:24px;}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:22px;}
+.stat-label{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;}
+.stat-value{font-size:1.6rem;font-weight:900;color:var(--gold);}
+.stat-sub{font-size:.82rem;color:var(--green);margin-top:4px;}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:18px;}
+.card h3{font-size:1.05rem;margin-bottom:14px;color:#fff;}
+.btn{padding:10px 20px;background:var(--gold);color:#000;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-size:.9rem;}
+.btn:hover{opacity:.9;}
+.btn-ghost{background:none;border:1px solid var(--border2);color:var(--gold);}
+.btn-green{background:var(--green);color:#000;}
+.btn-red{background:var(--red);color:#fff;}
+.btn-sm{padding:7px 14px;font-size:.82rem;}
+
+/* KYC status banners */
+.kyc-banner{padding:18px 22px;border-radius:12px;margin-bottom:18px;display:flex;align-items:center;gap:14px;}
+.kyc-banner.not_subm{background:rgba(79,142,247,.1);border:1px solid rgba(79,142,247,.3);}
+.kyc-banner.under{background:rgba(240,180,41,.1);border:1px solid rgba(240,180,41,.3);}
+.kyc-banner.verified{background:rgba(0,208,132,.1);border:1px solid rgba(0,208,132,.3);}
+.kyc-banner.rejected{background:rgba(255,69,96,.1);border:1px solid rgba(255,69,96,.3);}
+.kyc-ico{font-size:1.6rem;}
+.kyc-msg h4{font-size:1rem;margin-bottom:4px;}
+.kyc-msg p{color:var(--muted);font-size:.85rem;}
+
+/* Admin layout */
+.admin-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:24px;}
+.admin-card{background:linear-gradient(135deg,var(--bg2),var(--bg3));border:1px solid var(--border);border-radius:12px;padding:20px;}
+.admin-card .val{font-size:1.7rem;font-weight:900;color:var(--gold);}
+.admin-card .lbl{font-size:.8rem;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:1px;}
+.user-row{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+.user-info{display:flex;align-items:center;gap:12px;}
+.user-info h4{margin:0;font-size:.95rem;}
+.user-info p{margin:0;font-size:.78rem;color:var(--muted);}
+.user-actions{display:flex;gap:8px;flex-wrap:wrap;}
+.status-badge{padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:700;display:inline-block;}
+.status-badge.active{background:rgba(0,208,132,.15);color:var(--green);}
+.status-badge.pending{background:rgba(240,180,41,.15);color:var(--gold);}
+.status-badge.suspended{background:rgba(255,69,96,.15);color:var(--red);}
+.status-badge.verified{background:rgba(0,208,132,.15);color:var(--green);}
+.status-badge.under_review{background:rgba(240,180,41,.15);color:var(--gold);}
+.status-badge.rejected{background:rgba(255,69,96,.15);color:var(--red);}
+.status-badge.not_submitted{background:rgba(79,142,247,.15);color:var(--blue);}
+table{width:100%;border-collapse:collapse;}
+th,td{padding:12px 14px;text-align:left;border-bottom:1px solid var(--border);font-size:.88rem;}
+th{font-weight:700;color:var(--muted);font-size:.78rem;text-transform:uppercase;letter-spacing:1px;}
+
+/* Markets ticker */
+.ticker{background:#080c18;border-top:1px solid var(--border);border-bottom:1px solid var(--border);overflow:hidden;padding:11px 0;}
+.ticker-inner{display:flex;gap:36px;animation:tick 30s linear infinite;white-space:nowrap;}
+@keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.tk-it{display:flex;align-items:center;gap:8px;font-size:.82rem;}
+.tk-sym{color:var(--gold);font-weight:700;}
+
+/* Footer */
+footer{background:#060910;border-top:1px solid var(--border);padding:50px 5% 24px;color:var(--muted);font-size:.88rem;}
+.foot-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:28px;margin-bottom:32px;}
+.foot-col h4{color:#fff;font-size:.95rem;margin-bottom:14px;}
+.foot-col a{display:block;color:var(--muted);padding:5px 0;font-size:.85rem;}
+.foot-col a:hover{color:var(--gold);}
+.foot-bot{border-top:1px solid var(--border);padding-top:18px;text-align:center;font-size:.78rem;}
+
+/* Utilities */
+.hidden{display:none!important;}
+.upgrade-pulse{background:linear-gradient(135deg,rgba(240,180,41,.2),rgba(196,143,10,.15));border:1.5px solid var(--gold);animation:goldpulse 2s infinite;}
+@keyframes goldpulse{0%,100%{box-shadow:0 0 0 rgba(240,180,41,0)}50%{box-shadow:0 0 18px rgba(240,180,41,.3)}}
+.withdraw-pulse{background:linear-gradient(135deg,rgba(0,208,132,.2),rgba(0,168,107,.15));border:1.5px solid var(--green);animation:greenpulse 1.5s infinite;}
+@keyframes greenpulse{0%,100%{box-shadow:0 0 0 rgba(0,208,132,0)}50%{box-shadow:0 0 18px rgba(0,208,132,.4)}}
+
+/* Doc viewer modal */
+.doc-viewer{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:300;display:none;align-items:center;justify-content:center;padding:20px;}
+.doc-viewer.show{display:flex;}
+.doc-viewer img,.doc-viewer iframe{max-width:100%;max-height:90vh;}
+
+/* Chat */
+.chat-box{background:var(--bg3);border-radius:10px;padding:16px;height:380px;overflow-y:auto;margin-bottom:12px;}
+.msg{margin-bottom:12px;}
+.msg.admin{text-align:right;}
+.msg-bub{display:inline-block;max-width:75%;padding:9px 13px;border-radius:12px;background:var(--bg2);text-align:left;}
+.msg.client .msg-bub{background:rgba(79,142,247,.15);}
+.msg.admin .msg-bub{background:rgba(240,180,41,.2);}
+.msg-meta{font-size:.7rem;color:var(--muted);margin-top:3px;}
+.notif-dot{position:absolute;top:-6px;right:-6px;width:18px;height:18px;background:var(--red);border-radius:50%;font-size:.7rem;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;}
+
+@media(max-width:768px){
+  .nav-links{display:none;}
+  .hero h1{font-size:2rem;}
+  .stats-row{grid-template-columns:repeat(2,1fr);}
+  .dash-header{padding:14px 4%;}
+  section{padding:50px 4%;}
+  .field-row{grid-template-columns:1fr;}
+  .dash-tabs{padding:12px 4%;}
+  .tg-float{bottom:80px;right:14px;width:44px;height:44px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ════════ TELEGRAM FLOATING BUTTON (hidden by default) ════════ -->
+<a id="tgFloat" class="tg-float" href="https://t.me/+15146679490" target="_blank" rel="noopener" title="Telegram Support">
+  <svg viewBox="0 0 24 24"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>
+</a>
+
+<!-- ════════ PUBLIC VIEW ════════ -->
+<div id="view-public">
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#">
+    <div class="logo-box">V</div>
+    <div class="logo-txt">Vital<span>TradeOption</span></div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#markets">Markets</a></li>
+    <li><a href="#plans">Plans</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#support">Support</a></li>
+  </ul>
+  <div class="nav-btns" id="pubNavBtns">
+    <button class="btn-login" onclick="openModal('login')">Login</button>
+    <button class="btn-reg" onclick="openModal('register')">Open Account</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-badge"><span class="live-dot"></span> Live · 24/7 Trading</div>
+    <h1>Trade Global Markets <span class="hi">Smarter</span>, Faster</h1>
+    <p>VitalTradeOption is a multi-asset broker. Trade Forex, Crypto, Stocks and more — with tight spreads, instant execution, and professional tools.</p>
+    <div class="hero-cta">
+      <button class="btn-primary" onclick="openModal('register')">Open Free Account</button>
+      <button class="btn-secondary" onclick="openModal('login')">Sign In</button>
+    </div>
+    <div class="hero-stats">
+      <div class="hstat"><h3 id="heroS1">24,800+</h3><p>Active Clients</p></div>
+      <div class="hstat"><h3 id="heroS2">$186M+</h3><p>Daily Volume</p></div>
+      <div class="hstat"><h3 id="heroS3">52</h3><p>Countries</p></div>
+      <div class="hstat"><h3 id="heroS4">99.99%</h3><p>Uptime</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-inner" id="tickerInner"></div>
+</div>
+
+<!-- MARKETS -->
+<section id="markets">
+  <div class="center">
+    <div class="sec-tag">Markets</div>
+    <h2 class="sec-h">26+ Tradable Instruments</h2>
+    <p class="sec-sub">Forex, Crypto, Stocks, Indices and Commodities — all from one account.</p>
+  </div>
+  <div class="markets-grid" id="marketsGrid"></div>
+</section>
+
+<!-- PLANS -->
+<section id="plans" style="background:#060910;">
+  <div class="center">
+    <div class="sec-tag">Investment Plans</div>
+    <h2 class="sec-h">Choose Your Account</h2>
+    <p class="sec-sub">From beginner to professional — pick the plan that fits your goals.</p>
+  </div>
+  <div class="plans-grid" id="plansGrid"></div>
+</section>
+
+<!-- PRODUCTS -->
+<section id="about">
+  <div class="center">
+    <div class="sec-tag">Products</div>
+    <h2 class="sec-h">Everything In One Platform</h2>
+    <p class="sec-sub">Trade what you want, when you want.</p>
+  </div>
+  <div class="markets-grid" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr));">
+    <div class="mkt-card" style="text-align:center;padding:30px 20px;">
+      <div class="mkt-icon cmd">📈</div>
+      <h3 style="margin:10px 0 4px;">SIP Investments</h3>
+      <p style="color:var(--muted);font-size:.85rem;">Systematic plans with monthly investing.</p>
+    </div>
+    <div class="mkt-card" style="text-align:center;padding:30px 20px;">
+      <div class="mkt-icon stock">📊</div>
+      <h3 style="margin:10px 0 4px;">Stock Investing</h3>
+      <p style="color:var(--muted);font-size:.85rem;">Apple, Tesla, NVIDIA and more.</p>
+    </div>
+    <div class="mkt-card" style="text-align:center;padding:30px 20px;">
+      <div class="mkt-icon forex">💼</div>
+      <h3 style="margin:10px 0 4px;">ETFs & Mutual Funds</h3>
+      <p style="color:var(--muted);font-size:.85rem;">Diversified portfolio in one click.</p>
+    </div>
+    <div class="mkt-card" style="text-align:center;padding:30px 20px;">
+      <div class="mkt-icon crypto">₿</div>
+      <h3 style="margin:10px 0 4px;">Crypto Trading</h3>
+      <p style="color:var(--muted);font-size:.85rem;">BTC, ETH, SOL, XRP and more.</p>
+    </div>
+    <div class="mkt-card" style="text-align:center;padding:30px 20px;">
+      <div class="mkt-icon forex">💱</div>
+      <h3 style="margin:10px 0 4px;">Forex Trading</h3>
+      <p style="color:var(--muted);font-size:.85rem;">Major and exotic pairs.</p>
+    </div>
+    <div class="mkt-card" style="text-align:center;padding:30px 20px;">
+      <div class="mkt-icon cmd">🛢️</div>
+      <h3 style="margin:10px 0 4px;">Commodities</h3>
+      <p style="color:var(--muted);font-size:.85rem;">Gold, Silver, Oil, Natural Gas.</p>
+    </div>
+    <div class="mkt-card" style="text-align:center;padding:30px 20px;">
+      <div class="mkt-icon idx">📉</div>
+      <h3 style="margin:10px 0 4px;">Indices</h3>
+      <p style="color:var(--muted);font-size:.85rem;">NASDAQ, S&P 500, DAX, FTSE.</p>
+    </div>
+    <div class="mkt-card" style="text-align:center;padding:30px 20px;">
+      <div class="mkt-icon cmd">⚡</div>
+      <h3 style="margin:10px 0 4px;">Binary Options</h3>
+      <p style="color:var(--muted);font-size:.85rem;">Quick high-yield trades.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SUPPORT -->
+<section id="support" style="background:#060910;">
+  <div class="center">
+    <div class="sec-tag">Support</div>
+    <h2 class="sec-h">24/7 Customer Support</h2>
+    <p class="sec-sub">Our team is here to help — anytime.</p>
+    <p style="font-size:1.2rem;margin-top:20px;color:var(--gold);font-weight:700;">Telegram: +1 514 667 9490</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="foot-grid">
+    <div class="foot-col">
+      <div class="nav-logo" style="margin-bottom:14px;">
+        <div class="logo-box">V</div>
+        <div class="logo-txt">Vital<span>TradeOption</span></div>
+      </div>
+      <p style="font-size:.85rem;">Professional multi-asset broker. Trade Forex, Crypto, Stocks and more with confidence.</p>
+    </div>
+    <div class="foot-col">
+      <h4>Markets</h4>
+      <a href="#markets">Forex</a><a href="#markets">Cryptocurrency</a><a href="#markets">Stocks</a><a href="#markets">Indices</a><a href="#markets">Commodities</a>
+    </div>
+    <div class="foot-col">
+      <h4>Products</h4>
+      <a href="#markets">SIP</a><a href="#markets">ETFs</a><a href="#markets">Mutual Funds</a><a href="#markets">Binary Options</a>
+    </div>
+    <div class="foot-col">
+      <h4>Company</h4>
+      <a href="#about">About Us</a><a href="#about">Security</a><a href="#about">Careers</a>
+      <a href="#support">Support</a>
+    </div>
+    <div class="foot-col">
+      <h4>Legal</h4>
+      <a href="#about">Terms of Service</a><a href="#about">Privacy Policy</a><a href="#about">Compliance</a>
+    </div>
+  </div>
+  <div class="foot-bot">
+    © <span id="y"></span> VitalTradeOption. All rights reserved ·
+    Telegram: +1 514 667 9490
+  </div>
+</footer>
+
+</div><!-- /view-public -->
+
+<!-- ════════ CLIENT DASHBOARD ════════ -->
+<div id="view-client" class="hidden">
+  <div class="dash-header">
+    <div class="nav-logo">
+      <div class="logo-box">V</div>
+      <div class="logo-txt">Vital<span>TradeOption</span></div>
+    </div>
+    <div class="dash-user">
+      <div class="user-av" id="cAv">A</div>
+      <div>
+        <div style="font-weight:700;font-size:.95rem;" id="cName">Client</div>
+        <div style="font-size:.78rem;color:var(--muted);" id="cEmail">client@vto.com</div>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="logout()" style="margin-left:14px;">Logout</button>
+    </div>
+  </div>
+  <div class="dash-tabs" id="clientTabs">
+    <div class="tabx active" data-tab="dashboard" onclick="cTab('dashboard')">Dashboard</div>
+    <div class="tabx" data-tab="kyc" onclick="cTab('kyc')">KYC Verify</div>
+    <div class="tabx" data-tab="portfolio" onclick="cTab('portfolio')">Portfolio</div>
+    <div class="tabx" data-tab="trades" onclick="cTab('trades')">Trades</div>
+    <div class="tabx" data-tab="deposit" onclick="cTab('deposit')">Deposit</div>
+    <div class="tabx" data-tab="withdraw" onclick="cTab('withdraw')">Withdraw</div>
+    <div class="tabx" data-tab="referral" onclick="cTab('referral')">Referral</div>
+    <div class="tabx" data-tab="support" onclick="cTab('support')">Support</div>
+  </div>
+  <div class="dash-content" id="clientContent"></div>
+</div>
+
+<!-- ════════ ADMIN PANEL ════════ -->
+<div id="view-admin" class="hidden">
+  <div class="dash-header">
+    <div class="nav-logo">
+      <div class="logo-box" style="background:linear-gradient(135deg,#ff4560,#c00000);">A</div>
+      <div class="logo-txt">Vital<span>Admin</span></div>
+    </div>
+    <div class="dash-user">
+      <div class="user-av" style="background:linear-gradient(135deg,#ff4560,#c00000);">A</div>
+      <div>
+        <div style="font-weight:700;font-size:.95rem;">Admin</div>
+        <div style="font-size:.78rem;color:var(--muted);">vitaltradesoption@gmail.com</div>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="logout()" style="margin-left:14px;">Logout</button>
+    </div>
+  </div>
+  <div class="dash-tabs" id="adminTabs">
+    <div class="tabx active" data-tab="overview" onclick="aTab('overview')">Overview</div>
+    <div class="tabx" data-tab="users" onclick="aTab('users')">Users</div>
+    <div class="tabx" data-tab="kyc" onclick="aTab('kyc')">KYC Review</div>
+    <div class="tabx" data-tab="trades" onclick="aTab('trades')">Trades</div>
+    <div class="tabx" data-tab="messages" onclick="aTab('messages')">Support</div>
+  </div>
+  <div class="dash-content" id="adminContent"></div>
+</div>
+
+<!-- ════════ AUTH MODAL ════════ -->
+<div class="modal-bg" id="authModal">
+  <div class="modal" style="position:relative;">
+    <button class="modal-close" onclick="closeModal()">×</button>
+    
+    <div id="modalLogin">
+      <h2>Sign In</h2>
+      <p class="modal-sub">Welcome back. Sign in to your account.</p>
+      <div class="error-line" id="loginErr"></div>
+      <div class="field">
+        <label>Email or Username</label>
+        <input type="text" id="lEmail" placeholder="you@email.com" autocomplete="email"/>
+      </div>
+      <div class="field" style="position:relative;">
+        <label>Password</label>
+        <input type="password" id="lPass" placeholder="Your password" autocomplete="current-password" style="padding-right:44px;"/>
+        <button type="button" onclick="togglePw('lPass',this)" style="position:absolute;right:10px;bottom:12px;background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.1rem;">👁</button>
+      </div>
+      <button class="btn-full" id="loginBtn" onclick="doLogin()">Sign In →</button>
+      <div class="switch-line">Don't have an account? <a onclick="switchAuth('register')">Open one here</a></div>
+    </div>
+
+    <div id="modalRegister" class="hidden">
+      <h2>Open Account</h2>
+      <p class="modal-sub">Join VitalTradeOption in 30 seconds.</p>
+      <div class="error-line" id="regErr"></div>
+      <div class="field-row">
+        <div class="field"><label>First Name</label><input type="text" id="rFirst" placeholder="John"/></div>
+        <div class="field"><label>Last Name</label><input type="text" id="rLast" placeholder="Doe"/></div>
+      </div>
+      <div class="field"><label>Email</label><input type="email" id="rEmail" placeholder="you@email.com" autocomplete="email"/></div>
+      <div class="field-row">
+        <div class="field">
+          <label>Country</label>
+          <select id="rCountry" onchange="setCurrency()">
+            <option value="">Select</option>
+            <option value="United States">🇺🇸 United States</option>
+            <option value="United Kingdom">🇬🇧 United Kingdom</option>
+            <option value="Nigeria">🇳🇬 Nigeria</option>
+            <option value="India">🇮🇳 India</option>
+            <option value="Germany">🇩🇪 Germany</option>
+            <option value="Canada">🇨🇦 Canada</option>
+            <option value="Australia">🇦🇺 Australia</option>
+            <option value="Ghana">🇬🇭 Ghana</option>
+            <option value="South Africa">🇿🇦 South Africa</option>
+            <option value="UAE">🇦🇪 UAE</option>
+            <option value="Kenya">🇰🇪 Kenya</option>
+            <option value="Brazil">🇧🇷 Brazil</option>
+            <option value="France">🇫🇷 France</option>
+            <option value="Spain">🇪🇸 Spain</option>
+            <option value="Italy">🇮🇹 Italy</option>
+            <option value="Japan">🇯🇵 Japan</option>
+            <option value="Singapore">🇸🇬 Singapore</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="field"><label>Currency</label><input type="text" id="rCurrency" value="USD" readonly/><div class="field-hint" id="currHint">United States Dollar</div></div>
+      </div>
+      <div class="field"><label>Phone (with country code)</label><input type="tel" id="rPhone" placeholder="+1 415 555 2671"/></div>
+      <div class="field" style="position:relative;">
+        <label>Password</label>
+        <input type="password" id="rPass" placeholder="Min 6 characters" autocomplete="new-password" style="padding-right:44px;"/>
+        <button type="button" onclick="togglePw('rPass',this)" style="position:absolute;right:10px;bottom:12px;background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.1rem;">👁</button>
+      </div>
+      <button class="btn-full" id="regBtn" onclick="doRegister()">Create Account →</button>
+      <div class="switch-line">Already have an account? <a onclick="switchAuth('login')">Sign In</a></div>
+    </div>
+  </div>
+</div>
+
+<div class="doc-viewer" id="docViewer">
+  <button class="modal-close" onclick="closeDoc()" style="background:rgba(255,255,255,.1);width:40px;height:40px;border-radius:50%;color:#fff;font-size:24px;">×</button>
+  <div id="docContent"></div>
+</div>
+
+<script>
+/* ════════ STATE ════════ */
+const API = '';
+let session = null; // {role, token, user}
+let allUsers = [];
+let allMessages = [];
+let activeAdminTab = 'overview';
+let activeClientTab = 'dashboard';
+let activeConvoUserId = null;
+
+const COUNTRY_CURRENCY = {
+  'United States':'USD','United Kingdom':'GBP','Nigeria':'NGN','India':'INR',
+  'Germany':'EUR','Canada':'CAD','Australia':'AUD','Ghana':'GHS','South Africa':'ZAR',
+  'UAE':'AED','Kenya':'KES','Brazil':'BRL','France':'EUR','Spain':'EUR','Italy':'EUR',
+  'Japan':'JPY','Singapore':'SGD','Other':'USD'
+};
+const COUNTRY_NAMES = {
+  USD:'US Dollar',GBP:'British Pound',NGN:'Nigerian Naira',INR:'Indian Rupee',
+  EUR:'Euro',CAD:'Canadian Dollar',AUD:'Australian Dollar',GHS:'Ghanaian Cedi',
+  ZAR:'South African Rand',AED:'UAE Dirham',KES:'Kenyan Shilling',BRL:'Brazilian Real',
+  JPY:'Japanese Yen',SGD:'Singapore Dollar'
+};
+
+/* ════════ AUTH ════════ */
+function saveSession(){ localStorage.setItem('vto_session', JSON.stringify(session)); }
+function loadSession(){ try{session=JSON.parse(localStorage.getItem('vto_session'));}catch(e){session=null;} }
+function clearSession(){ session=null; localStorage.removeItem('vto_session'); }
+
+function togglePw(id, btn){
+  const inp = document.getElementById(id);
+  if(inp.type==='password'){ inp.type='text'; btn.textContent='🔒'; }
+  else { inp.type='password'; btn.textContent='👁'; }
+}
+
+function setCurrency(){
+  const c = document.getElementById('rCountry').value;
+  const cur = COUNTRY_CURRENCY[c] || 'USD';
+  document.getElementById('rCurrency').value = cur;
+  document.getElementById('currHint').textContent = COUNTRY_NAMES[cur] || '';
+}
+
+function openModal(type){
+  document.getElementById('authModal').classList.add('show');
+  switchAuth(type);
+}
+function closeModal(){ document.getElementById('authModal').classList.remove('show'); }
+function switchAuth(type){
+  document.getElementById('modalLogin').classList.toggle('hidden', type!=='login');
+  document.getElementById('modalRegister').classList.toggle('hidden', type!=='register');
+  $('loginErr').classList.remove('show');
+  $('regErr').classList.remove('show');
+}
+const $ = id => document.getElementById(id);
+
+async function doLogin(){
+  const email = $('lEmail').value.trim();
+  const pass = $('lPass').value;
+  const btn = $('loginBtn');
+  if(!email||!pass){ showErr('loginErr','Email and password required.'); return; }
+  btn.disabled=true; btn.textContent='Signing in…';
+  try{
+    const r = await fetch('/api/auth/check-credentials', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({email, password: pass})
+    });
+    const d = await r.json();
+    
+    if(d.role === 'admin'){
+      // Admin path: use admin login
+      const r2 = await fetch('/api/auth/admin-login', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({email, password: pass})
+      });
+      const d2 = await r2.json();
+      if(!r2.ok){ showErr('loginErr', d2.error || 'Invalid admin credentials'); btn.disabled=false; btn.textContent='Sign In →'; return; }
+      session = {role:'admin', token:d2.token, user:d2.user};
+      saveSession();
+      closeModal();
+      showAdmin();
+    } else {
+      // Client path
+      const r2 = await fetch('/api/auth/login', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({email, password: pass})
+      });
+      const d2 = await r2.json();
+      if(!r2.ok){ showErr('loginErr', d2.error || 'Invalid credentials'); btn.disabled=false; btn.textContent='Sign In →'; return; }
+      session = {role:'client', token:d2.token, user:d2.user};
+      saveSession();
+      closeModal();
+      showClient();
+    }
+  } catch(e){
+    showErr('loginErr','Network error');
+  }
+  btn.disabled=false; btn.textContent='Sign In →';
+}
+
+async function doRegister(){
+  const f = $('rFirst').value.trim();
+  const l = $('rLast').value.trim();
+  const email = $('rEmail').value.trim();
+  const country = $('rCountry').value;
+  const currency = $('rCurrency').value;
+  const phone = $('rPhone').value.trim();
+  const pass = $('rPass').value;
+  const btn = $('regBtn');
+  if(!f||!email||!pass||!country){ showErr('regErr','Fill all required fields.'); return; }
+  if(pass.length<6){ showErr('regErr','Password must be at least 6 characters.'); return; }
+  btn.disabled=true; btn.textContent='Creating account…';
+  try{
+    const r = await fetch('/api/auth/register',{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({firstName:f, lastName:l, email, country, currency, phone, password:pass})
+    });
+    const d = await r.json();
+    if(!r.ok){ showErr('regErr', d.error || 'Registration failed'); btn.disabled=false; btn.textContent='Create Account →'; return; }
+    session = {role:'client', token:d.token, user:d.user};
+    saveSession();
+    closeModal();
+    showClient();
+    // Force KYC tab if kyc not yet submitted
+    if(!session.user.kyc_status || session.user.kyc_status==='not_submitted'){
+      cTab('kyc');
+    }
+  } catch(e){ showErr('regErr','Network error'); }
+  btn.disabled=false; btn.textContent='Create Account →';
+}
+
+function showErr(id, msg){ const e=$(id); e.textContent=msg; e.classList.add('show'); }
+
+function logout(){
+  clearSession();
+  document.getElementById('tgFloat').style.display='none';
+  $('view-public').classList.remove('hidden');
+  $('view-client').classList.add('hidden');
+  $('view-admin').classList.add('hidden');
+  // Reset nav
+  $('pubNavBtns').innerHTML = '<button class="btn-login" onclick="openModal(\'login\')">Login</button><button class="btn-reg" onclick="openModal(\'register\')">Open Account</button>';
+}
+
+/* ════════ VIEW SWITCHING ════════ */
+function showClient(){
+  $('view-public').classList.add('hidden');
+  $('view-admin').classList.add('hidden');
+  $('view-client').classList.remove('hidden');
+  $('tgFloat').style.display='flex';
+  $('pubNavBtns').innerHTML = '<button class="btn-login" onclick="logout()">Logout</button>';
+  // Set user info
+  const u = session.user;
+  const first = u.firstName || (u.email||'?')[0];
+  $('cAv').textContent = first[0].toUpperCase();
+  $('cName').textContent = `${u.firstName||''} ${u.lastName||''}`.trim() || u.email;
+  $('cEmail').textContent = u.email;
+  refreshClient();
+}
+
+function showAdmin(){
+  $('view-public').classList.add('hidden');
+  $('view-client').classList.add('hidden');
+  $('view-admin').classList.remove('hidden');
+  $('tgFloat').style.display='flex';
+  $('pubNavBtns').innerHTML = '<button class="btn-login" onclick="logout()">Logout</button>';
+  refreshAdmin();
+}
+
+/* ════════ CLIENT TABS ════════ */
+function cTab(t){
+  activeClientTab = t;
+  document.querySelectorAll('#clientTabs .tabx').forEach(x => x.classList.toggle('active', x.dataset.tab===t));
+  renderClientTab(t);
+}
+
+async function refreshClient(){
+  // refresh user data
+  try{
+    const r = await fetch('/api/client/me', {headers:{'Authorization':'Bearer '+session.token}});
+    if(r.ok){ const d = await r.json(); session.user = d.user; saveSession(); }
+  } catch(e){}
+  renderClientTab(activeClientTab);
+}
+
+function renderClientTab(t){
+  const c = $('clientContent');
+  const u = session.user || {};
+  if(t==='dashboard'){
+    const kycClass = {not_submitted:'not_subm', under_review:'under', verified:'verified', rejected:'rejected'}[u.kyc_status||'not_submitted'];
+    const kycIcon = {not_submitted:'', under_review:'', verified:'', rejected:''}[u.kyc_status||'not_submitted'];
+    const kycTitle = {not_submitted:'KYC Required', under_review:'KYC Under Review', verified:'KYC Verified', rejected:'KYC Rejected'}[u.kyc_status||'not_submitted'];
+    const kycBody = {not_submitted:'Please upload your documents to start trading.', under_review:'Your documents are being reviewed. We\'ll notify you soon.', verified:'Your account has been fully verified. Happy trading!', rejected:`Verification failed. Reason: ${u.rejection_reason||'Documents unclear'}. Please resubmit clearer documents.`}[u.kyc_status||'not_submitted'];
+    c.innerHTML = `
+      ${u.upgrade_message ? `<div class="kyc-banner upgrade-pulse"><div class="kyc-ico">⭐</div><div class="kyc-msg"><h4>Account Upgrade Available</h4><p>${u.upgrade_message}</p></div></div>` : ''}
+      <div class="kyc-banner ${kycClass}"><div class="kyc-ico">${kycIcon}</div><div class="kyc-msg"><h4>${kycTitle}</h4><p>${kycBody}</p></div></div>
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-label">Balance</div><div class="stat-value">$${(u.balance||0).toFixed(2)}</div><div class="stat-sub">Live</div></div>
+        <div class="stat-card"><div class="stat-label">Today's Earnings</div><div class="stat-value">$${(u.today_earned||0).toFixed(2)}</div></div>
+        <div class="stat-card"><div class="stat-label">Total Profit</div><div class="stat-value">$${(u.profit||0).toFixed(2)}</div></div>
+        <div class="stat-card"><div class="stat-label">Plan</div><div class="stat-value" style="font-size:1.3rem;">${u.plan||'Starter'}</div></div>
+      </div>
+      <div class="card"><h3>Recent Activity</h3>
+        ${(u.activity||[]).length === 0 ? '<p style="color:var(--muted);">No activity yet. Make your first deposit to start earning.</p>' : ''}
+        ${(u.activity||[]).slice(-8).reverse().map(a => `<div style="padding:10px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;"><div>${a.message||a.type}</div><div style="color:${a.amount>0?'var(--green)':'var(--red)'};">${a.amount>0?'+':''}$${a.amount||0}</div></div>`).join('')}
+      </div>
+    `;
+  }
+  else if(t==='kyc'){
+    if((u.kyc_status||'not_submitted')==='verified'){
+      c.innerHTML = `<div class="kyc-banner verified"><div class="kyc-ico">✅</div><div class="kyc-msg"><h4>KYC Verified</h4><p>Your account has been fully verified. All trading features are unlocked.</p></div></div>`;
+    } else if((u.kyc_status||'not_submitted')==='under_review'){
+      c.innerHTML = `<div class="kyc-banner under"><div class="kyc-ico">🟡</div><div class="kyc-msg"><h4>Under Review</h4><p>Your documents are being reviewed. We typically respond within 24 hours.</p></div></div>`;
+    } else if((u.kyc_status||'not_submitted')==='rejected'){
+      c.innerHTML = `<div class="kyc-banner rejected"><div class="kyc-ico">🔴</div><div class="kyc-msg"><h4>Verification Failed</h4><p>Reason: ${u.rejection_reason||'Documents unclear'}</p></div>
+      <div class="card" style="text-align:center;padding:40px;">
+        <h3>Resubmit Documents</h3>
+        <p style="color:var(--muted);margin-bottom:20px;">Upload clearer images of the same documents.</p>
+        <button class="btn" onclick="$('kycUploadForm').classList.toggle('hidden')">Upload Documents</button>
+        <div id="kycUploadForm" class="hidden" style="margin-top:24px;">${kycUploadFormHTML()}</div>
+      </div>`;
+    } else {
+      c.innerHTML = `<div class="card" style="text-align:center;padding:40px;">
+        <h3>Upload KYC Documents</h3>
+        <p style="color:var(--muted);margin-bottom:24px;">Required to activate your account.</p>
+        <div>MULTI-FILE FORM</div>
+        <div id="kycUploadForm">${kycUploadFormHTML()}</div>
+      </div>`;
+    }
+  }
+  else if(t==='portfolio' || t==='trades'){
+    c.innerHTML = `<div class="card"><h3>${t==='portfolio'?'Portfolio':'Trade History'}</h3>
+      ${(u.trades||[]).length === 0 ? '<p style="color:var(--muted);">No trades yet.</p>' : ''}
+      ${(u.trades||[]).slice().reverse().map(t => `<div style="padding:10px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;">
+        <div><strong>${t.symbol}</strong> · ${t.direction} · $${t.amount}</div>
+        <div style="color:${t.status==='won'?'var(--green)':'var(--red)'};">${t.status==='won'?'+':''}$${t.pnl||0}</div>
+      </div>`).join('')}
+    </div>`;
+  }
+  else if(t==='deposit'){
+    c.innerHTML = `<div class="card"><h3>Deposit Funds</h3>
+      <div class="field"><label>Amount (USD)</label><input type="number" id="depAmt" min="10" value="500"/></div>
+      <div class="field"><label>Crypto</label><select id="depCrypto"><option>BTC</option><option>ETH</option><option>USDT</option></select></div>
+      <div class="field"><label>Transaction Hash (optional)</label><input type="text" id="depTx" placeholder="0x..."/></div>
+      <button class="btn" onclick="clientDeposit()">Submit Deposit Request</button>
+    </div>
+    <div class="card"><h3>Deposit History</h3>
+      ${(u.deposits||[]).length === 0 ? '<p style="color:var(--muted);">No deposits yet.</p>' : ''}
+      ${(u.deposits||[]).map(d => `<div style="padding:8px 0;">$${d.amount} ${d.crypto} - <span class="status-badge ${d.status==='approved'?'verified':'pending'}">${d.status}</span></div>`).join('')}
+    </div>`;
+  }
+  else if(t==='withdraw'){
+    c.innerHTML = `<div class="card"><h3>Withdraw Funds</h3>
+      <div class="field"><label>Amount (USD)</label><input type="number" id="wdAmt" min="50" value="100"/></div>
+      <div class="field"><label>Crypto</label><select id="wdCrypto"><option>BTC</option><option>ETH</option><option>USDT</option></select></div>
+      <div class="field"><label>Wallet Address</label><input type="text" id="wdAddr" placeholder="Your wallet"/></div>
+      <button class="btn" onclick="clientWithdraw()">Submit Withdrawal</button>
+    </div>
+    <div class="card"><h3>Withdrawal History</h3>
+      ${(u.withdrawals||[]).length === 0 ? '<p style="color:var(--muted);">No withdrawals yet.</p>' : ''}
+      ${(u.withdrawals||[]).map(w => `<div style="padding:8px 0;">$${w.amount} ${w.crypto} - <span class="status-badge ${w.status==='approved'?'verified':'pending'}">${w.status}</span></div>`).join('')}
+    </div>`;
+  }
+  else if(t==='referral'){
+    c.innerHTML = `<div class="card"><h3>Your Referral Link</h3>
+      <div class="field"><input type="text" readonly value="${window.location.origin}/?ref=${u.referral_code||''}" id="refLink"/></div>
+      <button class="btn" onclick="navigator.clipboard.writeText($('refLink').value); alert('Copied!')">Copy Link</button>
+    </div>
+    <div class="card"><h3>Active Referrals</h3>
+      ${(u.referrals||[]).length === 0 ? '<p style="color:var(--muted);">No referrals yet. Share your link to earn commissions!</p>' : ''}
+    </div>`;
+  }
+  else if(t==='support'){
+    c.innerHTML = `<div class="card"><h3>Support Chat</h3>
+      <div class="chat-box" id="chatBox"><p style="color:var(--muted);text-align:center;padding:30px;">Start a conversation...</p></div>
+      <div style="display:flex;gap:8px;">
+        <input type="text" id="msgInput" placeholder="Type your message..." style="flex:1;padding:11px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:#fff;"/>
+        <button class="btn" onclick="sendMsg()">Send</button>
+      </div>
+      <p style="color:var(--muted);font-size:.78rem;margin-top:10px;">Or contact us directly on Telegram: <a href="https://t.me/+15146679490" target="_blank" style="color:var(--gold);">+1 514 667 9490</a></p>
+    </div>`;
+    loadMessages();
+  }
+}
+
+function kycUploadFormHTML(){
+  return `<form onsubmit="submitKYC(event)">
+    <div class="field"><label>ID Document (Passport/ID/License)</label><input type="file" name="id_document" accept="image/*,.pdf" required/></div>
+    <div class="field"><label>Proof of Address (Utility bill/Bank statement)</label><input type="file" name="address_document" accept="image/*,.pdf" required/></div>
+    <div class="field"><label>Selfie with ID (optional)</label><input type="file" name="selfie_document" accept="image/*,.pdf"/></div>
+    <button type="submit" class="btn-full">Submit for Review</button>
+  </form>`;
+}
+
+async function submitKYC(e){
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  $('regBtn').disabled = true;
+  try{
+    const r = await fetch('/api/kyc/upload', {method:'POST', headers:{'Authorization':'Bearer '+session.token}, body:fd});
+    const d = await r.json();
+    if(!r.ok){ alert(d.error || 'Upload failed'); return; }
+    alert('Documents submitted! Your KYC is now under review.');
+    await refreshClient();
+    cTab('dashboard');
+  } catch(e){ alert('Network error'); }
+}
+
+async function loadMessages(){
+  try{
+    const r = await fetch('/api/client/messages', {headers:{'Authorization':'Bearer '+session.token}});
+    const d = await r.json();
+    renderMessages(d.messages||[]);
+  } catch(e){}
+}
+function renderMessages(msgs){
+  const b = $('chatBox');
+  if(msgs.length === 0){
+    b.innerHTML = '<p style="color:var(--muted);text-align:center;padding:30px;">Start a conversation...</p>';
+    return;
+  }
+  b.innerHTML = msgs.map(m => `<div class="msg ${m.from}">
+    <div class="msg-bub">${m.message}</div>
+    <div class="msg-meta">${new Date(m.timestamp).toLocaleString()}</div>
+  </div>`).join('');
+  b.scrollTop = b.scrollHeight;
+}
+async function sendMsg(){
+  const inp = $('msgInput');
+  const m = inp.value.trim();
+  if(!m) return;
+  inp.value='';
+  try{
+    await fetch('/api/client/messages', {method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.token}, body:JSON.stringify({message:m})});
+    loadMessages();
+  } catch(e){}
+}
+
+async function clientDeposit(){
+  const amt = parseFloat($('depAmt').value);
+  const crypto = $('depCrypto').value;
+  const tx = $('depTx').value.trim();
+  if(!amt) return alert('Enter amount');
+  try{
+    const r = await fetch('/api/client/deposit', {method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.token}, body:JSON.stringify({amount:amt, crypto, tx_hash:tx})});
+    const d = await r.json();
+    if(d.ok){ alert('Deposit request submitted!'); refreshClient(); } else alert(d.error);
+  } catch(e){ alert('Network error'); }
+}
+async function clientWithdraw(){
+  const amt = parseFloat($('wdAmt').value);
+  const crypto = $('wdCrypto').value;
+  const addr = $('wdAddr').value.trim();
+  if(!amt||!addr) return alert('Fill all fields');
+  try{
+    const r = await fetch('/api/client/withdraw', {method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.token}, body:JSON.stringify({amount:amt, crypto, wallet_address:addr})});
+    const d = await r.json();
+    if(d.ok){ alert('Withdrawal request submitted!'); refreshClient(); } else alert(d.error);
+  } catch(e){ alert('Network error'); }
+}
+
+/* ════════ ADMIN TABS ════════ */
+function aTab(t){
+  activeAdminTab = t;
+  document.querySelectorAll('#adminTabs .tabx').forEach(x => x.classList.toggle('active', x.dataset.tab===t));
+  renderAdminTab(t);
+}
+
+async function refreshAdmin(){
+  try{
+    const r = await fetch('/api/admin/users', {headers:{'Authorization':'Bearer '+session.token}});
+    if(r.status===401||r.status===403){ logout(); return; }
+    const d = await r.json();
+    allUsers = d.users || [];
+  } catch(e){}
+  try{
+    const r = await fetch('/api/admin/messages', {headers:{'Authorization':'Bearer '+session.token}});
+    if(r.ok){ const d = await r.json(); allMessages = d.conversations || []; }
+  } catch(e){}
+  renderAdminTab(activeAdminTab);
+}
+
+function renderAdminTab(t){
+  const c = $('adminContent');
+  if(t==='overview'){
+    const total = allUsers.length;
+    const verified = allUsers.filter(u => u.kyc_status==='verified').length;
+    const under = allUsers.filter(u => u.kyc_status==='under_review').length;
+    const rej = allUsers.filter(u => u.kyc_status==='rejected').length;
+    const pend = allUsers.filter(u => u.status==='pending' || u.kyc_status==='not_submitted').length;
+    const bal = allUsers.reduce((s,u) => s + (u.balance||0), 0);
+    c.innerHTML = `
+      <div class="admin-grid">
+        <div class="admin-card"><div class="val">${total}</div><div class="lbl">Total Users</div></div>
+        <div class="admin-card"><div class="val">${verified}</div><div class="lbl">KYC Verified</div></div>
+        <div class="admin-card"><div class="val">${under}</div><div class="lbl">Under Review</div></div>
+        <div class="admin-card"><div class="val">${rej}</div><div class="lbl">Rejected</div></div>
+        <div class="admin-card"><div class="val">${pend}</div><div class="lbl">Pending</div></div>
+        <div class="admin-card"><div class="val">$${bal.toFixed(0)}</div><div class="lbl">Total Balance</div></div>
+      </div>
+      <div class="card"><h3>Pending KYC Review</h3>
+        ${allUsers.filter(u => u.kyc_status==='under_review').length === 0 ? '<p style="color:var(--muted);">No pending KYC.</p>' :
+        allUsers.filter(u => u.kyc_status==='under_review').map(u => `<div class="user-row">
+          <div class="user-info">
+            <div class="user-av">${(u.firstName||'?')[0]}</div>
+            <div><h4>${u.firstName} ${u.lastName}</h4><p>${u.email} · ${u.country}</p></div>
+          </div>
+          <div class="user-actions">
+            <button class="btn btn-sm" onclick="aTab('kyc')">Review</button>
+          </div>
+        </div>`).join('')}
+      </div>`;
+  }
+  else if(t==='users'){
+    c.innerHTML = `<div class="card"><h3>All Users (${allUsers.length})</h3>` +
+      allUsers.map(u => `<div class="user-row">
+        <div class="user-info">
+          <div class="user-av">${(u.firstName||'?')[0]}</div>
+          <div>
+            <h4>${u.firstName} ${u.lastName} <span class="status-badge ${u.status}">${u.status}</span> <span class="status-badge ${u.kyc_status||'not_submitted'}">KYC: ${u.kyc_status||'not_submitted'}</span></h4>
+            <p>${u.email} · ${u.country||'N/A'} · ${u.phone||''}</p>
+            <p style="font-size:.7rem;margin-top:3px;">Registered: ${u.registration_date ? new Date(u.registration_date).toLocaleDateString() : 'N/A'} · IP: ${u.ip_address||'N/A'} · Ref: ${u.referral_code||'N/A'}</p>
+          </div>
+        </div>
+        <div class="user-actions">
+          <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end;margin-right:14px;">
+            <strong style="color:var(--gold);">$${(u.balance||0).toFixed(2)}</strong>
+            <span style="color:var(--muted);font-size:.75rem;">Profit: $${(u.profit||0).toFixed(2)}</span>
+          </div>
+          <button class="btn btn-sm" onclick="quickCredit(${u.id})">+Credit</button>
+          <button class="btn btn-sm btn-ghost" onclick="userDetail(${u.id})">View</button>
+        </div>
+      </div>`).join('') + '</div>';
+  }
+  else if(t==='kyc'){
+    const usersWithKYC = allUsers.filter(u => ['under_review','verified','rejected','not_submitted'].includes(u.kyc_status));
+    c.innerHTML = `<div class="card"><h3>KYC Review Queue (${usersWithKYC.length})</h3>` +
+      usersWithKYC.map(u => `<div class="user-row">
+        <div class="user-info">
+          <div class="user-av">${(u.firstName||'?')[0]}</div>
+          <div>
+            <h4>${u.firstName} ${u.lastName}</h4>
+            <p>${u.email} · ${u.country} · Phone: ${u.phone||'N/A'}</p>
+            <p style="font-size:.7rem;margin-top:3px;">Registered: ${u.registration_date ? new Date(u.registration_date).toLocaleString() : 'N/A'} · IP: ${u.ip_address||'N/A'}</p>
+          </div>
+        </div>
+        <div class="user-actions">
+          <span class="status-badge ${u.kyc_status||'not_submitted'}">${u.kyc_status||'not_submitted'}</span>
+          ${u.kyc_status==='under_review' || u.kyc_status==='rejected' ? `<button class="btn btn-sm" onclick="reviewKyc(${u.id})">View Docs</button>` : ''}
+        </div>
+      </div>`).join('') + '</div>';
+  }
+  else if(t==='trades'){
+    c.innerHTML = `<div class="card"><h3>Add Trade</h3>
+      <div class="field"><label>Select User</label><select id="tradeUser">${allUsers.map(u => `<option value="${u.id}">${u.firstName} ${u.lastName} (${u.email})</option>`).join('')}</select></div>
+      <div class="field"><label>Symbol</label><input type="text" id="tradeSym" value="BTC/USD"/></div>
+      <div class="field-row">
+        <div class="field"><label>Direction</label><select id="tradeDir"><option>UP</option><option>DOWN</option></select></div>
+        <div class="field"><label>Result</label><select id="tradeRes"><option value="won">Won</option><option value="lost">Lost</option></select></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Amount</label><input type="number" id="tradeAmt" value="100"/></div>
+        <div class="field"><label>P/L</label><input type="number" id="tradePnl" value="80"/></div>
+      </div>
+      <button class="btn" onclick="addTrade()">Add Trade</button>
+    </div>`;
+  }
+  else if(t==='messages'){
+    c.innerHTML = `<div style="display:grid;grid-template-columns:300px 1fr;gap:14px;min-height:500px;">
+      <div class="card" style="padding:14px;overflow-y:auto;">
+        <h3 style="font-size:.95rem;margin-bottom:10px;">Conversations (${allMessages.length})</h3>
+        ${allMessages.length === 0 ? '<p style="color:var(--muted);">No messages.</p>' : ''}
+        ${allMessages.map(c => `<div onclick="selectConvo(${c.user_id})" style="padding:10px;border-radius:8px;cursor:pointer;background:${activeConvoUserId===c.user_id?'var(--bg3)':'transparent'};margin-bottom:4px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <strong style="font-size:.88rem;">${c.user_name}</strong>
+            ${c.unread_count > 0 ? `<span class="notif-dot" style="position:static;">${c.unread_count}</span>` : ''}
+          </div>
+          <p style="color:var(--muted);font-size:.75rem;margin-top:3px;">${c.last_message?.message?.slice(0,30)||''}</p>
+        </div>`).join('')}
+      </div>
+      <div class="card">
+        <h3 id="convoTitle">Select a conversation</h3>
+        <div class="chat-box" id="convoBox"></div>
+        <div style="display:flex;gap:8px;margin-top:10px;">
+          <input type="text" id="adminMsgInput" placeholder="Type reply..." style="flex:1;padding:11px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:#fff;"/>
+          <button class="btn" onclick="sendAdminMsg()">Send</button>
+        </div>
+      </div>
+    </div>`;
+    if(activeConvoUserId) selectConvo(activeConvoUserId);
+  }
+}
+
+async function quickCredit(id){
+  const amt = prompt('Credit amount (USD):','100');
+  if(!amt) return;
+  try{
+    const r = await fetch(`/api/admin/users/${id}/balance`,{
+      method:'PUT', headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.token},
+      body: JSON.stringify({amount:parseFloat(amt), operation:'credit'})
+    });
+    const d = await r.json();
+    if(d.ok){ alert('Credited!'); refreshAdmin(); } else alert(d.error);
+  } catch(e){ alert('Error'); }
+}
+
+async function userDetail(id){
+  const u = allUsers.find(x => x.id==id);
+  if(!u) return;
+  const detail = `Full Name: ${u.firstName} ${u.lastName}\nEmail: ${u.email}\nPhone: ${u.phone}\nCountry: ${u.country}\nRegistered: ${u.registration_date}\nIP: ${u.ip_address}\nPlan: ${u.plan}\nBalance: $${u.balance}\nProfit: $${u.profit}\nInvested: $${u.invested}\nKYC: ${u.kyc_status}\nDocuments:\n- ID: ${u.id_document?'On file':'None'}\n- Address: ${u.address_document?'On file':'None'}\n- Selfie: ${u.selfie_document?'On file':'None'}\nKYC History:\n${(u.kyc_history||[]).map(h => `  ${h.timestamp}: ${h.status} by ${h.reviewer} — ${h.reason||''}`).join('\n')}`;
+  alert(detail);
+}
+
+async function reviewKyc(id){
+  const u = allUsers.find(x => x.id==id);
+  if(!u) return;
+  let html = `<h3>${u.firstName} ${u.lastName} — KYC Documents</h3>`;
+  if(u.id_document){
+    if(u.id_document.type?.startsWith('image/')){
+      html += `<p><strong>ID Document:</strong></p><img src="data:${u.id_document.type};base64,${u.id_document.data}" style="max-width:100%;border-radius:8px;margin-bottom:12px;"/>`;
+    } else {
+      html += `<p><strong>ID Document (PDF):</strong> <a href="data:${u.id_document.type};base64,${u.id_document.data}" download="${u.id_document.name}" class="btn btn-sm">Download</a></p>`;
+    }
+  } else html += '<p>No ID document uploaded.</p>';
+  if(u.address_document){
+    if(u.address_document.type?.startsWith('image/')){
+      html += `<p><strong>Address Document:</strong></p><img src="data:${u.address_document.type};base64,${u.address_document.data}" style="max-width:100%;border-radius:8px;margin-bottom:12px;"/>`;
+    } else {
+      html += `<p><strong>Address (PDF):</strong> <a href="data:${u.address_document.type};base64,${u.address_document.data}" download="${u.address_document.name}" class="btn btn-sm">Download</a></p>`;
+    }
+  } else html += '<p>No address document uploaded.</p>';
+  if(u.selfie_document){
+    html += `<p><strong>Selfie:</strong></p><img src="data:${u.selfie_document.type};base64,${u.selfie_document.data}" style="max-width:60%;border-radius:8px;"/>`;
+  }
+  html += `<div style="margin-top:24px;display:flex;gap:10px;flex-wrap:wrap;">
+    <button class="btn btn-green" onclick="kycAction(${id},'approve')">✅ Approve</button>
+    <button class="btn btn-red" onclick="kycAction(${id},'reject')">❌ Reject</button>
+  </div>
+  <div style="margin-top:14px;"><label style="color:var(--muted);font-size:.85rem;">Reason (for reject):</label><br/><input type="text" id="kycReason" placeholder="Documents unclear..." style="width:100%;padding:10px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;color:#fff;margin-top:6px;"/></div>`;
+  // Show in modal
+  const m = document.createElement('div');
+  m.className = 'modal-bg show';
+  m.innerHTML = `<div class="modal" style="max-width:680px;max-height:90vh;overflow-y:auto;">${html}<button class="modal-close" onclick="this.closest('.modal-bg').remove()">×</button></div>`;
+  document.body.appendChild(m);
+}
+
+async function kycAction(id, action){
+  const reason = $('kycReason')?.value || '';
+  try{
+    const r = await fetch(`/api/admin/users/${id}/kyc`,{
+      method:'PUT', headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.token},
+      body: JSON.stringify({action, reason})
+    });
+    const d = await r.json();
+    if(d.ok){
+      alert(action==='approve'?'KYC Approved!':'KYC Rejected');
+      document.querySelector('.modal-bg')?.remove();
+      refreshAdmin();
+    } else alert(d.error);
+  } catch(e){ alert('Error'); }
+}
+
+async function addTrade(){
+  const uid = $('tradeUser').value;
+  const data = {
+    symbol: $('tradeSym').value,
+    direction: $('tradeDir').value,
+    amount: parseFloat($('tradeAmt').value),
+    pnl: parseFloat($('tradePnl').value),
+    status: $('tradeRes').value
+  };
+  try{
+    const r = await fetch(`/api/admin/users/${uid}/trade`,{
+      method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.token},
+      body: JSON.stringify(data)
+    });
+    const d = await r.json();
+    if(d.ok){ alert('Trade added!'); refreshAdmin(); } else alert(d.error);
+  } catch(e){ alert('Error'); }
+}
+
+async function selectConvo(userId){
+  activeConvoUserId = userId;
+  const c = allMessages.find(c => c.user_id == userId);
+  if(!c) return;
+  $('convoTitle').textContent = `${c.user_name} · ${c.user_email}`;
+  const box = $('convoBox');
+  box.innerHTML = c.messages.map(m => `<div class="msg ${m.from}">
+    <div class="msg-bub">${m.message}</div>
+    <div class="msg-meta">${new Date(m.timestamp).toLocaleString()}</div>
+  </div>`).join('');
+  box.scrollTop = box.scrollHeight;
+  // Mark read
+  fetch(`/api/admin/messages/read/${userId}`,{method:'PUT', headers:{'Authorization':'Bearer '+session.token}});
+}
+async function sendAdminMsg(){
+  const msg = $('adminMsgInput').value.trim();
+  if(!msg||!activeConvoUserId) return;
+  $('adminMsgInput').value = '';
+  try{
+    await fetch(`/api/admin/messages/${activeConvoUserId}`,{method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.token}, body:JSON.stringify({message:msg})});
+    refreshAdmin();
+  } catch(e){}
+}
+
+/* ════════ INIT ════════ */
+async function init(){
+  $('y').textContent = new Date().getFullYear();
+  // Load markets
+  try{
+    const r = await fetch('/api/markets');
+    const d = await r.json();
+    renderMarkets(d);
+  } catch(e){}
+  try{
+    const r = await fetch('/api/plans');
+    const d = await r.json();
+    renderPlans(d.plans);
+  } catch(e){}
+  
+  // Restore session
+  loadSession();
+  if(session && session.token){
+    try {
+      const r = await fetch(session.role==='admin' ? '/api/admin/stats' : '/api/client/me', {headers:{'Authorization':'Bearer '+session.token}});
+      if(r.ok){
+        if(session.role==='admin') showAdmin(); else showClient();
+        return;
+      }
+    } catch(e){}
+    clearSession();
+  }
+  
+  // Show public view
+  $('view-public').classList.remove('hidden');
+}
+
+function renderMarkets(d){
+  const grid = $('marketsGrid');
+  let html = '';
+  const map = (arr, cls, iconFor) => arr.map(m => `
+    <div class="mkt-card">
+      <div class="mkt-icon ${cls}">${iconFor(m)}</div>
+      <div class="mkt-sym">${m.symbol}</div>
+      <div class="mkt-name">${m.name||''}</div>
+      <div class="mkt-price">${m.price}</div>
+      <div class="mkt-chg ${m.change>=0?'up':'dn'}">${m.change>=0?'+':''}${m.change}%</div>
+    </div>`).join('');
+  html += map(d.crypto, 'crypto', m => '₿');
+  html += map(d.forex, 'forex', m => '💱');
+  html += map(d.stocks, 'stock', m => m.symbol.slice(0,2));
+  html += map(d.indices, 'idx', m => '📈');
+  html += map(d.commodities, 'cmd', m => '◆');
+  grid.innerHTML = html;
+  
+  // Ticker
+  const all = [...d.crypto, ...d.forex, ...d.stocks, ...d.indices, ...d.commodities];
+  const tick = $('tickerInner');
+  const t = all.concat(all).map(m => `<div class="tk-it"><span class="tk-sym">${m.symbol}</span><span>${m.price}</span><span class="${m.change>=0?'up':'dn'}">${m.change>=0?'+':''}${m.change}%</span></div>`).join('');
+  tick.innerHTML = t;
+}
+
+function renderPlans(plans){
+  const grid = $('plansGrid');
+  if(!plans) return;
+  grid.innerHTML = plans.map((p,i) => `
+    <div class="plan-card ${i===1?'featured':''}">
+      ${i===1?'<div class="plan-badge">POPULAR</div>':''}
+      <div class="plan-name">${p.name}</div>
+      <div class="plan-min">Min Deposit: $${p.min_deposit}</div>
+      <div class="plan-roi">${p.roi}%<small>/mo</small></div>
+      <ul class="plan-feat">${p.features.map(f => `<li>${f}</li>`).join('')}</ul>
+      <button class="btn-primary" onclick="openModal('register')" style="width:100%;">Get ${p.name}</button>
+    </div>
+  `).join('');
+}
+
+init();
+</script>
+</body>
+</html>
