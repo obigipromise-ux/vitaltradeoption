@@ -262,7 +262,7 @@ tr:hover td{background:rgba(255,255,255,.015);}
     </div>
     <div class="topbar-right">
       <div class="live"><div class="ldot"></div>Live</div>
-      <a href="https://wa.me/12158924891" target="_blank" style="display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:7px;background:rgba(37,211,102,.1);border:1px solid rgba(37,211,102,.3);color:#25D366;font-size:.76rem;font-weight:700;text-decoration:none;">💬 WhatsApp</a>
+      <a href="https://t.me/15146679490" target="_blank" style="display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:7px;background:rgba(0,136,204,.1);border:1px solid rgba(0,136,204,.3);color:#0088cc;font-size:.76rem;font-weight:700;text-decoration:none;">💬 Telegram</a>
       <button class="tbbtn" onclick="testEmail()" title="Test email delivery">📧 Test Email</button>
       <button class="tbbtn" onclick="refreshAll()">🔄 Refresh</button>
       <button class="tbbtn bsm gold" style="border:none;padding:7px 14px;" onclick="openM('addUser')">+ Add Client</button>
@@ -295,7 +295,7 @@ tr:hover td{background:rgba(255,255,255,.015);}
       <div style="background:rgba(79,142,247,.07);border:1px solid rgba(79,142,247,.25);border-radius:10px;padding:14px 18px;margin-bottom:14px;font-size:.82rem;color:var(--text);line-height:1.8;">
         <strong style="color:var(--blue);">📋 How to approve new clients:</strong><br/>
         1. Client registers → appears below with status <strong style="color:var(--blue)">📧 Awaiting Email Verify</strong><br/>
-        2. Click <strong style="color:#25D366">📲 Send Link via WhatsApp</strong> → WhatsApp opens with message ready → send to client<br/>
+        2. Click <strong style="color:#0088cc">📲 Send Link via Telegram</strong> → Telegram opens with message ready → send to client<br/>
         3. Client clicks the link → account auto-activates → they can login immediately<br/>
         4. Or click <strong style="color:var(--green)">✅ Approve Directly</strong> to skip email verification entirely
       </div>
@@ -546,7 +546,7 @@ tr:hover td{background:rgba(255,255,255,.015);}
       <div id="verifyLinkText" style="font-family:monospace;font-size:.76rem;color:var(--gold);word-break:break-all;line-height:1.6;"></div>
     </div>
     <div style="background:rgba(79,142,247,.06);border:1px solid rgba(79,142,247,.2);border-radius:8px;padding:12px;margin-bottom:14px;font-size:.78rem;color:#93c5fd;line-height:1.7;">
-      📋 Copy this link and send it to the client via WhatsApp, email, or any message platform. When they click it, their email is verified and account moves to <strong>Pending Approval</strong>.
+      📋 Copy this link and send it to the client via Telegram, email, or any message platform. When they click it, their email is verified and account moves to <strong>Pending Approval</strong>.
     </div>
     <div class="mbtns">
       <button class="mbtn out" onclick="closeM('verify')">Close</button>
@@ -593,7 +593,7 @@ tr:hover td{background:rgba(255,255,255,.015);}
 
 <script>
 const API = window.location.origin;
-let adminToken = sessionStorage.getItem('vto_admin_token') || null;
+let adminToken = localStorage.getItem('vto_admin_token') || null;
 let allUsers=[], allDeps=[], allWds=[], allTrades=[];
 let activeConvoId=null, chatPoll=null, statsPoll=null;
 let failAttempts=0, isLocked=false, lockTimer=null, sessSecs=1800, sessInterval=null;
@@ -618,7 +618,7 @@ async function tryLogin(){
   try{
     const d=await aFetch('POST','/api/auth/admin',{username:u,password:p});
     adminToken=d.token;
-    sessionStorage.setItem('vto_admin_token',adminToken);
+    localStorage.setItem('vto_admin_token',adminToken);
     document.getElementById('sbUser').textContent=u;
     document.getElementById('sessUser').textContent=u;
     failAttempts=0;
@@ -640,20 +640,20 @@ function triggerLock(){
   let s=60; document.getElementById('lcd').textContent=s;
   lockTimer=setInterval(()=>{s--;document.getElementById('lcd').textContent=s;if(s<=0){clearInterval(lockTimer);isLocked=false;failAttempts=0;document.getElementById('lAttempts').textContent='0';document.getElementById('lockWrap').classList.remove('show');document.getElementById('loginWrap').classList.remove('gone');document.getElementById('lBtn').disabled=false;document.getElementById('lBtn').textContent='🔓 Login to Admin Panel';document.getElementById('lErr').classList.remove('show');}},1000);
 }
-function adminLogout(){
+function adminLogout(){localStorage.removeItem('vto_admin_token');
   clearInterval(statsPoll);clearInterval(chatPoll);clearInterval(sessInterval);
-  adminToken=null;sessionStorage.removeItem('vto_admin_token');
+  adminToken=null;localStorage.removeItem('vto_admin_token';
   document.getElementById('loginWrap').classList.remove('gone');
   document.getElementById('lPass').value='';document.getElementById('lErr').classList.remove('show');
   document.getElementById('lBtn').disabled=false;document.getElementById('lBtn').textContent='🔓 Login to Admin Panel';
 }
 // Session restore
 (async()=>{
-  const tok=sessionStorage.getItem('vto_admin_token');
+  const tok=localStorage.getItem('vto_admin_token');
   if(!tok)return;
   adminToken=tok;
   try{await aFetch('GET','/api/admin/stats');document.getElementById('loginWrap').classList.add('gone');startSession();refreshAll();startPolling();}
-  catch(e){sessionStorage.removeItem('vto_admin_token');}
+  catch(e){localStorage.removeItem('vto_admin_token';}
 })();
 function startSession(){
   clearInterval(sessInterval);sessSecs=1800;
@@ -1159,18 +1159,18 @@ async function confirmRejectKYC(){
 }
 
 
-async function copyAndWhatsApp(id, name){
+async function copyAndTelegram(id, name){
   try{
     const d=await aFetch('GET',`/api/admin/verify-link/${id}`);
     if(!d.link){showToast('ℹ️ Email already verified — approve the account directly.');return;}
     // Copy link
     await navigator.clipboard.writeText(d.link).catch(()=>{});
-    // Open WhatsApp with pre-filled message
+    // Open Telegram with pre-filled message
     const msg=encodeURIComponent(
       `Hello ${name}!\n\nWelcome to VitalTradeOption! Please click the link below to verify your email and activate your account:\n\n${d.link}\n\nAfter clicking, you will be redirected to our platform and can login immediately.\n\nThank you,\nVitalTradeOption Team`
     );
-    window.open(`https://wa.me/?text=${msg}`,'_blank');
-    showToast('✅ Link copied + WhatsApp opened! Paste and send to client.');
+    window.open(`https://t.me/?text=${msg}`,'_blank');
+    showToast('✅ Link copied + Telegram opened! Paste and send to client.');
   }catch(e){showToast('⚠️ '+(e.error||'Error'));}
 }
 async function resendVerifyEmail(id){
@@ -1193,11 +1193,11 @@ async function getAndCopyLink(id, email){
     }
     // Copy to clipboard
     await navigator.clipboard.writeText(d.link).catch(()=>{});
-    showToast(`✅ Verification link COPIED! Paste and send to: ${email} via WhatsApp/email`);
+    showToast(`✅ Verification link COPIED! Paste and send to: ${email} via Telegram/email`);
     // Also show in a popup for easy access
-    if(confirm(`Link copied!\n\nSend this to ${d.name} (${email}):\n\n${d.link}\n\nClick OK to open WhatsApp to send it.`)){
+    if(confirm(`Link copied!\n\nSend this to ${d.name} (${email}):\n\n${d.link}\n\nClick OK to open Telegram to send it.`)){
       const waMsg=encodeURIComponent(`Hello ${d.name},\n\nWelcome to VitalTradeOption! Please click the link below to verify your email and activate your account:\n\n${d.link}\n\nThank you,\nVitalTradeOption Team`);
-      window.open('https://wa.me/?text='+waMsg,'_blank');
+      window.open('https://t.me/?text='+waMsg,'_blank');
     }
   }catch(e){showToast('⚠️ '+(e.error||'Error getting link'));}
 }
@@ -1279,17 +1279,17 @@ function showToast(m){const t=document.getElementById('toast');t.textContent=m;t
   <button class="mob-btn" onclick="adminLogout()" style="color:var(--red);"><span class="mbi">⏏</span>Logout</button>
 </div>
 
-<!-- WhatsApp Floating Button -->
-<a href="https://wa.me/12158924891?text=Hello%2C%20I%20need%20support%20with%20my%20VitalTradeOption%20account" target="_blank" id="waBtn" title="Chat with us on WhatsApp"
-   style="position:fixed;bottom:28px;right:24px;z-index:999;width:58px;height:58px;background:#25D366;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(37,211,102,.5);text-decoration:none;transition:.2s;animation:waPulse 2.5s infinite;">
+<!-- Telegram Floating Button -->
+<a href="https://t.me/15146679490?text=Hello%2C%20I%20need%20support%20with%20my%20VitalTradeOption%20account" target="_blank" id="waBtn" title="Chat with us on Telegram"
+   style="position:fixed;bottom:28px;right:24px;z-index:999;width:58px;height:58px;background:#0088cc;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(0,136,204,.5);text-decoration:none;transition:.2s;animation:waPulse 2.5s infinite;">
   <svg width="30" height="30" viewBox="0 0 30 30" fill="white">
     <path d="M15 2C7.8 2 2 7.8 2 15c0 2.3.6 4.5 1.7 6.4L2 28l6.8-1.7C10.6 27.4 12.8 28 15 28c7.2 0 13-5.8 13-13S22.2 2 15 2zm6.4 17.9c-.3.8-1.5 1.5-2.1 1.6-.5.1-1.2.1-1.9-.1-.4-.1-1-.3-1.7-.6-3-1.3-5-4.3-5.1-4.5-.1-.2-1.1-1.5-1.1-2.8 0-1.3.7-2 .9-2.2.3-.3.6-.3.8-.3h.6c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .6l-.5.7c-.1.1-.2.3-.1.5.4.7.9 1.4 1.5 1.9.6.6 1.3 1 2 1.2.2.1.4 0 .5-.1l.6-.8c.2-.2.4-.3.6-.2l1.9.9c.2.1.4.2.5.4.1.6-.1 1.5-.4 2.3z"/>
   </svg>
 </a>
 <style>
 @keyframes waPulse{
-  0%,100%{box-shadow:0 4px 20px rgba(37,211,102,.5);transform:scale(1);}
-  50%{box-shadow:0 4px 32px rgba(37,211,102,.8);transform:scale(1.05);}
+  0%,100%{box-shadow:0 4px 20px rgba(0,136,204,.5);transform:scale(1);}
+  50%{box-shadow:0 4px 32px rgba(0,136,204,.8);transform:scale(1.05);}
 }
 </style>
 </body>
