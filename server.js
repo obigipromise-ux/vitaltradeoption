@@ -287,6 +287,23 @@ ${balance ? `<div class="infobox"><div class="row"><span>Available Balance</span
 <div class="warn">⏰ Please submit your withdrawal within 7 days. Go to Dashboard → Withdraw tab.</div>
 <div style="text-align:center"><a class="wa" href="https://wa.me/${WHATSAPP_NO.replace(/[^0-9]/g,'')}">💬 WhatsApp Support</a></div>`);
 
+
+// ── Input sanitization ──────────────────────────────────────────
+function sanitize(str) {
+  if (typeof str !== 'string') return str;
+  return str.replace(/<script[^>]*>.*?<\/script>/gi, '')
+            .replace(/<[^>]+>/g, '')
+            .trim();
+}
+function sanitizeUserInput(obj) {
+  if (!obj || typeof obj !== 'object') return obj;
+  const clean = {};
+  for (const [k, v] of Object.entries(obj)) {
+    clean[k] = typeof v === 'string' ? sanitize(v) : v;
+  }
+  return clean;
+}
+
 // ══════════════════════════════════════════════════════════════
 //  AUTH HELPERS
 // ══════════════════════════════════════════════════════════════
@@ -310,6 +327,22 @@ app.post('/api/admin/test-email', needA, async (req,res) => {
   </div>`;
   const ok = await sendEmail(dest, 'Admin', `Test — ${BROKER_NAME} email system`, html);
   res.json({ ok, message: ok ? 'Test email sent to ' + dest : 'Email failed — check GMAIL_APP_PASSWORD in Render env vars' });
+});
+
+
+// ── Rate limiting for auth ──────────────────────────────────────
+const loginAttempts = {};
+app.use('/api/auth/', (req, res, next) => {
+  if (req.method !== 'POST') return next();
+  const ip = req.ip || req.connection?.remoteAddress || 'unknown';
+  const now2 = Date.now();
+  if (!loginAttempts[ip]) loginAttempts[ip] = [];
+  loginAttempts[ip] = loginAttempts[ip].filter(t => now2 - t < 60000);
+  if (loginAttempts[ip].length >= 10) {
+    return res.status(429).json({error:'Too many attempts. Please wait 60 seconds.'});
+  }
+  loginAttempts[ip].push(now2);
+  next();
 });
 
 // ══════════════════════════════════════════════════════════════
@@ -794,12 +827,18 @@ app.post('/api/admin/support/:uid', needA, (req,res) => {
   db.messages=db.messages||[]; db.messages.push(msg); saveDB(db); res.json({ok:true});
 });
 
-// ── Pages ─────────────────────────────────────────────────────
-app.get('/',       (_,res)=>res.sendFile(path.join(__dirname,'public','index.html')));
-app.get('/client', (_,res)=>res.sendFile(path.join(__dirname,'public','client.html')));
-app.get('/admin',  (_,res)=>res.sendFile(path.join(__dirname,'public','admin.html')));
+// ── Pages — UNIFIED: single URL for everything ════════════════
+// Main app serves index.html which handles routing client-side
+app.get('/',             (_,res)=>res.sendFile(path.join(__dirname,'public','index.html')));
+app.get('/client',       (_,res)=>res.sendFile(path.join(__dirname,'public','index.html')));
+app.get('/admin',        (_,res)=>res.sendFile(path.join(__dirname,'public','index.html')));
+app.get('/dashboard',    (_,res)=>res.sendFile(path.join(__dirname,'public','index.html')));
 app.get('/email-templates.html', (_,res)=>res.sendFile(path.join(__dirname,'public','email-templates.html')));
 app.get('/ping',   (_,res)=>res.json({ok:true, time:now(), users: loadDB().users.length}));
+
+// Serve client.html and admin.html as content endpoints (fetched by JS router)
+app.get('/content/client', (_,res)=>res.sendFile(path.join(__dirname,'public','client.html')));
+app.get('/content/admin',  (_,res)=>res.sendFile(path.join(__dirname,'public','admin.html')));
 
 // ── Start ─────────────────────────────────────────────────────
 initDB().then(() => {
