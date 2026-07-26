@@ -1,5 +1,170 @@
 {
-  "users": [],
+  "users": [
+    {
+      "id": 1001,
+      "firstName": "Adebayo",
+      "lastName": "Okafor",
+      "email": "adebayo@email.com",
+      "password": "$2a$10$vLQ1nmDaClFn7E47EQPwZOEOkXMakaFKAXtHzCgFt0dTyEa8Od3tq",
+      "country": "Nigeria",
+      "phone": "+2348012345678",
+      "currency": "NGN",
+      "plan": "Growth",
+      "balance": 12845.6,
+      "invested": 8000,
+      "profit": 4845.6,
+      "total_withdrawn": 1200,
+      "status": "active",
+      "kyc_status": "verified",
+      "ip_address": "102.176.55.21",
+      "registration_date": "2024-01-12T08:00:00Z",
+      "referral_code": "ADEBAY24",
+      "kyc_history": [
+        {
+          "status": "verified",
+          "timestamp": "2024-01-13T10:00:00Z",
+          "reviewer": "admin",
+          "reason": "Approved"
+        }
+      ],
+      "trades": [],
+      "deposits": [
+        {
+          "id": 1,
+          "amount": 8000,
+          "crypto": "BTC",
+          "tx_hash": "a4f...",
+          "status": "approved",
+          "timestamp": "2024-01-15T08:00:00Z"
+        }
+      ],
+      "withdrawals": [
+        {
+          "id": 1,
+          "amount": 1200,
+          "crypto": "BTC",
+          "status": "approved",
+          "timestamp": "2024-05-23T08:00:00Z"
+        }
+      ],
+      "activity": [
+        {
+          "type": "credit",
+          "amount": 8000,
+          "timestamp": "2024-01-15T08:00:00Z"
+        }
+      ],
+      "referrals": [],
+      "id_document": null,
+      "address_document": null,
+      "selfie_document": null
+    },
+    {
+      "id": 1002,
+      "firstName": "James",
+      "lastName": "Richardson",
+      "email": "james@email.com",
+      "password": "$2a$10$stVY7Df0ESUkA.FUK/60x.hQL4SyvSMXQu3wj1Jcd.pv4QTCuBiKa",
+      "country": "United States",
+      "phone": "+14155552671",
+      "currency": "USD",
+      "plan": "Premium",
+      "balance": 45000,
+      "invested": 25000,
+      "profit": 20000,
+      "total_withdrawn": 5000,
+      "status": "active",
+      "kyc_status": "verified",
+      "ip_address": "73.222.18.99",
+      "registration_date": "2024-03-20T08:00:00Z",
+      "referral_code": "JAME2024",
+      "kyc_history": [
+        {
+          "status": "verified",
+          "timestamp": "2024-03-21T10:00:00Z",
+          "reviewer": "admin"
+        }
+      ],
+      "trades": [],
+      "deposits": [],
+      "withdrawals": [],
+      "activity": [],
+      "referrals": [],
+      "id_document": null,
+      "address_document": null,
+      "selfie_document": null
+    },
+    {
+      "id": 1003,
+      "firstName": "Priya",
+      "lastName": "Sharma",
+      "email": "priya@email.com",
+      "password": "$2a$10$5HE9SN0FkV0GePYKfCP4qOs.IJv3DSyyzRL2MjKal/LN7ZubkmsKG",
+      "country": "India",
+      "phone": "+919876543210",
+      "currency": "INR",
+      "plan": "Growth",
+      "balance": 22000,
+      "invested": 12000,
+      "profit": 10000,
+      "total_withdrawn": 3000,
+      "status": "active",
+      "kyc_status": "verified",
+      "ip_address": "49.36.112.45",
+      "registration_date": "2024-04-10T08:00:00Z",
+      "referral_code": "PRIY2024",
+      "kyc_history": [
+        {
+          "status": "verified",
+          "timestamp": "2024-04-11T10:00:00Z",
+          "reviewer": "admin"
+        }
+      ],
+      "trades": [],
+      "deposits": [],
+      "withdrawals": [],
+      "activity": [],
+      "referrals": [],
+      "id_document": null,
+      "address_document": null,
+      "selfie_document": null
+    },
+    {
+      "id": 1004,
+      "firstName": "Marcus",
+      "lastName": "Hoffmann",
+      "email": "marcus@email.com",
+      "password": "$2a$10$//Htjy2AiQbPSsEyRA/WDOermn2W78I0Bvr3MQnyblLTFZSSPPkaK",
+      "country": "Germany",
+      "phone": "+4915123456789",
+      "currency": "EUR",
+      "plan": "VIP Elite",
+      "balance": 92000,
+      "invested": 60000,
+      "profit": 32000,
+      "total_withdrawn": 15000,
+      "status": "active",
+      "kyc_status": "verified",
+      "ip_address": "85.214.32.108",
+      "registration_date": "2023-11-05T08:00:00Z",
+      "referral_code": "MARC2024",
+      "kyc_history": [
+        {
+          "status": "verified",
+          "timestamp": "2023-11-06T10:00:00Z",
+          "reviewer": "admin"
+        }
+      ],
+      "trades": [],
+      "deposits": [],
+      "withdrawals": [],
+      "activity": [],
+      "referrals": [],
+      "id_document": null,
+      "address_document": null,
+      "selfie_document": null
+    }
+  ],
   "deposits": [],
   "withdrawals": [],
   "trades": [],
