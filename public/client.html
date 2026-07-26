@@ -583,10 +583,10 @@ tr:hover td{background:rgba(255,255,255,.015);}
           <div style="font-weight:700;font-size:.9rem;">VitalTradeOption Support</div>
           <div style="font-size:.72rem;color:var(--green);">🟢 Online — replies within minutes</div>
         </div>
-        <a href="https://wa.me/12158924891?text=Hello%2C%20I%20need%20support%20with%20my%20VitalTradeOption%20account" target="_blank"
-           style="display:flex;align-items:center;gap:6px;padding:7px 13px;background:#25D366;border-radius:8px;color:#fff;font-size:.75rem;font-weight:800;text-decoration:none;flex-shrink:0;">
-          <svg width="15" height="15" viewBox="0 0 30 30" fill="white"><path d="M15 2C7.8 2 2 7.8 2 15c0 2.3.6 4.5 1.7 6.4L2 28l6.8-1.7C10.6 27.4 12.8 28 15 28c7.2 0 13-5.8 13-13S22.2 2 15 2zm6.4 17.9c-.3.8-1.5 1.5-2.1 1.6-.5.1-1.2.1-1.9-.1-.4-.1-1-.3-1.7-.6-3-1.3-5-4.3-5.1-4.5-.1-.2-1.1-1.5-1.1-2.8 0-1.3.7-2 .9-2.2.3-.3.6-.3.8-.3h.6c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .6l-.5.7c-.1.1-.2.3-.1.5.4.7.9 1.4 1.5 1.9.6.6 1.3 1 2 1.2.2.1.4 0 .5-.1l.6-.8c.2-.2.4-.3.6-.2l1.9.9c.2.1.4.2.5.4.1.6-.1 1.5-.4 2.3z"/></svg>
-          WhatsApp
+        <a href="https://t.me/15146679490?text=Hello%2C%20I%20need%20support%20with%20my%20VitalTradeOption%20account" target="_blank"
+           style="display:flex;align-items:center;gap:6px;padding:7px 13px;background:#0088cc;border-radius:8px;color:#fff;font-size:.75rem;font-weight:800;text-decoration:none;flex-shrink:0;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="white"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>
+          Telegram
         </a>
       </div>
       <div class="chat-msgs" id="chatMsgs">
@@ -627,7 +627,7 @@ tr:hover td{background:rgba(255,255,255,.015);}
 
 <script>
 const API = window.location.origin;
-let token = sessionStorage.getItem('vto_token');
+let token = localStorage.getItem('vto_token');
 let user  = null;
 let allTrades = [], chatPoll = null, supportPoll = null, selPlanIdx = 0, selMethodIdx = 0, depStep = 1;
 
@@ -655,7 +655,7 @@ async function req(method,path,body){
     supportPoll=setInterval(checkUnread,8000);
     checkUnread();
   }catch(e){
-    sessionStorage.clear(); window.location.href='/';
+    localStorage.removeItem('vto_token');localStorage.removeItem('vto_user'); window.location.href='/';
   }
 })();
 
@@ -937,7 +937,7 @@ function showTab(id,el){
 }
 function closeM(id){document.getElementById(id+'Modal').classList.remove('show');}
 document.querySelectorAll('.mover').forEach(o=>o.addEventListener('click',function(e){if(e.target===this)this.classList.remove('show');}));
-function logout(){sessionStorage.clear();window.location.href='/';}
+function logout(){localStorage.removeItem('vto_token');localStorage.removeItem('vto_user');window.location.href='/';}
 function copyRef(){navigator.clipboard.writeText(document.getElementById('refLink').textContent).catch(()=>{});showToast('✅ Referral link copied!');}
 function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.style.display='block';setTimeout(()=>t.style.display='none',3200);}
 // ── KYC functions ─────────────────────────────────────────────────
@@ -1047,17 +1047,17 @@ function buildTicker(){
 }
 </script>
 
-<!-- WhatsApp Floating Button -->
-<a href="https://wa.me/12158924891?text=Hello%2C%20I%20need%20support%20with%20my%20VitalTradeOption%20account" target="_blank" id="waBtn" title="Chat with us on WhatsApp"
-   style="position:fixed;bottom:70px;right:14px;z-index:90;width:40px;height:40px;background:#25D366;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(37,211,102,.3);text-decoration:none;opacity:.85;" title="WhatsApp Support">
+<!-- Telegram Floating Button -->
+<a href="https://t.me/15146679490?text=Hello%2C%20I%20need%20support%20with%20my%20VitalTradeOption%20account" target="_blank" id="waBtn" title="Chat with us on Telegram"
+   style="position:fixed;bottom:70px;right:14px;z-index:90;width:40px;height:40px;background:#0088cc;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,136,204,.3);text-decoration:none;opacity:.85;" title="Telegram Support">
   <svg width="30" height="30" viewBox="0 0 30 30" fill="white">
     <path d="M15 2C7.8 2 2 7.8 2 15c0 2.3.6 4.5 1.7 6.4L2 28l6.8-1.7C10.6 27.4 12.8 28 15 28c7.2 0 13-5.8 13-13S22.2 2 15 2zm6.4 17.9c-.3.8-1.5 1.5-2.1 1.6-.5.1-1.2.1-1.9-.1-.4-.1-1-.3-1.7-.6-3-1.3-5-4.3-5.1-4.5-.1-.2-1.1-1.5-1.1-2.8 0-1.3.7-2 .9-2.2.3-.3.6-.3.8-.3h.6c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .6l-.5.7c-.1.1-.2.3-.1.5.4.7.9 1.4 1.5 1.9.6.6 1.3 1 2 1.2.2.1.4 0 .5-.1l.6-.8c.2-.2.4-.3.6-.2l1.9.9c.2.1.4.2.5.4.1.6-.1 1.5-.4 2.3z"/>
   </svg>
 </a>
 <style>
 @keyframes waPulse{
-  0%,100%{box-shadow:0 4px 20px rgba(37,211,102,.5);transform:scale(1);}
-  50%{box-shadow:0 4px 32px rgba(37,211,102,.8);transform:scale(1.05);}
+  0%,100%{box-shadow:0 4px 20px rgba(0,136,204,.5);transform:scale(1);}
+  50%{box-shadow:0 4px 32px rgba(0,136,204,.8);transform:scale(1.05);}
 }
 </style>
 </body>
