@@ -210,6 +210,11 @@ footer h5{font-size:.82rem;font-weight:700;color:#fff;margin-bottom:14px;}
 
 @media(max-width:900px){.hero-visual{display:none;}.footer-grid{grid-template-columns:1fr 1fr;}.nav-links{display:none;}.hamburger{display:flex;}}
 @media(max-width:600px){.footer-grid{grid-template-columns:1fr;}.ss-item{padding:20px 8px;}.cta-band{padding:40px 20px;}.hero{padding:90px 4% 40px;}.stats-strip{flex-wrap:wrap;}.ss-item{flex:1 1 50%;border-bottom:1px solid var(--border);}}
+
+/* Hide Telegram button when auth modal is open */
+.modal-overlay.show ~ #waBtn,
+body:has(.modal-overlay.show) #waBtn { display: none !important; }
+
 </style>
 </head>
 <body>
@@ -304,7 +309,7 @@ footer h5{font-size:.82rem;font-weight:700;color:#fff;margin-bottom:14px;}
     <div class="why-card"><div class="why-ico" style="background:rgba(79,142,247,.1)">⚡</div><h3>Fast Withdrawals</h3><p>Request withdrawals anytime. Crypto processed within 1–24 hours. Zero withdrawal fees on all account types.</p></div>
     <div class="why-card"><div class="why-ico" style="background:rgba(167,139,250,.1)">🌍</div><h3>Global Access</h3><p>Trade from anywhere in the world across 52+ countries. Available on desktop and mobile with full feature access.</p></div>
     <div class="why-card"><div class="why-ico" style="background:rgba(240,180,41,.1)">💎</div><h3>Multiple Asset Classes</h3><p>Trade Forex, Cryptocurrencies, Stocks, Commodities, Indices and Binary Options — all from one unified account.</p></div>
-    <div class="why-card"><div class="why-ico" style="background:rgba(0,208,132,.1)">🤝</div><h3>Dedicated Support</h3><p>24/7 live chat, email and WhatsApp support. Premium and VIP clients receive a personal account manager.</p></div>
+    <div class="why-card"><div class="why-ico" style="background:rgba(0,208,132,.1)">🤝</div><h3>Dedicated Support</h3><p>24/7 live chat, email and Telegram support. Premium and VIP clients receive a personal account manager.</p></div>
   </div>
 </section>
 
@@ -442,9 +447,9 @@ footer h5{font-size:.82rem;font-weight:700;color:#fff;margin-bottom:14px;}
       <p>A professional online trading and investment platform empowering investors worldwide to grow their wealth through consistent daily returns.
       <div style="margin-top:12px;font-size:.8rem;color:var(--muted);">
         📧 <a href="mailto:obigipromise@gmail.com" style="color:var(--gold);">support@vitaltradeoption.com</a><br/>
-        💬 <a href="https://wa.me/12158924891" style="color:#25D366;font-weight:700;">WhatsApp: +1 (215) 892-4891</a>
+        💬 <a href="https://t.me/15146679490" style="color:#0088cc;font-weight:700;">Telegram: +1 514 667 9490</a>
       </div></p>
-      
+      <div class="risk-disc" style="margin-top:16px;">⚠️ <strong>Risk Disclosure:</strong> Trading involves risk. Past performance is not indicative of future results. Only invest capital you can afford to lose.</div>
     </div>
     <div>
       <h5>Platform</h5>
@@ -457,16 +462,16 @@ footer h5{font-size:.82rem;font-weight:700;color:#fff;margin-bottom:14px;}
     <div>
       <h5>Support</h5>
       <ul class="footer-links">
-        <li><a href="https://wa.me/12158924891?text=Hello%2C%20I%20need%20support" target="_blank" style="color:#25D366;font-weight:700;">💬 WhatsApp Support</a></li>
+        <li><a href="https://t.me/15146679490?text=Hello%2C%20I%20need%20support" target="_blank" style="color:#0088cc;font-weight:700;">💬 Telegram Support</a></li>
         <li><a href="#" onclick="showInfo('help');return false;">Help Center</a></li>
-        <li><a href="https://wa.me/12158924891?text=Hello+VitalTradeOption+I+need+support" target="_blank">💬 Live Chat (WhatsApp)</a></li>
+        <li><a href="https://t.me/15146679490?text=Hello+VitalTradeOption+I+need+support" target="_blank">💬 Live Chat (Telegram)</a></li>
         <li><a href="#" onclick="showInfo('terms');return false;">Terms of Service</a></li>
         <li><a href="#" onclick="showInfo('privacy');return false;">Privacy Policy</a></li>
         <li><a href="/admin" style="color:rgba(255,255,255,.15);font-size:.72rem;">Admin</a></li>
       </ul>
-      <div style="margin-top:14px;background:rgba(37,211,102,.08);border:1px solid rgba(37,211,102,.25);border-radius:8px;padding:10px 12px;">
-        <div style="font-size:.72rem;color:#6ee7b7;font-weight:700;margin-bottom:3px;">📱 WhatsApp Support</div>
-        <a href="https://wa.me/12158924891" target="_blank" style="color:#25D366;font-size:.82rem;font-weight:700;text-decoration:none;">+1 (215) 892-4891</div>
+      <div style="margin-top:14px;background:rgba(0,136,204,.08);border:1px solid rgba(0,136,204,.25);border-radius:8px;padding:10px 12px;">
+        <div style="font-size:.72rem;color:#6ee7b7;font-weight:700;margin-bottom:3px;">📱 Telegram Support</div>
+        <a href="https://t.me/15146679490" target="_blank" style="color:#0088cc;font-size:.82rem;font-weight:700;text-decoration:none;">+1 514 667 9490</div>
         <div style="font-size:.68rem;color:var(--muted);margin-top:2px;">24/7 · Responds within minutes</div>
       </div>
     </div>
@@ -497,7 +502,7 @@ footer h5{font-size:.82rem;font-weight:700;color:#fff;margin-bottom:14px;}
     <div class="mform active" id="form-login">
       <div class="merr" id="loginErr"></div>
       <div class="mfield"><label>Email Address</label><div class="mfield-wrap"><input type="email" id="lEmail" placeholder="your@email.com" onkeydown="if(event.key==='Enter')doLogin()"/><span class="mfield-ico">✉️</span></div></div>
-      <div class="mfield"><label>Password</label><div class="mfield-wrap"><input type="password" id="lPass" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()"/><span class="mfield-ico" id="lEye" onclick="togglePw('lPass','lEye')" style="cursor:pointer">👁️</span></div></div>
+      <div class="mfield"><label>Password</label><div class="mfield-wrap"><input type="password" id="lPass" placeholder="Enter password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()" style="padding-right:40px;"/><button type="button" id="lEye" onclick="togglePw('lPass','lEye')" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;color:#8492a6;cursor:pointer;font-size:1rem;padding:4px 8px;z-index:1;">👁️</button></div></div>
       <button class="btn-submit" id="loginBtn" onclick="doLogin()">🔓 Login to My Account</button>
       <div class="mfooter">Don't have an account? <a onclick="switchTab('register')">Create one here</a></div>
     </div>
@@ -586,8 +591,8 @@ footer h5{font-size:.82rem;font-weight:700;color:#fff;margin-bottom:14px;}
       <div class="mfield"><label>Country</label>
         <select id="rCountry"><option>Nigeria</option><option>Ghana</option><option>Kenya</option><option>South Africa</option><option>United Kingdom</option><option>United States</option><option>Canada</option><option>Other</option></select>
       </div>
-      <div class="mfield"><label>Password</label><div class="mfield-wrap"><input type="password" id="rPass" placeholder="Min 6 characters"/><span class="mfield-ico" id="rEye" onclick="togglePw('rPass','rEye')" style="cursor:pointer">👁️</span></div></div>
-      <div class="mfield"><label>Confirm Password</label><input type="password" id="rPass2" placeholder="Repeat password"/></div>
+      <div class="mfield"><label>Password</label><div class="mfield-wrap"><input type="password" id="rPass" placeholder="Min 6 characters" autocomplete="new-password" style="padding-right:40px;"/><button type="button" id="rEye" onclick="togglePw('rPass','rEye')" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;color:#8492a6;cursor:pointer;font-size:1rem;padding:4px 8px;z-index:1;">👁️</button></div></div>
+      <div class="mfield"><label>Confirm Password</label><input type="password" id="rPass2" placeholder="Repeat password" autocomplete="new-password" style="padding-right:40px;"/></div>
       <button class="btn-submit" id="regBtn" onclick="doRegister()">📝 Create My Account</button>
       <div class="mfooter">Already have an account? <a onclick="switchTab('login')">Login here</a></div>
     </div>
@@ -609,7 +614,7 @@ const API = window.location.origin;
 
 // ── check if already logged in → redirect to dashboard ─────────
 (function(){
-  if (sessionStorage.getItem('vto_token')) {
+  if (localStorage.getItem('vto_token')) {
     try {
       window.location.href = '/client';
     } catch(e) {}
@@ -686,21 +691,133 @@ async function doLogin(){
   const btn=document.getElementById('loginBtn');
   err.classList.remove('show');
   if(!email||!pass){err.textContent='Please enter your email and password.';err.classList.add('show');return;}
-  btn.disabled=true;btn.textContent='⏳ Signing in…';
+  btn.disabled=true; btn.textContent='⏳ Signing in…';
   try{
     const r=await fetch(API+'/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password:pass})});
     const d=await r.json();
     if(!r.ok){
-      if(d.error==='verify_email'){err.innerHTML='📧 <strong>Please verify your email first.</strong> Check your inbox for the verification link.';err.classList.add('show');btn.disabled=false;btn.textContent='🔓 Login to My Account';return;}
       if(d.error==='pending'){showPending();btn.disabled=false;btn.textContent='🔓 Login to My Account';return;}
-      err.textContent=d.error||'Login failed';err.classList.add('show');
+      err.textContent=d.message||d.error||'Login failed';err.classList.add('show');
     }else{
-      sessionStorage.setItem('vto_token',d.token);
-      sessionStorage.setItem('vto_user',JSON.stringify(d.user));
-      window.location.href='/client';
+      // Unified: check role (admin vs client)
+      if(d.role==='admin'){
+        localStorage.setItem('vto_admin_token',d.token);
+        closeModal();
+        // Load admin panel
+        await loadAdminPanel();
+      } else if(d.role==='client'){
+        localStorage.setItem('vto_token',d.token);
+        if(d.user) localStorage.setItem('vto_user',JSON.stringify(d.user));
+        closeModal();
+        // Load client dashboard
+        await loadClientDashboard(d.kyc_required);
+      }
     }
   }catch(e){err.textContent='Connection error. Please try again.';err.classList.add('show');}
   btn.disabled=false;btn.textContent='🔓 Login to My Account';
+}
+
+// ── Unified dashboard loader ────────────────────────────────────
+async function loadClientDashboard(kycRequired){
+  const container=document.getElementById('dashboardContainer');
+  if(!container){return;}
+  showLoadingSpinner();
+  try{
+    const res=await fetch(API+'/content/client');
+    const html=await res.text();
+    // Parse HTML properly — extract styles and body separately
+    const parser=new DOMParser();
+    const doc=parser.parseFromString(html,'text/html');
+    // Inject styles into head
+    doc.querySelectorAll('style').forEach(s=>{
+      const ns=document.createElement('style');
+      ns.textContent=s.textContent;
+      document.head.appendChild(ns);
+    });
+    // Inject body content
+    container.innerHTML=doc.body.innerHTML;
+    document.getElementById('view-public').style.display='none';
+    container.style.display='block';
+    // Execute scripts
+    doc.querySelectorAll('script').forEach(old=>{
+      const s=document.createElement('script');
+      s.textContent=old.textContent;
+      document.body.appendChild(s);
+    });
+    if(kycRequired){
+      setTimeout(()=>{
+        const tabs=document.querySelectorAll('.tab');
+        for(const t of tabs){if(t.textContent.includes('KYC')){t.click();break;}}
+      },800);
+    }
+    showFloatBtn();
+  }catch(e){
+    showToast('Error loading dashboard');
+  }
+  hideLoadingSpinner();
+}
+
+async function loadAdminPanel(){
+  const container=document.getElementById('dashboardContainer');
+  if(!container){return;}
+  showLoadingSpinner();
+  try{
+    const res=await fetch(API+'/content/admin');
+    const html=await res.text();
+    const parser=new DOMParser();
+    const doc=parser.parseFromString(html,'text/html');
+    doc.querySelectorAll('style').forEach(s=>{
+      const ns=document.createElement('style');
+      ns.textContent=s.textContent;
+      document.head.appendChild(ns);
+    });
+    container.innerHTML=doc.body.innerHTML;
+    document.getElementById('view-public').style.display='none';
+    container.style.display='block';
+    doc.querySelectorAll('script').forEach(old=>{
+      const s=document.createElement('script');
+      s.textContent=old.textContent;
+      document.body.appendChild(s);
+    });
+    showFloatBtn();
+  }catch(e){
+    showToast('Error loading admin panel');
+  }
+  hideLoadingSpinner();
+}
+
+function showLoadingSpinner(){
+  const s=document.createElement('div');
+  s.id='loadingSpinner';
+  s.style.cssText='position:fixed;inset:0;background:#060910;display:flex;align-items:center;justify-content:center;z-index:9999;';
+  s.innerHTML='<div style="text-align:center"><div style="font-size:2.5rem;margin-bottom:14px;animation:spin 1s linear infinite">⏳</div><p style="color:#8492a6">Loading...</p></div>';
+  document.body.appendChild(s);
+}
+function hideLoadingSpinner(){
+  const s=document.getElementById('loadingSpinner');
+  if(s) s.remove();
+}
+
+// ── Unified logout ──────────────────────────────────────────────
+function unifiedLogout(){
+  localStorage.removeItem('vto_token');
+  localStorage.removeItem('vto_user');
+  localStorage.removeItem('vto_admin_token');
+  document.getElementById('dashboardContainer').innerHTML='';
+  document.getElementById('dashboardContainer').style.display='none';
+  document.getElementById('view-public').style.display='block';
+  hideFloatBtn();
+}
+
+// ── Auto-restore session on page load ───────────────────────────
+async function restoreSession(){
+  const adminToken=localStorage.getItem('vto_admin_token');
+  const clientToken=localStorage.getItem('vto_token');
+  if(adminToken){
+    await loadAdminPanel();
+  } else if(clientToken){
+    await loadClientDashboard();
+  }
 }
 
 // ── Register ─────────────────────────────────────────────────────
@@ -726,8 +843,8 @@ async function doRegister(){
     if(!r.ok){err.textContent=d.error||'Registration failed';err.classList.add('show');}
     else if(d.token){
       // Auto-login: save token and go straight to KYC dashboard
-      sessionStorage.setItem('vto_token', d.token);
-      if(d.user) sessionStorage.setItem('vto_user', JSON.stringify(d.user));
+      localStorage.setItem('vto_token', d.token);
+      if(d.user) localStorage.setItem('vto_user', JSON.stringify(d.user));
       window.location.href = '/client?tab=kyc&new=1';
     } else {
       ok.innerHTML='<div style="text-align:center"><div style="font-size:2rem;margin-bottom:8px">✅</div><strong>Account Created!</strong><p style="color:#8492a6;font-size:.82rem;margin-top:8px;">Redirecting to your dashboard...</p></div>';
@@ -762,7 +879,7 @@ function showToast(m){const t=document.getElementById('toast');t.textContent=m;t
       banner.style.background='linear-gradient(135deg,#dc2626,#b91c1c)';
       banner.style.display='flex';
       if(title) title.textContent='Invalid or Expired Verification Link';
-      if(sub)   sub.textContent='Please register again or contact support via WhatsApp.';
+      if(sub)   sub.textContent='Please register again or contact support via Telegram.';
       window.history.replaceState({},'','/');
     }
   }
@@ -801,7 +918,7 @@ const INFO_CONTENT = {
 <ul style="padding-left:18px;line-height:2;">
 <li>Founded: 2022</li><li>Clients: 24,800+ across 52 countries</li>
 <li>Total Payouts: $186M+</li><li>Payout Success Rate: 98.6%</li>
-<li>Support: 24/7 live chat and WhatsApp</li></ul>`
+<li>Support: 24/7 live chat and Telegram</li></ul>`
   },
   team: {
     title: '👥 Our Team',
@@ -839,7 +956,7 @@ const INFO_CONTENT = {
   stocks: { title: '📈 Stock Trading', body: `<p><strong style="color:#e2e8f0">Global Stocks</strong> — invest in the world's most successful companies. Access US, European and Asian equity markets from a single account.</p><br/><ul style="padding-left:18px;line-height:2.2;"><li>US Tech: Apple, Tesla, Amazon, Google</li><li>Financial: JPMorgan, Goldman Sachs</li><li>European & Asian blue chips</li><li>Fractional shares available</li><li>No stamp duty on most markets</li></ul>` },
   commodities: { title: '🏅 Commodities Trading', body: `<p><strong style="color:#e2e8f0">Commodities</strong> including precious metals, energy, and agricultural products provide portfolio diversification and inflation protection.</p><br/><ul style="padding-left:18px;line-height:2.2;"><li>Precious Metals: Gold (XAU), Silver (XAG)</li><li>Energy: Crude Oil (WTI & Brent), Natural Gas</li><li>Agriculture: Corn, Wheat, Cotton, Coffee</li><li>Trade on price movements without ownership</li></ul>` },
   binary: { title: '⚡ Binary Options', body: `<p><strong style="color:#e2e8f0">Binary Options</strong> offer a simple, high-yield trading method where you predict whether an asset's price will go UP or DOWN within a set timeframe.</p><br/><ul style="padding-left:18px;line-height:2.2;"><li>Payouts up to 92% per trade</li><li>Timeframes: 1 minute to 24 hours</li><li>All major Forex, Crypto and Indices</li><li>Fixed risk — know your max loss upfront</li><li>Perfect for beginners and experts alike</li></ul>` },
-  help: { title: '❓ Help Center', body: `<h4 style="color:#f0b429;margin-bottom:10px;">Frequently Asked Questions</h4><div style="display:flex;flex-direction:column;gap:12px;"><div style="background:rgba(255,255,255,.04);border-radius:8px;padding:13px;"><strong>How do I make a deposit?</strong><p style="margin-top:6px;font-size:.83rem;">Login → Dashboard → Deposit tab → Select crypto method → Send funds to displayed address → Click Notify Admin.</p></div><div style="background:rgba(255,255,255,.04);border-radius:8px;padding:13px;"><strong>How long do withdrawals take?</strong><p style="margin-top:6px;font-size:.83rem;">Withdrawals are processed within 1–24 hours after submission. Crypto is usually faster.</p></div><div style="background:rgba(255,255,255,.04);border-radius:8px;padding:13px;"><strong>What is KYC verification?</strong><p style="margin-top:6px;font-size:.83rem;">KYC (Know Your Customer) is identity verification required to protect all users. Upload your government ID and proof of address.</p></div><div style="background:rgba(255,255,255,.04);border-radius:8px;padding:13px;"><strong>How do I contact support?</strong><p style="margin-top:6px;font-size:.83rem;">Use the live chat in your dashboard, WhatsApp us at +1 (215) 892-4891, or email support@vitaltradeoption.com.</p></div></div>` },
+  help: { title: '❓ Help Center', body: `<h4 style="color:#f0b429;margin-bottom:10px;">Frequently Asked Questions</h4><div style="display:flex;flex-direction:column;gap:12px;"><div style="background:rgba(255,255,255,.04);border-radius:8px;padding:13px;"><strong>How do I make a deposit?</strong><p style="margin-top:6px;font-size:.83rem;">Login → Dashboard → Deposit tab → Select crypto method → Send funds to displayed address → Click Notify Admin.</p></div><div style="background:rgba(255,255,255,.04);border-radius:8px;padding:13px;"><strong>How long do withdrawals take?</strong><p style="margin-top:6px;font-size:.83rem;">Withdrawals are processed within 1–24 hours after submission. Crypto is usually faster.</p></div><div style="background:rgba(255,255,255,.04);border-radius:8px;padding:13px;"><strong>What is KYC verification?</strong><p style="margin-top:6px;font-size:.83rem;">KYC (Know Your Customer) is identity verification required to protect all users. Upload your government ID and proof of address.</p></div><div style="background:rgba(255,255,255,.04);border-radius:8px;padding:13px;"><strong>How do I contact support?</strong><p style="margin-top:6px;font-size:.83rem;">Use the live chat in your dashboard, Telegram us at +1 514 667 9490, or email support@vitaltradeoption.com.</p></div></div>` },
   terms: { title: '📋 Terms of Service', body: `<p style="margin-bottom:14px;"><strong style="color:#f0b429">Last Updated: January 2025</strong></p><p>By using VitalTradeOption, you agree to these Terms of Service. Please read them carefully.</p><br/><h4 style="color:#f0b429;margin-bottom:8px;">1. Account Registration</h4><p>You must provide accurate information. You are responsible for maintaining account security. You must be 18+ to use this platform.</p><br/><h4 style="color:#f0b429;margin-bottom:8px;">2. Trading Risk</h4><p>Trading involves significant risk. Past performance does not guarantee future results. Only invest capital you can afford to lose.</p><br/><h4 style="color:#f0b429;margin-bottom:8px;">3. Deposits & Withdrawals</h4><p>All deposits are final. Withdrawals are processed within 24 hours. Minimum withdrawal is $20.</p><br/><h4 style="color:#f0b429;margin-bottom:8px;">4. KYC Compliance</h4><p>Users must complete KYC verification. We reserve the right to suspend accounts that violate our policies.</p><br/><p>For questions, contact: <strong style="color:#f0b429">support@vitaltradeoption.com</strong></p>` },
   privacy: { title: '🔐 Privacy Policy', body: `<p style="margin-bottom:14px;"><strong style="color:#f0b429">Last Updated: January 2025</strong></p><p>VitalTradeOption is committed to protecting your privacy. This policy explains how we collect, use and protect your data.</p><br/><h4 style="color:#f0b429;margin-bottom:8px;">Data We Collect</h4><ul style="padding-left:18px;line-height:2;"><li>Name, email, phone number</li><li>Government ID and proof of address (KYC)</li><li>Transaction and trading history</li><li>Device and usage data</li></ul><br/><h4 style="color:#f0b429;margin-bottom:8px;">How We Use Your Data</h4><ul style="padding-left:18px;line-height:2;"><li>To provide and improve our services</li><li>Identity verification and fraud prevention</li><li>Regulatory compliance (AML/KYC)</li><li>Customer support</li></ul><br/><h4 style="color:#f0b429;margin-bottom:8px;">Data Protection</h4><p>All data is encrypted with 256-bit SSL. We never sell your personal data to third parties.</p>` },
 };
@@ -873,18 +990,19 @@ function updateCurrency(){
   if(b)b.textContent=CURRENCY_MAP[c]||'$ USD';
 }
 </script>
-<!-- WhatsApp Floating Button -->
-<a href="https://wa.me/12158924891?text=Hello%2C%20I%20need%20support%20with%20my%20VitalTradeOption%20account" target="_blank" id="waBtn" title="Chat with us on WhatsApp"
-   style="position:fixed;bottom:20px;right:14px;z-index:90;width:40px;height:40px;background:#25D366;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(37,211,102,.3);text-decoration:none;opacity:.85;" title="WhatsApp">
+<!-- Telegram Floating Button -->
+<a href="https://t.me/15146679490?text=Hello%2C%20I%20need%20support%20with%20my%20VitalTradeOption%20account" target="_blank" id="waBtn" style="display:none;" title="Chat with us on Telegram"
+   style="position:fixed;bottom:20px;right:14px;z-index:90;width:40px;height:40px;background:#0088cc;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,136,204,.3);text-decoration:none;opacity:.85;" title="Telegram">
   <svg width="24" height="24" viewBox="0 0 30 30" fill="white">
     <path d="M15 2C7.8 2 2 7.8 2 15c0 2.3.6 4.5 1.7 6.4L2 28l6.8-1.7C10.6 27.4 12.8 28 15 28c7.2 0 13-5.8 13-13S22.2 2 15 2zm6.4 17.9c-.3.8-1.5 1.5-2.1 1.6-.5.1-1.2.1-1.9-.1-.4-.1-1-.3-1.7-.6-3-1.3-5-4.3-5.1-4.5-.1-.2-1.1-1.5-1.1-2.8 0-1.3.7-2 .9-2.2.3-.3.6-.3.8-.3h.6c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .6l-.5.7c-.1.1-.2.3-.1.5.4.7.9 1.4 1.5 1.9.6.6 1.3 1 2 1.2.2.1.4 0 .5-.1l.6-.8c.2-.2.4-.3.6-.2l1.9.9c.2.1.4.2.5.4.1.6-.1 1.5-.4 2.3z"/>
   </svg>
 </a>
 <style>
 @keyframes waPulse{
-  0%,100%{box-shadow:0 4px 20px rgba(37,211,102,.5);transform:scale(1);}
-  50%{box-shadow:0 4px 32px rgba(37,211,102,.8);transform:scale(1.05);}
+  0%,100%{box-shadow:0 4px 20px rgba(0,136,204,.5);transform:scale(1);}
+  50%{box-shadow:0 4px 32px rgba(0,136,204,.8);transform:scale(1.05);}
 }
 </style>
+<div id="dashboardContainer" style="display:none;"></div>
 </body>
 </html>
