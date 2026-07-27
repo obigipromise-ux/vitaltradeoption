@@ -241,6 +241,14 @@
           "tx_hash": "",
           "status": "pending",
           "timestamp": "2026-07-27T00:22:37.853Z"
+        },
+        {
+          "id": 1785166811139,
+          "amount": 500,
+          "crypto": "USDT",
+          "tx_hash": "",
+          "status": "pending",
+          "timestamp": "2026-07-27T15:40:11.139Z"
         }
       ],
       "withdrawals": [
