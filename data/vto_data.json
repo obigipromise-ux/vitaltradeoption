@@ -178,9 +178,9 @@
       "status": "active",
       "kyc_status": "verified",
       "plan": "Starter",
-      "balance": 580,
+      "balance": 780,
       "invested": 0,
-      "profit": 80,
+      "profit": 280,
       "today_earned": 0,
       "total_withdrawn": 0,
       "registration_date": "2026-07-27T00:03:12.999Z",
@@ -222,6 +222,15 @@
           "pnl": 80,
           "status": "won",
           "timestamp": "2026-07-27T00:17:52.173Z"
+        },
+        {
+          "id": 1785111684447,
+          "symbol": "BTC/USD",
+          "direction": "UP",
+          "amount": 500,
+          "pnl": 200,
+          "status": "won",
+          "timestamp": "2026-07-27T00:21:24.447Z"
         }
       ],
       "deposits": [],
@@ -241,6 +250,15 @@
           "pnl": 80,
           "status": "won",
           "timestamp": "2026-07-27T00:17:52.173Z"
+        },
+        {
+          "type": "trade",
+          "symbol": "BTC/USD",
+          "direction": "UP",
+          "amount": 500,
+          "pnl": 200,
+          "status": "won",
+          "timestamp": "2026-07-27T00:21:24.447Z"
         }
       ],
       "referrals": [],
