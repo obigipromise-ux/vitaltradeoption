@@ -178,7 +178,7 @@
       "status": "pending_kyc",
       "kyc_status": "not_submitted",
       "plan": "Starter",
-      "balance": 0,
+      "balance": 500,
       "invested": 0,
       "profit": 0,
       "today_earned": 0,
@@ -191,7 +191,14 @@
       "trades": [],
       "deposits": [],
       "withdrawals": [],
-      "activity": [],
+      "activity": [
+        {
+          "type": "credit",
+          "amount": 500,
+          "timestamp": "2026-07-27T00:11:50.597Z",
+          "message": "Admin credit"
+        }
+      ],
       "referrals": [],
       "ip_address": "102.90.100.253, 172.71.151.201, 10.27.235.132"
     }
