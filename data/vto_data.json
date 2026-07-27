@@ -233,7 +233,16 @@
           "timestamp": "2026-07-27T00:21:24.447Z"
         }
       ],
-      "deposits": [],
+      "deposits": [
+        {
+          "id": 1785111757853,
+          "amount": 500,
+          "crypto": "BTC",
+          "tx_hash": "",
+          "status": "pending",
+          "timestamp": "2026-07-27T00:22:37.853Z"
+        }
+      ],
       "withdrawals": [],
       "activity": [
         {
