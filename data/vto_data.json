@@ -243,7 +243,16 @@
           "timestamp": "2026-07-27T00:22:37.853Z"
         }
       ],
-      "withdrawals": [],
+      "withdrawals": [
+        {
+          "id": 1785111777158,
+          "amount": 100,
+          "crypto": "BTC",
+          "wallet_address": "7t5rr4677ytt566uuut",
+          "status": "pending",
+          "timestamp": "2026-07-27T00:22:57.158Z"
+        }
+      ],
       "activity": [
         {
           "type": "credit",
