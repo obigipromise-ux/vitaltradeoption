@@ -286,6 +286,16 @@
   "deposits": [],
   "withdrawals": [],
   "trades": [],
-  "messages": [],
+  "messages": [
+    {
+      "id": 1785166755424,
+      "user_id": 1785110593122,
+      "user_email": "azipropromise@gmail.com",
+      "from": "client",
+      "message": "Hello",
+      "timestamp": "2026-07-27T15:39:15.424Z",
+      "read_by_admin": false
+    }
+  ],
   "nextId": 1
 }
