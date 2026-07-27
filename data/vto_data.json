@@ -176,7 +176,7 @@
       "referral_code": "AZIPRO674",
       "referred_by": null,
       "status": "active",
-      "kyc_status": "under_review",
+      "kyc_status": "verified",
       "plan": "Starter",
       "balance": 500,
       "invested": 0,
@@ -190,6 +190,12 @@
           "timestamp": "2026-07-27T00:13:08.965Z",
           "reviewer": "system",
           "reason": "Documents submitted"
+        },
+        {
+          "status": "verified",
+          "timestamp": "2026-07-27T00:14:13.280Z",
+          "reviewer": "vitaltradesoption@gmail.com",
+          "reason": "Documents approved"
         }
       ],
       "id_document": {
